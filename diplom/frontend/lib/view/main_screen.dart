@@ -13,7 +13,7 @@ class _AppMainScreenState extends State<AppMainScreen> {
     return const Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Text("Main Screenasdasdasdsadasdasdasdsadsad"),
+        child: Text("Main Screen"),
       ),
     );
   }
