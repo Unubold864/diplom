@@ -9,8 +9,8 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  final CollectionReference categoryCollection =
-      FirebaseFirestore.instance.collection('places');
+  // final CollectionReference categoryCollection =
+  //     FirebaseFirestore.instance.collection('places');
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -21,7 +21,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           children: [
             // Хайх хэсэг
             SearchBarAndFilter(),
-            StreamBuilder(stream: stream, builder: builder)
+            // StreamBuilder(stream: stream, builder: builder)
           ],
         ),
       ),
