@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:frontend/widgets/location_card.dart';
+import 'package:frontend/widgets/nerby_places.dart';
+import 'package:frontend/widgets/reccommended_places.dart';
 import 'package:frontend/widgets/tourist_places.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 
@@ -20,10 +22,7 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Өглөөний мэнд"),
-            Text(
-              "Батаа",
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
+            Text("Батаа", style: Theme.of(context).textTheme.labelMedium),
           ],
         ),
         actions: [
@@ -37,6 +36,7 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: ListView(
+        physics: BouncingScrollPhysics(),
         padding: EdgeInsets.all(14),
         children: [
           // Байршил болон хайлт хэсэг
@@ -44,6 +44,32 @@ class HomePage extends StatelessWidget {
           SizedBox(height: 15),
           TouristPlaces(),
           // Төрөл болон бусад хэсэг
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Recommendation",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              TextButton(onPressed: () {}, child: Text("View All")),
+            ],
+          ),
+          SizedBox(height: 10),
+          ReccommendedPlaces(),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Nerby From You",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              TextButton(onPressed: () {}, child: Text("View All")),
+            ],
+          ),
+          SizedBox(height: 10),
+          NerbyPlaces(),
           // Зөвлөгөө хэсэг
         ],
       ),
