@@ -27,7 +27,7 @@ class LocationCard extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  "Улаанбаатар хот, Баянгол дүүрэг, 13-р хороо, 13-р байр",
+                  "Улаанбаатар хот, Баянгол дүүрэг",
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ],
