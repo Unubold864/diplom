@@ -11,78 +11,117 @@ class NerbyPlaces extends StatelessWidget {
     return Column(
       children: List.generate(nearbyPlaces.length, (index) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: SizedBox(
-            height: 135,
-            width: double.maxFinite,
-            child: Card(
-              elevation: 0.4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          nearbyPlaces[index].image,
-                          height: double.maxFinite,
-                          width: 130,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Sea of Peace",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Container(
+            height: 140,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {},
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Hero(
+                          tag: 'nearby_${nearbyPlaces[index].image}',
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              nearbyPlaces[index].image,
+                              height: double.maxFinite,
+                              width: 120,
+                              fit: BoxFit.cover,
                             ),
-                            Text("Portic Team"),
-                            SizedBox(height: 10),
-
-                            //Distance Widget
-                            Distance(),
-                            Spacer(),
-                            Row(
-                              children: [
-                                Icon(Icons.star, color: Colors.yellow.shade700),
-                                Text("4.5", style: TextStyle(fontSize: 12)),
-                                Spacer(),
-                                RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    text: "\$22",
-                                    children: [
-                                      TextSpan(
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.black54,
-                                        ),
-                                        text: "/Person",
-                                      ),
-                                    ],
-                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Sea of Peace",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Portic Team",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Distance(),
+                              Spacer(),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.yellow.shade50,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.star, color: Colors.yellow.shade700, size: 16),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          "4.5",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      text: "\$22",
+                                      children: [
+                                        TextSpan(
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.black45,
+                                          ),
+                                          text: "/Person",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

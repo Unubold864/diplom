@@ -11,88 +11,129 @@ class ReccommendedPlaces extends StatelessWidget {
     return SizedBox(
       height: 235,
       child: ListView.separated(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) {
-          return SizedBox(
-            width: 220,
-            child: Card(
-              elevation: 0.4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TouristDetailsPage(
-                        image: recommendedPlaces[index].image,
-                      ),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          recommendedPlaces[index].image,
-                          width: double.maxFinite,
-                          fit: BoxFit.cover,
-                          height: 150,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Text(
-                            "St Regis Bora Bora",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Spacer(),
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow.shade700,
-                            size: 14,
-                          ),
-                          Text("4.4", style: TextStyle(fontSize: 12)),
-                        ],
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Icon(
-                            ionicons['location_outline'],
-                            color: Theme.of(context).primaryColor,
-                            size: 14,
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            "French Polynesia",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+        itemBuilder: (context, index) => _RecommendedPlaceCard(
+          place: recommendedPlaces[index],
+        ),
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemCount: recommendedPlaces.length,
+      ),
+    );
+  }
+}
+
+class _RecommendedPlaceCard extends StatelessWidget {
+  final ReccommendedPlacesModel place;
+
+  const _RecommendedPlaceCard({
+    Key? key,
+    required this.place,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return SizedBox(
+      width: 220,
+      child: Card(
+        elevation: 0.4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _navigateToDetails(context),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildImage(),
+                const SizedBox(height: 8),
+                _buildTitleRow(theme),
+                const SizedBox(height: 8),
+                _buildLocation(theme),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.asset(
+        place.image,
+        width: double.maxFinite,
+        height: 150,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 150,
+            color: Colors.grey[300],
+            child: const Icon(Icons.error_outline),
           );
         },
-        separatorBuilder:
-            (context, index) => Padding(padding: EdgeInsets.only(right: 10)),
-        itemCount: recommendedPlaces.length,
+      ),
+    );
+  }
+
+  Widget _buildTitleRow(ThemeData theme) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            "St Regis Bora Bora",
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Icon(
+          Icons.star,
+          color: Colors.yellow.shade700,
+          size: 16,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          "4.4",
+          style: theme.textTheme.bodySmall,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocation(ThemeData theme) {
+    return Row(
+      children: [
+        Icon(
+          ionicons['location_outline'],
+          color: theme.primaryColor,
+          size: 14,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          "French Polynesia",
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _navigateToDetails(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TouristDetailsPage(
+          image: place.image,
+        ),
       ),
     );
   }
