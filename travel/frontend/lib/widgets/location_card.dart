@@ -62,7 +62,7 @@ class LocationCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        "Таны байршил",
+                        "Location",
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: persianGreen, // Persian Green text
                           fontWeight: FontWeight.bold,
