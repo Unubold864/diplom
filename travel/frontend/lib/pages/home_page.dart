@@ -10,6 +10,9 @@ import 'package:ionicons_named/ionicons_named.dart';
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  // Define Persian Green as the primary color
+  final Color persianGreen = const Color(0xFF00A896);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,8 +23,8 @@ class HomePage extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withOpacity(0.8),
+                persianGreen, // Persian Green
+                persianGreen.withOpacity(0.8), // Slightly transparent Persian Green
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -121,7 +124,7 @@ class HomePage extends StatelessWidget {
             "View All",
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: Theme.of(context).primaryColor,
+              color: persianGreen, // Use Persian Green for "View All"
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -153,7 +156,7 @@ class HomePage extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           showSelectedLabels: true,
           showUnselectedLabels: true,
-          selectedItemColor: Theme.of(context).primaryColor,
+          selectedItemColor: persianGreen, // Use Persian Green for selected items
           unselectedItemColor: Colors.grey[400],
           selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
           unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
@@ -179,12 +182,12 @@ class HomePage extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).primaryColor.withOpacity(0.15)
+              ? persianGreen.withOpacity(0.15) // Use Persian Green for selected state
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
           border: isSelected
               ? Border.all(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: persianGreen.withOpacity(0.3), // Persian Green border
                   width: 1,
                 )
               : null,
@@ -192,7 +195,7 @@ class HomePage extends StatelessWidget {
         child: Icon(
           icon,
           size: 22,
-          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[400],
+          color: isSelected ? persianGreen : Colors.grey[400], // Persian Green for selected icon
         ),
       ),
       label: label,
