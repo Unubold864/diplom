@@ -78,15 +78,14 @@ class WelcomePage extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 5,
-          ),
-        ],
+        color: Colors.transparent, // Set background to transparent
       ),
-      child: Lottie.asset(assetPath, width: 300, height: 300),
+      child: Lottie.asset(
+        assetPath,
+        width: 300,
+        height: 300,
+        fit: BoxFit.contain,
+      ),
     );
   }
 
