@@ -3,7 +3,8 @@ import 'package:lottie/lottie.dart';
 
 class LocationCard extends StatelessWidget {
   const LocationCard({Key? key}) : super(key: key);
-  
+
+  // Define Persian Green as the primary color
   final Color persianGreen = const Color(0xFF00A896);
 
   @override
@@ -38,7 +39,7 @@ class LocationCard extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: persianGreen.withOpacity(0.1), // Persian Green background
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Lottie.asset(
@@ -56,14 +57,14 @@ class LocationCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.location_on,
-                        color: persianGreen,
+                        color: persianGreen, // Persian Green icon
                         size: 24,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         "Таны байршил",
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: persianGreen,
+                          color: persianGreen, // Persian Green text
                           fontWeight: FontWeight.bold,
                         ),
                       ),
