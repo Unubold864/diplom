@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         elevation: 0,
         flexibleSpace: Container(
@@ -21,7 +21,6 @@ class HomePage extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 Theme.of(context).primaryColor,
-                // ignore: deprecated_member_use
                 Theme.of(context).primaryColor.withOpacity(0.8),
               ],
               begin: Alignment.topLeft,
@@ -69,17 +68,11 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const LocationCard(),
             const SizedBox(height: 25),
@@ -103,42 +96,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              // ignore: deprecated_member_use
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          child: BottomNavigationBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: true,
-            showUnselectedLabels: true,
-            selectedItemColor: Theme.of(context).primaryColor,
-            unselectedItemColor: Colors.grey[400],
-            selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
-            unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
-            items: [
-              _buildNavItem(context, ionicons['home']!, "Home", true),
-              _buildNavItem(context, ionicons['bookmark']!, "Saved", false),
-              _buildNavItem(context, ionicons['heart']!, "Favorites", false),
-              _buildNavItem(context, ionicons['person']!, "Profile", false),
-            ],
-          ),
-        ),
-      ),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
@@ -172,6 +130,44 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: BottomNavigationBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          type: BottomNavigationBarType.fixed,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.grey[400],
+          selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
+          unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
+          items: [
+            _buildNavItem(context, ionicons['home']!, "Home", true),
+            _buildNavItem(context, ionicons['bookmark']!, "Saved", false),
+            _buildNavItem(context, ionicons['heart']!, "Favorites", false),
+            _buildNavItem(context, ionicons['person']!, "Profile", false),
+          ],
+        ),
+      ),
+    );
+  }
+
   BottomNavigationBarItem _buildNavItem(
     BuildContext context,
     IconData icon,
@@ -182,7 +178,9 @@ class HomePage extends StatelessWidget {
       icon: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.15) : Colors.transparent,
+          color: isSelected
+              ? Theme.of(context).primaryColor.withOpacity(0.15)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
           border: isSelected
               ? Border.all(
