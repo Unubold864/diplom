@@ -6,6 +6,9 @@ import 'package:frontend/pages/home_page.dart';
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
+  // Define Persian Green as the primary color
+  final Color persianGreen = const Color(0xFF00A896);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +17,10 @@ class WelcomePage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.blue.shade50, Colors.purple.shade50],
+            colors: [
+              persianGreen.withOpacity(0.1), // Light green gradient
+              persianGreen.withOpacity(0.05), // Very light green gradient
+            ],
           ),
         ),
         child: IntroductionScreen(
@@ -58,7 +64,7 @@ class WelcomePage extends StatelessWidget {
             size: Size(10, 10),
             color: Colors.grey.shade300,
             activeSize: Size(22, 10),
-            activeColor: Colors.blue,
+            activeColor: persianGreen, // Use Persian Green for active dot
             activeShape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -88,11 +94,11 @@ class WelcomePage extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: persianGreen, // Use Persian Green for buttons
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: persianGreen.withOpacity(0.3), // Green shadow
             blurRadius: 10,
             spreadRadius: 2,
           ),
@@ -114,7 +120,7 @@ class WelcomePage extends StatelessWidget {
       titleTextStyle: TextStyle(
         fontSize: 28,
         fontWeight: FontWeight.bold,
-        color: Colors.blue.shade800,
+        color: persianGreen, // Use Persian Green for titles
       ),
       bodyTextStyle: TextStyle(
         fontSize: 18,
