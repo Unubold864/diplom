@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class LocationCard extends StatelessWidget {
   const LocationCard({Key? key}) : super(key: key);
+  
+  final Color persianGreen = const Color(0xFF00A896);
 
   @override
   Widget build(BuildContext context) {
@@ -10,19 +13,19 @@ class LocationCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).primaryColor.withOpacity(0.1),
             Colors.white,
+            Colors.white.withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -30,20 +33,21 @@ class LocationCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
+            // Lottie Animation
             Container(
-              padding: const EdgeInsets.all(12),
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Image.asset(
-                'assets/map.png',
-                width: 80,
-                height: 80,
+              child: Lottie.asset(
+                'assets/map.json', // Replace with your Lottie file
                 fit: BoxFit.cover,
               ),
             ),
             const SizedBox(width: 16),
+            // Location Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,14 +56,14 @@ class LocationCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.location_on,
-                        color: Theme.of(context).primaryColor,
-                        size: 20,
+                        color: persianGreen,
+                        size: 24,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         "Таны байршил",
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).primaryColor,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: persianGreen,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
