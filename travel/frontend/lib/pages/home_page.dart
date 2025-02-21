@@ -18,44 +18,26 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        elevation: 0,
+        elevation: 4, // Add elevation for shadow
+        backgroundColor: Colors.white, // Solid white background
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                persianGreen, // Persian Green
-                persianGreen.withOpacity(0.8), // Slightly transparent Persian Green
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
           ),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Өглөөний мэнд",
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.white70,
-              ),
-            ),
-            Text(
-              "Батаа",
-              style: GoogleFonts.poppins(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
+        
         actions: [
           CustomIconButton(
             icon: Icon(
               ionicons['search_outline'],
-              color: Colors.white,
+              color: persianGreen, // Use Persian Green for icons
               size: 22,
             ),
             onTap: () {},
@@ -63,7 +45,7 @@ class HomePage extends StatelessWidget {
           CustomIconButton(
             icon: Icon(
               ionicons['notifications_outline'],
-              color: Colors.white,
+              color: persianGreen, // Use Persian Green for icons
               size: 22,
             ),
             showBadge: true,
