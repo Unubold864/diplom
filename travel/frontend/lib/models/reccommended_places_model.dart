@@ -8,6 +8,8 @@ class ReccommendedPlacesModel {
     required this.rating,
     required this.location,
   });
+
+  String? get name => null;
 }
 
 List<ReccommendedPlacesModel> recommendedPlaces = [

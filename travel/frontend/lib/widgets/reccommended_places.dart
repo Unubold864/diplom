@@ -9,7 +9,7 @@ class ReccommendedPlaces extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 235,
+      height: 260, // Increased height for better visibility
       child: ListView.separated(
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
@@ -31,31 +31,52 @@ class _RecommendedPlaceCard extends StatelessWidget {
     required this.place,
   }) : super(key: key);
 
+  // Define Persian Green as the primary color
+  final Color persianGreen = const Color(0xFF00A896);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return SizedBox(
-      width: 220,
-      child: Card(
-        elevation: 0.4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+      width: 240, // Increased width for better spacing
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           onTap: () => _navigateToDetails(context),
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildImage(),
-                const SizedBox(height: 8),
-                _buildTitleRow(theme),
-                const SizedBox(height: 8),
-                _buildLocation(theme),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  persianGreen.withOpacity(0.1), // Light Persian Green
+                  Colors.white.withOpacity(0.8), // Slightly transparent white
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
               ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildImage(),
+                  const SizedBox(height: 12),
+                  _buildTitleRow(theme),
+                  const SizedBox(height: 8),
+                  _buildLocation(theme),
+                ],
+              ),
             ),
           ),
         ),
@@ -69,13 +90,13 @@ class _RecommendedPlaceCard extends StatelessWidget {
       child: Image.asset(
         place.image,
         width: double.maxFinite,
-        height: 150,
+        height: 160, // Increased height for better visibility
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Container(
-            height: 150,
+            height: 160,
             color: Colors.grey[300],
-            child: const Icon(Icons.error_outline),
+            child: const Icon(Icons.error_outline, color: Colors.grey),
           );
         },
       ),
@@ -87,9 +108,10 @@ class _RecommendedPlaceCard extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            "St Regis Bora Bora",
+            place.name ?? 'Unknown Place', // Use the place name from the model
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: persianGreen, // Persian Green text
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -101,8 +123,10 @@ class _RecommendedPlaceCard extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(
-          "4.4",
-          style: theme.textTheme.bodySmall,
+          place.rating.toString(), // Use the rating from the model
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: Colors.grey.shade700,
+          ),
         ),
       ],
     );
@@ -113,12 +137,12 @@ class _RecommendedPlaceCard extends StatelessWidget {
       children: [
         Icon(
           ionicons['location_outline'],
-          color: theme.primaryColor,
+          color: persianGreen, // Persian Green icon
           size: 14,
         ),
         const SizedBox(width: 4),
         Text(
-          "French Polynesia",
+          place.location, // Use the location from the model
           style: theme.textTheme.bodySmall?.copyWith(
             color: Colors.grey.shade600,
           ),
