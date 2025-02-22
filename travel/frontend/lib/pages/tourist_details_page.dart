@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/widgets/distance.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 
@@ -6,16 +7,18 @@ class TouristDetailsPage extends StatelessWidget {
   const TouristDetailsPage({super.key, required this.image});
 
   final String image;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.all(16), // Consistent padding
           children: [
+            // Image Section
             SizedBox(
-              height: size.height * 0.38,
+              height: size.height * 0.35, // Adjusted height
               width: double.maxFinite,
               child: Stack(
                 fit: StackFit.expand,
@@ -29,15 +32,6 @@ class TouristDetailsPage extends StatelessWidget {
                         image: AssetImage(image),
                         fit: BoxFit.cover,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          // ignore: deprecated_member_use
-                          color: Colors.black.withOpacity(0.4),
-                          spreadRadius: 0,
-                          blurRadius: 20,
-                          offset: Offset(0, 10),
-                        ),
-                      ],
                     ),
                   ),
                   Positioned(
@@ -45,7 +39,7 @@ class TouristDetailsPage extends StatelessWidget {
                     left: 0,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.horizontal(
                           right: Radius.circular(15),
                         ),
@@ -56,13 +50,13 @@ class TouristDetailsPage extends StatelessWidget {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            iconSize: 20,
-                            icon: Icon(ionicons['chevron-back']),
+                            iconSize: 24, // Larger icon size
+                            icon: Icon(ionicons['chevron_back_outline']), // Cleaner icon
                           ),
                           IconButton(
                             onPressed: () {},
-                            iconSize: 20,
-                            icon: Icon(ionicons['heart_outline']),
+                            iconSize: 24,
+                            icon: Icon(ionicons['heart_outline']), // Cleaner icon
                           ),
                         ],
                       ),
@@ -72,89 +66,113 @@ class TouristDetailsPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
+
+            // Title and Rating Section
             Row(
               children: [
                 Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "Sea of Peace",
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
-                    SizedBox(height: 5),
+                    SizedBox(height: 4),
                     Text(
-                      "Portic Team  8km",
-                      style: Theme.of(context).textTheme.bodySmall,
+                      "Portic Team • 8km",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
                 Spacer(),
-                Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    onPressed: () {},
-                    iconSize: 20,
-                    icon: Icon(ionicons['chatbubble_ellipses_outline']),
-                  ),
-                ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("4.6", style: Theme.of(context).textTheme.bodySmall),
-                    Icon(ionicons['star'], color: Colors.yellow[800], size: 15),
+                    Text(
+                      "4.6",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Icon(ionicons['star_outline'], color: Colors.amber, size: 20),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
+
+            // Timer Section
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       "01d:32h:56m",
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    SizedBox(height: 4),
                     Text(
                       "Started in",
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
+
+            // Map Section
             Container(
-              height: 100,
+              height: 120,
               width: double.maxFinite,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                // ignore: deprecated_member_use
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                color: Colors.grey.shade100,
                 image: DecorationImage(
                   image: AssetImage('assets/map.png'),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
+
+            // Distance Widget
             Distance(),
             SizedBox(height: 20),
+
+            // Start Tour Button
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 shape: StadiumBorder(),
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8.0),
+                padding: EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: Theme.of(context).colorScheme.primary,
               ),
-              child: Text("Start Tour"),
+              child: Text(
+                "Start Tour",
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ],
         ),
