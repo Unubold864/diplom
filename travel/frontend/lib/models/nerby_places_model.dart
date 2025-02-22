@@ -2,6 +2,14 @@ class NerbyPlacesModel {
   final String image;
 
   NerbyPlacesModel({required this.image});
+
+  String? get name => null;
+
+  String? get location => null;
+
+  get rating => null;
+
+  get price => null;
 }
 
 List<NerbyPlacesModel> nearbyPlaces = [
