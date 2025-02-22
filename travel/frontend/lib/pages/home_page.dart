@@ -16,37 +16,45 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor:
+          Colors.white, // Solid white background for a cleaner look
       appBar: AppBar(
-        elevation: 4, // Add elevation for shadow
-        backgroundColor: Colors.white, // Solid white background
+        elevation: 0, // Remove elevation for a flat design
+        backgroundColor: Colors.transparent, // Transparent background
         flexibleSpace: Container(
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withOpacity(0.05), // Subtle shadow
                 blurRadius: 10,
-                offset: Offset(0, 5),
+                offset: const Offset(0, 5),
               ),
             ],
           ),
         ),
-        
+        title: Text(
+          "Explore",
+          style: GoogleFonts.poppins(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87, // Dark text for better contrast
+          ),
+        ),
         actions: [
           CustomIconButton(
             icon: Icon(
               ionicons['search_outline'],
-              color: persianGreen, // Use Persian Green for icons
-              size: 22,
+              color: persianGreen, // Persian Green icon
+              size: 24, // Slightly larger icon
             ),
             onTap: () {},
           ),
           CustomIconButton(
             icon: Icon(
               ionicons['notifications_outline'],
-              color: persianGreen, // Use Persian Green for icons
-              size: 22,
+              color: persianGreen, // Persian Green icon
+              size: 24, // Slightly larger icon
             ),
             showBadge: true,
             onTap: () {},
@@ -85,7 +93,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, {
+  Widget _buildSectionHeader(
+    BuildContext context, {
     required String title,
     required VoidCallback onViewAll,
   }) {
@@ -97,7 +106,7 @@ class HomePage extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.black87, // Dark text for better contrast
           ),
         ),
         TextButton(
@@ -106,7 +115,7 @@ class HomePage extends StatelessWidget {
             "View All",
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: persianGreen, // Use Persian Green for "View All"
+              color: persianGreen, // Persian Green for "View All"
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -121,7 +130,7 @@ class HomePage extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withOpacity(0.1), // Subtle shadow
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -138,15 +147,15 @@ class HomePage extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           showSelectedLabels: true,
           showUnselectedLabels: true,
-          selectedItemColor: persianGreen, // Use Persian Green for selected items
+          selectedItemColor: persianGreen, // Persian Green for selected items
           unselectedItemColor: Colors.grey[400],
           selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
           unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
           items: [
-            _buildNavItem(context, ionicons['home']!, "Home", true),
-            _buildNavItem(context, ionicons['bookmark']!, "Saved", false),
-            _buildNavItem(context, ionicons['heart']!, "Favorites", false),
-            _buildNavItem(context, ionicons['person']!, "Profile", false),
+            _buildNavItem(context, Icons.home_outlined, "Home", true),
+            _buildNavItem(context, Icons.bookmark_border, "Saved", false),
+            _buildNavItem(context, Icons.favorite_border, "Favorites", false),
+            _buildNavItem(context, Icons.person_outline, "Profile", false),
           ],
         ),
       ),
@@ -160,25 +169,28 @@ class HomePage extends StatelessWidget {
     bool isSelected,
   ) {
     return BottomNavigationBarItem(
-      icon: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? persianGreen.withOpacity(0.15) // Use Persian Green for selected state
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(14),
-          border: isSelected
-              ? Border.all(
-                  color: persianGreen.withOpacity(0.3), // Persian Green border
-                  width: 1,
-                )
-              : null,
-        ),
-        child: Icon(
-          icon,
-          size: 22,
-          color: isSelected ? persianGreen : Colors.grey[400], // Persian Green for selected icon
-        ),
+      icon: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 24, // Consistent icon size
+            color:
+                isSelected
+                    ? persianGreen
+                    : Colors.grey[400], // Persian Green for selected icon
+          ),
+          if (isSelected)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 3,
+              width: 20,
+              decoration: BoxDecoration(
+                color: persianGreen,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+        ],
       ),
       label: label,
     );
