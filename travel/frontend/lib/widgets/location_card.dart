@@ -42,9 +42,11 @@ class LocationCard extends StatelessWidget {
                 color: persianGreen.withOpacity(0.1), // Persian Green background
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Lottie.asset(
-                'assets/map.json', // Replace with your Lottie file
-                fit: BoxFit.cover,
+              child: Center( // Center the Lottie animation
+                child: Lottie.asset(
+                  'assets/map1.json', // Replace with your Lottie file
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -63,9 +65,11 @@ class LocationCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         "Location",
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: persianGreen, // Persian Green text
+                        style: TextStyle( // Custom font style
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: persianGreen, // Persian Green text
+                          fontFamily: 'YourCustomFont', // Replace with your custom font
                         ),
                       ),
                     ],
@@ -73,8 +77,10 @@ class LocationCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     "Улаанбаатар хот, Баянгол дүүрэг",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: TextStyle( // Custom font style
+                      fontSize: 16,
                       color: Colors.grey[700],
+                      fontFamily: 'YourCustomFont', // Replace with your custom font
                     ),
                   ),
                 ],
