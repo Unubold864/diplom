@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/tourist_places_model.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:ionicons_named/ionicons_named.dart';
 
 class TouristPlaces extends StatelessWidget {
   const TouristPlaces({Key? key}) : super(key: key);
@@ -27,18 +29,11 @@ class TouristPlaces extends StatelessWidget {
               child: Container(
                 width: 160, // Fixed width for each card
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      persianGreen.withOpacity(0.1), // Light Persian Green
-                      Colors.white.withOpacity(0.8), // Slightly transparent white
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.white, // Solid white background
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withOpacity(0.1), // Subtle shadow
                       spreadRadius: 2,
                       blurRadius: 8,
                       offset: const Offset(0, 4),
@@ -50,19 +45,20 @@ class TouristPlaces extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Place Image
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: AssetImage(touristPlaces[index].image),
+                      // Place Icon
+                      Icon(
+                        ionicons['location_outline'], // Use an icon instead of an image
+                        size: 40,
+                        color: persianGreen, // Persian Green icon
                       ),
                       const SizedBox(height: 8),
                       // Place Name
                       Text(
                         touristPlaces[index].name,
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: persianGreen, // Persian Green text
+                          color: Colors.black87, // Dark text for better contrast
                         ),
                         textAlign: TextAlign.center,
                       ),
