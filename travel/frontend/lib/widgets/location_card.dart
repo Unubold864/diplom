@@ -36,14 +36,7 @@ class LocationCard extends StatelessWidget {
             Container(
               width: 80,
               height: 80,
-              decoration: BoxDecoration(
-                color: persianGreen.withOpacity(
-                  0.1,
-                ), // Persian Green background
-                borderRadius: BorderRadius.circular(16),
-              ),
               child: Center(
-                // Center the Lottie animation
                 child: Lottie.asset(
                   'assets/map1.json', // Replace with your Lottie file
                   fit: BoxFit.cover,
@@ -66,11 +59,10 @@ class LocationCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         "Location",
-                        style: GoogleFonts.lato(
-                          // Replace 'lato' with the desired font family
+                        style: GoogleFonts.poppins(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: persianGreen, // Persian Green text
+                          color: Colors.black87, // Dark text for better contrast
                         ),
                       ),
                     ],
@@ -78,10 +70,9 @@ class LocationCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     "Улаанбаатар, Монгол",
-                    style: GoogleFonts.lato(
-                      // Replace 'lato' with the desired font family
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.grey[700], // Persian Green text
+                      color: Colors.grey[700], // Subdued text color
                     ),
                   ),
                 ],
