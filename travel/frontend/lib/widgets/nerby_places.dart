@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/nerby_places_model.dart';
-import 'package:frontend/widgets/distance.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class NerbyPlaces extends StatelessWidget {
   const NerbyPlaces({Key? key}) : super(key: key);
@@ -24,18 +24,11 @@ class NerbyPlaces extends StatelessWidget {
               child: Container(
                 height: 140,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      persianGreen.withOpacity(0.1), // Light Persian Green
-                      Colors.white.withOpacity(0.8), // Slightly transparent white
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.white, // Solid white background
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withOpacity(0.1), // Subtle shadow
                       spreadRadius: 2,
                       blurRadius: 8,
                       offset: const Offset(0, 4),
@@ -61,7 +54,10 @@ class NerbyPlaces extends StatelessWidget {
                                 height: double.maxFinite,
                                 width: 120,
                                 color: Colors.grey[300],
-                                child: const Icon(Icons.error_outline, color: Colors.grey),
+                                child: const Icon(
+                                  Icons.error_outline,
+                                  color: Colors.grey,
+                                ),
                               );
                             },
                           ),
@@ -75,32 +71,55 @@ class NerbyPlaces extends StatelessWidget {
                           children: [
                             // Title
                             Text(
-                              nearbyPlaces[index].name ?? 'Unknown', // Use the name from the model
-                              style: TextStyle(
+                              nearbyPlaces[index].name ??
+                                  'Unknown', // Use the name from the model
+                              style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: persianGreen, // Persian Green text
+                                color:
+                                    Colors
+                                        .black87, // Dark text for better contrast
                               ),
                             ),
                             const SizedBox(height: 4),
                             // Subtitle
                             Text(
-                              nearbyPlaces[index].location ?? 'Unknown location', // Use the location from the model
-                              style: TextStyle(
+                              nearbyPlaces[index].location ??
+                                  'Unknown location', // Use the location from the model
+                              style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 color: Colors.grey[700],
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Distance
-                            const Distance(),
+                            // Distance (Replaced with a simple horizontal layout)
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  color: persianGreen, // Persian Green icon
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "2.5 km", // Replace with dynamic distance if needed
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ],
+                            ),
                             const Spacer(),
                             // Rating and Price
                             Row(
                               children: [
                                 // Rating
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.yellow.shade50,
                                     borderRadius: BorderRadius.circular(12),
@@ -114,8 +133,9 @@ class NerbyPlaces extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        nearbyPlaces[index].rating.toString(), // Use the rating from the model
-                                        style: TextStyle(
+                                        nearbyPlaces[index].rating
+                                            .toString(), // Use the rating from the model
+                                        style: GoogleFonts.poppins(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -127,15 +147,16 @@ class NerbyPlaces extends StatelessWidget {
                                 // Price
                                 RichText(
                                   text: TextSpan(
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
                                       color: persianGreen, // Persian Green text
                                     ),
-                                    text: "\$${nearbyPlaces[index].price}", // Use the price from the model
+                                    text:
+                                        "\$${nearbyPlaces[index].price}", // Use the price from the model
                                     children: [
                                       TextSpan(
-                                        style: TextStyle(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 13,
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey[600],
