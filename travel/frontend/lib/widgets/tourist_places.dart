@@ -25,50 +25,45 @@ class TouristPlaces extends StatelessWidget {
                 // Handle tap event
                 print('Selected: ${touristPlaces[index].name}');
               },
-              borderRadius: BorderRadius.circular(12), // Smaller border radius
+              borderRadius: BorderRadius.circular(60), // Fully circular border radius
               child: Container(
-                width: 160, // Fixed width for each card
+                width: 120, // Adjusted width to match the circular shape
+                height: 120, // Ensure height matches the circular shape
                 decoration: BoxDecoration(
                   color: Colors.white, // Solid white background
-                  borderRadius: BorderRadius.circular(
-                    12,
-                  ), // Smaller border radius
+                  shape: BoxShape.circle, // Make the background circular
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1), // Subtle shadow
                       spreadRadius: 1,
-                      blurRadius: 6,
+                      blurRadius: 4,
                       offset: const Offset(0, 2), // Smaller offset
                     ),
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12), // Adjusted padding for circular shape
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // Place Icon
                       Icon(
                         ionicons['location_outline'], // Use an icon instead of an image
-                        size: 36, // Slightly smaller icon
+                        size: 32, // Slightly smaller icon
                         color: persianGreen, // Persian Green icon
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6), // Reduced spacing
                       // Place Name
                       Text(
                         touristPlaces[index].name,
                         style: GoogleFonts.poppins(
-                          fontSize: 14, // Slightly smaller font size
-                          fontWeight:
-                              FontWeight
-                                  .w600, // Semi-bold for better readability
-                          color:
-                              Colors.black87, // Dark text for better contrast
+                          fontSize: 13, // Slightly smaller font size
+                          fontWeight: FontWeight.w600, // Semi-bold for better readability
+                          color: Colors.black87, // Dark text for better contrast
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 2, // Allow text to wrap to two lines
-                        overflow:
-                            TextOverflow.ellipsis, // Add ellipsis for overflow
+                        overflow: TextOverflow.ellipsis, // Add ellipsis for overflow
                       ),
                     ],
                   ),
