@@ -25,18 +25,20 @@ class TouristPlaces extends StatelessWidget {
                 // Handle tap event
                 print('Selected: ${touristPlaces[index].name}');
               },
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12), // Smaller border radius
               child: Container(
                 width: 160, // Fixed width for each card
                 decoration: BoxDecoration(
                   color: Colors.white, // Solid white background
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(
+                    12,
+                  ), // Smaller border radius
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1), // Subtle shadow
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: const Offset(0, 2), // Smaller offset
                     ),
                   ],
                 ),
@@ -48,7 +50,7 @@ class TouristPlaces extends StatelessWidget {
                       // Place Icon
                       Icon(
                         ionicons['location_outline'], // Use an icon instead of an image
-                        size: 40,
+                        size: 36, // Slightly smaller icon
                         color: persianGreen, // Persian Green icon
                       ),
                       const SizedBox(height: 8),
@@ -56,11 +58,17 @@ class TouristPlaces extends StatelessWidget {
                       Text(
                         touristPlaces[index].name,
                         style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87, // Dark text for better contrast
+                          fontSize: 14, // Slightly smaller font size
+                          fontWeight:
+                              FontWeight
+                                  .w600, // Semi-bold for better readability
+                          color:
+                              Colors.black87, // Dark text for better contrast
                         ),
                         textAlign: TextAlign.center,
+                        maxLines: 2, // Allow text to wrap to two lines
+                        overflow:
+                            TextOverflow.ellipsis, // Add ellipsis for overflow
                       ),
                     ],
                   ),
