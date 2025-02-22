@@ -12,7 +12,7 @@ class TouristPlaces extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120, // Increased height for better visibility
+      height: 100, // Reduced height for better proportion
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView.separated(
         physics: const BouncingScrollPhysics(),
@@ -25,10 +25,10 @@ class TouristPlaces extends StatelessWidget {
                 // Handle tap event
                 print('Selected: ${touristPlaces[index].name}');
               },
-              borderRadius: BorderRadius.circular(60), // Fully circular border radius
+              borderRadius: BorderRadius.circular(40), // Adjusted border radius for smaller container
               child: Container(
-                width: 120, // Adjusted width to match the circular shape
-                height: 120, // Ensure height matches the circular shape
+                width: 80, // Smaller width for a more compact design
+                height: 80, // Smaller height for a more compact design
                 decoration: BoxDecoration(
                   color: Colors.white, // Solid white background
                   shape: BoxShape.circle, // Make the background circular
@@ -42,22 +42,22 @@ class TouristPlaces extends StatelessWidget {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12), // Adjusted padding for circular shape
+                  padding: const EdgeInsets.all(8), // Reduced padding for smaller container
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // Place Icon
                       Icon(
                         ionicons['location_outline'], // Use an icon instead of an image
-                        size: 32, // Slightly smaller icon
+                        size: 24, // Smaller icon size
                         color: persianGreen, // Persian Green icon
                       ),
-                      const SizedBox(height: 6), // Reduced spacing
+                      const SizedBox(height: 4), // Reduced spacing
                       // Place Name
                       Text(
                         touristPlaces[index].name,
                         style: GoogleFonts.poppins(
-                          fontSize: 13, // Slightly smaller font size
+                          fontSize: 11, // Smaller font size
                           fontWeight: FontWeight.w600, // Semi-bold for better readability
                           color: Colors.black87, // Dark text for better contrast
                         ),
@@ -72,7 +72,7 @@ class TouristPlaces extends StatelessWidget {
             ),
           );
         },
-        separatorBuilder: (context, index) => const SizedBox(width: 12),
+        separatorBuilder: (context, index) => const SizedBox(width: 20), // Increased space between items
         itemCount: touristPlaces.length,
       ),
     );
