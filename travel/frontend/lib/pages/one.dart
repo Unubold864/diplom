@@ -19,8 +19,8 @@ class WelcomePage extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              persianGreen.withOpacity(0.1), // Light green gradient
-              persianGreen.withOpacity(0.05), // Very light green gradient
+              Colors.white, // Solid white background
+              Colors.white.withOpacity(0.9), // Slight gradient for depth
             ],
           ),
         ),
@@ -62,12 +62,12 @@ class WelcomePage extends StatelessWidget {
           next: _buildButton("Next"),
           done: _buildButton("Done"),
           dotsDecorator: DotsDecorator(
-            size: Size(10, 10),
+            size: Size(8, 8), // Smaller dots
             color: Colors.grey.shade300,
-            activeSize: Size(22, 10),
+            activeSize: Size(20, 8), // Smaller active dot
             activeColor: persianGreen, // Use Persian Green for active dot
             activeShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8), // Rounded active dot
             ),
           ),
         ),
@@ -76,15 +76,11 @@ class WelcomePage extends StatelessWidget {
   }
 
   Widget _buildLottieAnimation(String assetPath) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.transparent, // Set background to transparent
-      ),
+    return Center(
       child: Lottie.asset(
         assetPath,
-        width: 300,
-        height: 300,
+        width: 250, // Smaller animation size
+        height: 250,
         fit: BoxFit.contain,
       ),
     );
@@ -92,24 +88,17 @@ class WelcomePage extends StatelessWidget {
 
   Widget _buildButton(String text) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
         color: persianGreen, // Use Persian Green for buttons
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: persianGreen.withOpacity(0.3), // Green shadow
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(24), // Rounded corners
       ),
       child: Text(
         text,
         style: TextStyle(
           color: Colors.white,
           fontSize: 16,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600, // Semi-bold for better readability
         ),
       ),
     );
@@ -118,16 +107,13 @@ class WelcomePage extends StatelessWidget {
   PageDecoration pageDecoration() {
     return PageDecoration(
       titleTextStyle: TextStyle(
-        fontSize: 28,
+        fontSize: 26,
         fontWeight: FontWeight.bold,
         color: persianGreen, // Use Persian Green for titles
       ),
-      bodyTextStyle: TextStyle(
-        fontSize: 18,
-        color: Colors.grey.shade700,
-      ),
-      imagePadding: EdgeInsets.all(32),
-      contentMargin: EdgeInsets.symmetric(horizontal: 16),
+      bodyTextStyle: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+      imagePadding: EdgeInsets.all(24), // Reduced padding
+      contentMargin: EdgeInsets.symmetric(horizontal: 24), // Consistent margins
       pageColor: Colors.transparent,
     );
   }
