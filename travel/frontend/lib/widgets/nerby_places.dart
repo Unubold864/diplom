@@ -10,11 +10,16 @@ class NerbyPlaces extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(nearbyPlaces.length, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Material(
+    return SizedBox(
+      height: 160, // Fixed height for the horizontal scroll view
+      child: ListView.separated(
+        physics: const BouncingScrollPhysics(), // Smooth scrolling
+        scrollDirection: Axis.horizontal, // Horizontal scroll
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: nearbyPlaces.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          return Material(
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
@@ -22,7 +27,7 @@ class NerbyPlaces extends StatelessWidget {
                 // Handle tap event
               },
               child: Container(
-                height: 140,
+                width: 280, // Fixed width for each card
                 decoration: BoxDecoration(
                   color: Colors.white, // Solid white background
                   borderRadius: BorderRadius.circular(16),
@@ -176,9 +181,9 @@ class NerbyPlaces extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }
