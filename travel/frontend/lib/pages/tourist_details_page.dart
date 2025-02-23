@@ -17,55 +17,14 @@ class TouristDetailsPage extends StatelessWidget {
           children: [
             // Image Section
             SizedBox(
-              height: size.height * 0.35, // Adjusted height
+              height: size.height * 0.3, // Adjusted height for a cleaner look
               width: double.maxFinite,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(20),
-                      ),
-                      image: DecorationImage(
-                        image: AssetImage(image),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 10,
-                    left: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.horizontal(
-                          right: Radius.circular(15),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            iconSize: 24, // Larger icon size
-                            icon: Icon(
-                              ionicons['chevron_back_outline'],
-                            ), // Cleaner icon
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            iconSize: 24,
-                            icon: Icon(
-                              ionicons['heart_outline'],
-                            ), // Cleaner icon
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20), // Rounded corners
+                child: Image.asset(
+                  image,
+                  fit: BoxFit.cover, // Ensures the image covers the area
+                ),
               ),
             ),
             SizedBox(height: 20),
@@ -80,7 +39,7 @@ class TouristDetailsPage extends StatelessWidget {
                 backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               child: Text(
-                "Start Tour",
+                "Get Directions",
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
