@@ -50,12 +50,16 @@ class TouristDetailsPage extends StatelessWidget {
                               Navigator.pop(context);
                             },
                             iconSize: 24, // Larger icon size
-                            icon: Icon(ionicons['chevron_back_outline']), // Cleaner icon
+                            icon: Icon(
+                              ionicons['chevron_back_outline'],
+                            ), // Cleaner icon
                           ),
                           IconButton(
                             onPressed: () {},
                             iconSize: 24,
-                            icon: Icon(ionicons['heart_outline']), // Cleaner icon
+                            icon: Icon(
+                              ionicons['heart_outline'],
+                            ), // Cleaner icon
                           ),
                         ],
                       ),
