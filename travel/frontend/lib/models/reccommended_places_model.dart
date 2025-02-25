@@ -16,26 +16,26 @@ List<ReccommendedPlacesModel> recommendedPlaces = [
   ReccommendedPlacesModel(
     image: "assets/places/place5.jpg",
     rating: 4.4,
-    location: "St. Regis Bora Bora",
+    location: "Ulaanbaatar",
   ),
   ReccommendedPlacesModel(
     image: "assets/places/place4.jpg",
     rating: 4.4,
-    location: "St. Regis Bora Bora",
+    location: "Khuvsgul Lake",
   ),
   ReccommendedPlacesModel(
     image: "assets/places/place3.jpg",
     rating: 4.4,
-    location: "St. Regis Bora Bora",
+    location: "Zavkhan",
   ),
   ReccommendedPlacesModel(
     image: "assets/places/place2.jpg",
     rating: 4.4,
-    location: "St. Regis Bora Bora",
+    location: "Uvs, Ulaangomb",
   ),
   ReccommendedPlacesModel(
     image: "assets/places/place1.jpg",
     rating: 4.4,
-    location: "St. Regis Bora Bora",
+    location: "Gobi Khangai",
   ),
 ];

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ionicons_named/ionicons_named.dart';
+//import 'package:ionicons_named/ionicons_named.dart';
 
 class TouristDetailsPage extends StatelessWidget {
   const TouristDetailsPage({super.key, required this.image});
@@ -39,7 +39,7 @@ class TouristDetailsPage extends StatelessWidget {
                 backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               child: Text(
-                "Get Directions",
+                "Эхлэх",
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

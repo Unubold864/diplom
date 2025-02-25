@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
         title: Text(
-          "Explore",
+          "Diplom",
           style: GoogleFonts.poppins(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
-              title: "Recommendation",
+              title: "Recommend",
               onViewAll: () {},
             ),
             const SizedBox(height: 20),
@@ -81,7 +81,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
-              title: "Nearby From You",
+              title: "Near",
               onViewAll: () {},
             ),
             const SizedBox(height: 20),
