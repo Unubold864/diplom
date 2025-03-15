@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   // Define Persian Green as the primary color
   final Color persianGreen = const Color(0xFF00A896);

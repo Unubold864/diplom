@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:ionicons_named/ionicons_named.dart';
+import 'package:ionicons/ionicons.dart'; // For icons
 
 class TouristDetailsPage extends StatelessWidget {
   const TouristDetailsPage({super.key, required this.image});
@@ -28,6 +28,88 @@ class TouristDetailsPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
+
+            // Place Name
+            Text(
+              "Гранд Плаза Хотель",
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey[900],
+              ),
+            ),
+            SizedBox(height: 10),
+
+            // Location Section
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  color: Colors.blueAccent,
+                  size: 20,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  "Улаанбаатар, Монгол",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.blueGrey[700],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+
+            // Description Section
+            Text(
+              "Гранд Плаза Хотель нь тав тухтай орчин, орчин үеийн тоног төхөөрөмжөөр тоноглогдсон, Улаанбаатар хотын төвд байрладаг. Энд амралтаа сайхан өнгөрүүлээрэй.",
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.blueGrey[600],
+                height: 1.5,
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Phone Section
+            Row(
+              children: [
+                Icon(
+                  Icons.phone,
+                  color: Colors.blueAccent,
+                  size: 20,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  "+976 1234 5678",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.blueGrey[700],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+
+            // Hotel Icon Section
+            Row(
+              children: [
+                Icon(
+                  Icons.hotel,
+                  color: Colors.blueAccent,
+                  size: 20,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  "5 одны зочид буудал",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.blueGrey[700],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 40),
 
             // Start Tour Button
             ElevatedButton(

@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 
 class ReccommendedPlaces extends StatelessWidget {
-  const ReccommendedPlaces({Key? key}) : super(key: key);
+  const ReccommendedPlaces({super.key});
 
   @override
   Widget build(BuildContext context) {
