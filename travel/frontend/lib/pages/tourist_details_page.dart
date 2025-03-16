@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ionicons/ionicons.dart'; // For icons
+// import 'package:ionicons/ionicons.dart'; // For icons
 
 class TouristDetailsPage extends StatelessWidget {
   const TouristDetailsPage({super.key, required this.image});
