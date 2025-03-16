@@ -6,7 +6,7 @@ class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
 
   Future<void> _signUp(BuildContext context, String name, String email, String password) async {
-    final url = Uri.parse('http://192.168.x.x:8000/api/signup/');
+    final url = Uri.parse('http://127.0.0.1:8000/api/signup/');
     print("Sending POST request to: $url"); // Debugging
     print("Request body: ${json.encode({
       'name': name,

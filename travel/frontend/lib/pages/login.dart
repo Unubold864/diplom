@@ -1,10 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/forget_password.dart';
-import 'package:frontend/pages/home_page.dart';
-import 'package:frontend/pages/sign_up.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'home_page.dart';
+import 'sign_up.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
+
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  Future<void> _login(BuildContext context) async {
+    final url = Uri.parse('http://127.0.0.1:8000/api/login/');
+    print("Sending POST request to: $url"); // Debugging
+    print("Request body: ${json.encode({
+      'email': _emailController.text,
+      'password': _passwordController.text,
+    })}"); // Debugging
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+
+      print("Response status code: ${response.statusCode}"); // Debugging
+      print("Response body: ${response.body}"); // Debugging
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final accessToken = data['access'];
+        final refreshToken = data['refresh'];
+        
+        // Save tokens locally (you can use SharedPreferences or other methods)
+        print('Access Token: $accessToken');
+        print('Refresh Token: $refreshToken');
+        
+        // Navigate to the Home Page on successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      print("Error: $e"); // Debugging
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: Unable to connect to the server')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +87,7 @@ class Login extends StatelessWidget {
 
             // Email Field
             TextFormField(
+              controller: _emailController,
               decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
@@ -41,6 +99,7 @@ class Login extends StatelessWidget {
 
             // Password Field
             TextFormField(
+              controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
@@ -55,20 +114,17 @@ class Login extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // Add login logic here
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
-                  );
-                },
+                onPressed: () => _login(context),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Login', style: TextStyle(fontSize: 16)),
+                child: const Text(
+                  'Login',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -76,13 +132,7 @@ class Login extends StatelessWidget {
             // Forgot Password Link
             TextButton(
               onPressed: () {
-                // Add forgot password logic here
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ForgetPassword(),
-                  ),
-                );
+                // Navigate to forgot password screen
               },
               child: const Text('Forgot Password?'),
             ),
@@ -95,7 +145,6 @@ class Login extends StatelessWidget {
                 const Text("Don't have an account?"),
                 TextButton(
                   onPressed: () {
-                    // Add navigation to sign-up screen
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const SignUp()),
