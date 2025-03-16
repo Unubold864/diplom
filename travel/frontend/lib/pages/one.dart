@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/login.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:lottie/lottie.dart';
-import 'package:frontend/pages/home_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -48,13 +48,13 @@ class WelcomePage extends StatelessWidget {
           onDone: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => Login()),
             );
           },
           onSkip: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => Login()),
             );
           },
           showSkipButton: true,
