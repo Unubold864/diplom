@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/forget_password.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/pages/sign_up.dart';
 
@@ -18,18 +19,12 @@ class Login extends StatelessWidget {
             const SizedBox(height: 32),
             const Text(
               'Welcome Back!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             const Text(
               'Sign in to continue',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 32),
 
@@ -73,10 +68,7 @@ class Login extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Login',
-                  style: TextStyle(fontSize: 16),
-                ),
+                child: const Text('Login', style: TextStyle(fontSize: 16)),
               ),
             ),
             const SizedBox(height: 16),
@@ -85,6 +77,12 @@ class Login extends StatelessWidget {
             TextButton(
               onPressed: () {
                 // Add forgot password logic here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ForgetPassword(),
+                  ),
+                );
               },
               child: const Text('Forgot Password?'),
             ),
