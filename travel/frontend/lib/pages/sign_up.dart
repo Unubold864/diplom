@@ -1,8 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
+
+  Future<void> _signUp(BuildContext context, String name, String email, String password) async {
+    final url = Uri.parse('http://192.168.x.x:8000/api/signup/');
+    print("Sending POST request to: $url"); // Debugging
+    print("Request body: ${json.encode({
+      'name': name,
+      'email': email,
+      'password': password,
+    })}"); // Debugging
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'name': name,
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      print("Response status code: ${response.statusCode}"); // Debugging
+      print("Response body: ${response.body}"); // Debugging
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign Up Successful!')),
+        );
+        Navigator.pop(context); // Go back to the login page
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      print("Error: $e"); // Debugging
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to connect to the server. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,13 +164,12 @@ class SignUp extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // Perform sign-up logic here
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sign Up Successful!')),
+                        _signUp(
+                          context,
+                          _nameController.text,
+                          _emailController.text,
+                          _passwordController.text,
                         );
-
-                        // Navigate to the login page after successful sign-up
-                        Navigator.pop(context); // Go back to the login page
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -152,12 +193,7 @@ class SignUp extends StatelessWidget {
                     const Text("Already have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Login(),
-                          ),
-                        );
+                        Navigator.pop(context); // Go back to the login page
                       },
                       child: const Text('Login'),
                     ),
