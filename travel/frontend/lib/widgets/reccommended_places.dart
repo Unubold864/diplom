@@ -180,11 +180,17 @@ class _RecommendedPlaceCard extends StatelessWidget {
   }
 
   void _navigateToDetails(BuildContext context) {
+    // Navigate to the TouristDetailsPage and pass all the necessary data
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => TouristDetailsPage(
           image: place.image,
+          name: place.name,
+          location: place.location,
+          description: place.description, // Default if not provided
+          phoneNumber: place.phoneNumber, // Default if not provided
+          hotelRating: place.hotelRating, // Default if not provided
         ),
       ),
     );

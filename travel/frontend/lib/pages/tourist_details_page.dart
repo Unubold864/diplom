@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:ionicons/ionicons.dart'; // For icons
 
 class TouristDetailsPage extends StatelessWidget {
-  const TouristDetailsPage({super.key, required this.image});
+  const TouristDetailsPage({
+    super.key,
+    required this.image,
+    required this.name,
+    required this.location,
+    required this.description,
+    required this.phoneNumber,
+    required this.hotelRating,
+  });
 
   final String image;
+  final String name;
+  final String location;
+  final String description;
+  final String phoneNumber;
+  final String hotelRating;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +25,7 @@ class TouristDetailsPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.all(16), // Consistent padding
+          padding: const EdgeInsets.all(16), // Consistent padding
           children: [
             // Image Section
             SizedBox(
@@ -21,36 +33,41 @@ class TouristDetailsPage extends StatelessWidget {
               width: double.maxFinite,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20), // Rounded corners
-                child: Image.asset(
+                child: Image.network(
                   image,
                   fit: BoxFit.cover, // Ensures the image covers the area
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(Icons.error_outline, color: Colors.grey),
+                    );
+                  },
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Place Name
             Text(
-              "Гранд Плаза Хотель",
+              name,
               style: GoogleFonts.poppins(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.blueGrey[900],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Location Section
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.location_on,
                   color: Colors.blueAccent,
                   size: 20,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  "Улаанбаатар, Монгол",
+                  location,
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     color: Colors.blueGrey[700],
@@ -58,30 +75,30 @@ class TouristDetailsPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Description Section
             Text(
-              "Гранд Плаза Хотель нь тав тухтай орчин, орчин үеийн тоног төхөөрөмжөөр тоноглогдсон, Улаанбаатар хотын төвд байрладаг. Энд амралтаа сайхан өнгөрүүлээрэй.",
+              description,
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 color: Colors.blueGrey[600],
                 height: 1.5,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Phone Section
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.phone,
                   color: Colors.blueAccent,
                   size: 20,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  "+976 1234 5678",
+                  phoneNumber,
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     color: Colors.blueGrey[700],
@@ -89,19 +106,19 @@ class TouristDetailsPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-            // Hotel Icon Section
+            // Hotel Rating Section
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.hotel,
                   color: Colors.blueAccent,
                   size: 20,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  "5 одны зочид буудал",
+                  hotelRating,
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     color: Colors.blueGrey[700],
@@ -109,15 +126,15 @@ class TouristDetailsPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
 
             // Start Tour Button
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                shape: StadiumBorder(),
-                padding: EdgeInsets.symmetric(vertical: 16),
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               child: Text(

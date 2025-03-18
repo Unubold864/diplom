@@ -60,6 +60,9 @@ class RecommendedPlace(models.Model):
     image = models.ImageField(max_length=200)
     rating = models.FloatField()
     location = models.CharField(max_length=255)
+    description = models.TextField(default="Unknown")  # New field for description
+    phone_number = models.CharField(max_length=20,default="Unknown")  # New field for phone number
+    hotel_rating = models.CharField(max_length=50,default="Unknown")  # New field for hotel rating
     
     def __str__(self):
         return self.location
