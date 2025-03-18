@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User
-from .serializers import UserSerializer
+from .models import User, RecommendedPlace
+from .serializers import UserSerializer, RecommendedPlaceSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
@@ -56,3 +56,8 @@ class LoginView(APIView):
         except User.DoesNotExist:
             print("User not found!")
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+class RecommendedPlaceListView(generics.ListCreateAPIView):
+    queryset = RecommendedPlace.objects.all()
+    serializer_class = RecommendedPlaceSerializer

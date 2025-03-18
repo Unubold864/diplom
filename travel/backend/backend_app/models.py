@@ -53,3 +53,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.name
+
+
+class RecommendedPlace(models.Model):
+    name = models.CharField(max_length=255, default="Unknown")
+    image = models.ImageField(max_length=200)
+    rating = models.FloatField()
+    location = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.location

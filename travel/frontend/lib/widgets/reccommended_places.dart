@@ -3,22 +3,64 @@ import 'package:frontend/models/reccommended_places_model.dart';
 import 'package:frontend/pages/tourist_details_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ReccommendedPlaces extends StatelessWidget {
+class ReccommendedPlaces extends StatefulWidget {
   const ReccommendedPlaces({super.key});
+
+  @override
+  _ReccommendedPlacesState createState() => _ReccommendedPlacesState();
+}
+
+class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
+  late Future<List<ReccommendedPlacesModel>> _recommendedPlacesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _recommendedPlacesFuture = fetchRecommendedPlaces();
+  }
+
+  Future<List<ReccommendedPlacesModel>> fetchRecommendedPlaces() async {
+    final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/recommended_places/'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data
+          .map((item) => ReccommendedPlacesModel.fromJson(item)) // Use the fromJson constructor
+          .toList();
+    } else {
+      throw Exception('Failed to load recommended places');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 260, // Increased height for better visibility
-      child: ListView.separated(
-        physics: const BouncingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) => _RecommendedPlaceCard(
-          place: recommendedPlaces[index],
-        ),
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemCount: recommendedPlaces.length,
+      child: FutureBuilder<List<ReccommendedPlacesModel>>(
+        future: _recommendedPlacesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final recommendedPlaces = snapshot.data!;
+            return ListView.separated(
+              physics: const BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => _RecommendedPlaceCard(
+                place: recommendedPlaces[index],
+              ),
+              separatorBuilder: (_, __) => const SizedBox(width: 16),
+              itemCount: recommendedPlaces.length,
+            );
+          } else {
+            return const Center(child: Text('No recommended places available.'));
+          }
+        },
       ),
     );
   }
@@ -65,7 +107,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
                   // Image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
+                    child: Image.network(
                       place.image,
                       width: double.maxFinite,
                       height: 160, // Increased height for better visibility
@@ -85,7 +127,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          place.name ?? 'Unknown Place', // Use the place name from the model
+                          place.name, // Use the name from the model
                           style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
