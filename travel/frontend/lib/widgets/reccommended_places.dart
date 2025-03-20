@@ -23,12 +23,16 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
   }
 
   Future<List<ReccommendedPlacesModel>> fetchRecommendedPlaces() async {
-    final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/recommended_places/'));
+    final response = await http.get(
+      Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
+      headers: {'Accept-Charset': 'utf-8'}, // Ensure UTF-8 encoding
+    );
 
     if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
+      // Use utf8.decode to properly decode the response body with UTF-8
+      List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
       return data
-          .map((item) => ReccommendedPlacesModel.fromJson(item)) // Use the fromJson constructor
+          .map((item) => ReccommendedPlacesModel.fromJson(item))
           .toList();
     } else {
       throw Exception('Failed to load recommended places');
@@ -38,7 +42,7 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 260, // Increased height for better visibility
+      height: 260,
       child: FutureBuilder<List<ReccommendedPlacesModel>>(
         future: _recommendedPlacesFuture,
         builder: (context, snapshot) {
@@ -80,7 +84,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 240, // Increased width for better spacing
+      width: 240,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -88,11 +92,11 @@ class _RecommendedPlaceCard extends StatelessWidget {
           onTap: () => _navigateToDetails(context),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white, // Solid white background
+              color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1), // Subtle shadow
+                  color: Colors.grey.withOpacity(0.1),
                   spreadRadius: 2,
                   blurRadius: 8,
                   offset: const Offset(0, 4),
@@ -110,7 +114,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
                     child: Image.network(
                       place.image,
                       width: double.maxFinite,
-                      height: 160, // Increased height for better visibility
+                      height: 160,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -127,11 +131,11 @@ class _RecommendedPlaceCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          place.name, // Use the name from the model
+                          place.name,
                           style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87, // Dark text for better contrast
+                            color: Colors.black87,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -143,7 +147,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        place.rating.toString(), // Use the rating from the model
+                        place.rating.toString(),
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: Colors.grey.shade700,
@@ -157,15 +161,18 @@ class _RecommendedPlaceCard extends StatelessWidget {
                     children: [
                       Icon(
                         ionicons['location_outline'],
-                        color: persianGreen, // Persian Green icon
+                        color: persianGreen,
                         size: 14,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        place.location, // Use the location from the model
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
+                      Expanded(
+                        child: Text(
+                          place.location,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -180,7 +187,6 @@ class _RecommendedPlaceCard extends StatelessWidget {
   }
 
   void _navigateToDetails(BuildContext context) {
-    // Navigate to the TouristDetailsPage and pass all the necessary data
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -188,9 +194,9 @@ class _RecommendedPlaceCard extends StatelessWidget {
           image: place.image,
           name: place.name,
           location: place.location,
-          description: place.description, // Default if not provided
-          phoneNumber: place.phoneNumber, // Default if not provided
-          hotelRating: place.hotelRating, // Default if not provided
+          description: place.description,
+          phoneNumber: place.phoneNumber,
+          hotelRating: place.hotelRating,
         ),
       ),
     );
