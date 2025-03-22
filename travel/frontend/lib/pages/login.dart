@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/forget_password.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home_page.dart';
@@ -34,10 +35,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   Future<void> _login(BuildContext context) async {
     final url = Uri.parse('http://127.0.0.1:8000/api/login/');
     print("Sending POST request to: $url");
-    print("Request body: ${json.encode({
-      'email': _emailController.text,
-      'password': _passwordController.text,
-    })}");
+    print(
+      "Request body: ${json.encode({'email': _emailController.text, 'password': _passwordController.text})}",
+    );
 
     try {
       final response = await http.post(
@@ -56,11 +56,11 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         final data = json.decode(response.body);
         final accessToken = data['access'];
         final refreshToken = data['refresh'];
-        
+
         // Save tokens locally (you can use SharedPreferences or other methods)
         print('Access Token: $accessToken');
         print('Refresh Token: $refreshToken');
-        
+
         // Navigate to the Home Page on successful login
         Navigator.pushReplacement(
           context,
@@ -99,13 +99,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
             const SizedBox(height: 8),
             const Text(
               'Please login to continue',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.blue,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.blue),
             ),
             const SizedBox(height: 40),
-            
+
             // Main Card
             Expanded(
               child: Container(
@@ -146,16 +143,15 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                         ),
                         labelColor: Colors.blue,
                         unselectedLabelColor: Colors.grey,
-                        tabs: const [
-                          Tab(text: 'Login'),
-                          Tab(text: 'Signup'),
-                        ],
+                        tabs: const [Tab(text: 'Login'), Tab(text: 'Signup')],
                         onTap: (index) {
                           if (index == 1) {
                             // Navigate to signup
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const SignUp()),
+                              MaterialPageRoute(
+                                builder: (context) => const SignUp(),
+                              ),
                             );
                             // Reset tab to login
                             _tabController.animateTo(0);
@@ -163,7 +159,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                         },
                       ),
                     ),
-                    
+
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(24),
@@ -185,7 +181,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 controller: _emailController,
                                 decoration: InputDecoration(
                                   hintText: 'Enter your email',
-                                  hintStyle: TextStyle(color: Colors.grey.shade400),
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey.shade400,
+                                  ),
                                   prefixIcon: const Icon(
                                     Icons.email_outlined,
                                     color: Colors.blue,
@@ -204,7 +202,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               const SizedBox(height: 20),
-                              
+
                               // Password Field
                               const Text(
                                 'Password',
@@ -220,14 +218,18 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 obscureText: _obscureText,
                                 decoration: InputDecoration(
                                   hintText: 'Enter your password',
-                                  hintStyle: TextStyle(color: Colors.grey.shade400),
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey.shade400,
+                                  ),
                                   prefixIcon: const Icon(
                                     Icons.lock_outline,
                                     color: Colors.blue,
                                   ),
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                                      _obscureText
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                       color: Colors.grey,
                                     ),
                                     onPressed: () {
@@ -248,18 +250,27 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                   ),
                                 ),
                               ),
-                              
+
                               // Forgot Password
+                              // Update this part in your login.dart file
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
                                   onPressed: () {
                                     // Navigate to forgot password screen
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const ForgetPassword(),
+                                      ),
+                                    );
                                   },
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(50, 30),
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
                                     'Forgot Password?',
@@ -270,8 +281,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 40),
-                              
+
                               // Login Button
                               SizedBox(
                                 width: double.infinity,
@@ -295,9 +305,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                   ),
                                 ),
                               ),
-                              
+
                               const SizedBox(height: 30),
-                              
+
                               // Sign in with
                               Center(
                                 child: Text(
@@ -310,14 +320,20 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              
+
                               // Social Login Buttons (optional)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _socialLoginButton(Icons.facebook, Colors.blue),
+                                  _socialLoginButton(
+                                    Icons.facebook,
+                                    Colors.blue,
+                                  ),
                                   const SizedBox(width: 16),
-                                  _socialLoginButton(Icons.g_mobiledata, Colors.red),
+                                  _socialLoginButton(
+                                    Icons.g_mobiledata,
+                                    Colors.red,
+                                  ),
                                   const SizedBox(width: 16),
                                   _socialLoginButton(Icons.apple, Colors.black),
                                 ],
@@ -347,10 +363,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         color: Colors.white,
         border: Border.all(color: Colors.grey.shade300),
       ),
-      child: Icon(
-        icon,
-        color: color,
-      ),
+      child: Icon(icon, color: color),
     );
   }
 }
