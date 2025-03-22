@@ -73,7 +73,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
-              title: "Popular",
+              title: "Top Destinations",
               onViewAll: () {},
             ),
             const SizedBox(height: 20),
@@ -81,7 +81,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
-              title: "New Destinations",
+              title: "Top Packages",
               onViewAll: () {},
             ),
             const SizedBox(height: 20),
