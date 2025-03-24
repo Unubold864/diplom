@@ -35,7 +35,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
             },
             children: [
               IntroPage(
-                title: "Discover Amazing Places",
+                title: "Discover Amsazing Places",
                 description: "Find new and exciting destinations all around the world with our curated travel guides.",
                 imagePath: "assets/tata.png",
                 pageIndex: 0,
