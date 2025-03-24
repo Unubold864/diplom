@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.mulishTextTheme(Theme.of(context).textTheme),
       ),
-      home: WelcomePage(),
+      home: IntroductionScreen(),
     );
   }
 }
