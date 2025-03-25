@@ -166,7 +166,7 @@ class HomeContent extends StatelessWidget {
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
-              title: "Top Packages",
+              title: "Nearby",
               onViewAll: () {},
             ),
             const SizedBox(height: 20),
