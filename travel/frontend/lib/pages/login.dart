@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/forget_password.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'home_page.dart';
 import 'sign_up.dart';
@@ -57,11 +58,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         final accessToken = data['access'];
         final refreshToken = data['refresh'];
 
-        // Save tokens locally (you can use SharedPreferences or other methods)
-        print('Access Token: $accessToken');
-        print('Refresh Token: $refreshToken');
+        // Save tokens to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('access_token', accessToken);
+        await prefs.setString('refresh_token', refreshToken);
 
-        // Navigate to the Home Page on successful login
+        // Debug: Verify tokens are saved
+        print('Saved Access Token: ${prefs.getString('access_token')}');
+        print('Saved Refresh Token: ${prefs.getString('refresh_token')}');
+
+        // Navigate to Home Page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomePage()),

@@ -31,65 +31,113 @@ class _ProfilePageState extends State<ProfilePage> {
     _fetchUserProfile();
   }
 
+  Future<bool> _refreshToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final refreshToken = prefs.getString('refresh_token');
+
+      if (refreshToken == null) {
+        _showErrorDialog('Session expired. Please log in again.');
+        await _logout();
+        return false;
+      }
+
+      final response = await http.post(
+        Uri.parse('http://127.0.0.1:8000/api/token/refresh/'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'refresh': refreshToken}),
+      );
+
+      if (response.statusCode == 200) {
+        final newTokens = json.decode(response.body);
+        await prefs.setString('access_token', newTokens['access']);
+        print('Token refreshed successfully');
+        return true;
+      } else {
+        _showErrorDialog('Session expired. Please log in again.');
+        await _logout();
+        return false;
+      }
+    } catch (e) {
+      print('Error refreshing token: $e');
+      _showErrorDialog('Error refreshing session. Please log in again.');
+      return false;
+    }
+  }
+
   Future<void> _fetchUserProfile() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
+      var accessToken = prefs.getString('access_token');
 
-      if (accessToken == null) {
-        _showErrorDialog('No access token found. Please log in again');
-        // Redirect to login page
+      print('Current Access Token: $accessToken');
+
+      if (accessToken == null || accessToken.isEmpty) {
+        _showErrorDialog('Please log in again');
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+        });
         return;
       }
 
-      print('Access Token: $accessToken');
-
-      // Make API call to fetch user profile
-      final response = await http.get(
-        Uri.parse(
-          'http://127.0.0.1:8000/api/profile/',
-        ), // Replace with your actual backend URL
+      // First attempt with current token
+      var response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/api/profile/'),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
       );
 
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      // If token expired, try to refresh
+      if (response.statusCode == 401) {
+        print('Access token expired, attempting refresh...');
+        final refreshSuccess = await _refreshToken();
+        
+        if (refreshSuccess) {
+          // Retry with new token
+          accessToken = prefs.getString('access_token');
+          response = await http.get(
+            Uri.parse('http://127.0.0.1:8000/api/profile/'),
+            headers: {
+              'Authorization': 'Bearer $accessToken',
+              'Content-Type': 'application/json',
+            },
+          );
+        } else {
+          return; // Refresh failed, already handled
+        }
+      }
 
       if (response.statusCode == 200) {
-        setState(() {
-          _userData = json.decode(response.body);
-        });
+        setState(() => _userData = json.decode(response.body));
       } else {
-        _showErrorDialog('Failed to load profile ${response.body}');
+        _showErrorDialog('Failed to load profile: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching profile: $e');
-      _showErrorDialog('Error connecting to server $e');
+      _showErrorDialog('Error connecting to server: $e');
     }
   }
 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text('Error', style: GoogleFonts.poppins(color: Colors.red)),
-            content: Text(message, style: GoogleFonts.poppins()),
-            actions: <Widget>[
-              TextButton(
-                child: Text(
-                  'Okay',
-                  style: GoogleFonts.poppins(color: persianGreen),
-                ),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: Text('Error', style: GoogleFonts.poppins(color: Colors.red)),
+        content: Text(message, style: GoogleFonts.poppins()),
+        actions: <Widget>[
+          TextButton(
+            child: Text(
+              'Okay',
+              style: GoogleFonts.poppins(color: persianGreen),
+            ),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
           ),
+        ],
+      ),
     );
   }
 
@@ -354,8 +402,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title,
         style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
       ),
-      trailing:
-          trailing ??
+      trailing: trailing ??
           Icon(ionicons['chevron_forward_outline'], color: Colors.grey[400]),
       onTap: onTap,
     );
