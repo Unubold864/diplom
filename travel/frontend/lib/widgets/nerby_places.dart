@@ -38,20 +38,21 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
         return data.map((item) {
           var place = NerbyPlacesModel.fromJson(item);
 
-          // Safely calculate distance
-          try {
-            double distanceInKm =
-                Geolocator.distanceBetween(
-                  position.latitude,
-                  position.longitude,
-                  place.latitude,
-                  place.longitude,
-                ) /
-                1000;
+          // Calculate distance only if both coordinates are available
+          if (place.latitude != null && place.longitude != null) {
+            try {
+              double distanceInKm = Geolocator.distanceBetween(
+                position.latitude,
+                position.longitude,
+                place.latitude!,
+                place.longitude!,
+              ) / 1000;
 
-            place.distance = distanceInKm;
-          } catch (e) {
-            // If distance calculation fails, set distance to null
+              place.distance = distanceInKm;
+            } catch (e) {
+              place.distance = null;
+            }
+          } else {
             place.distance = null;
           }
 
@@ -166,12 +167,13 @@ class _NearbyPlaceCard extends StatelessWidget {
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
+                      // Show placeholder if asset is missing
                       return Container(
                         height: 100,
                         width: double.infinity,
                         color: Colors.grey[300],
                         child: const Icon(
-                          Icons.error_outline,
+                          Icons.broken_image,
                           color: Colors.grey,
                         ),
                       );
@@ -220,8 +222,8 @@ class _NearbyPlaceCard extends StatelessWidget {
                           // Display dynamic distance
                           Text(
                             place.distance != null
-                                ? "${place.distance!.toStringAsFixed(1)} km" // Show distance with 1 decimal place
-                                : "Distance not available", // Show 'Distance not available' if distance is null
+                                ? "${place.distance!.toStringAsFixed(1)} km"
+                                : "Distance not available", // Clear fallback message
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: Colors.grey[700],

@@ -2,17 +2,17 @@ class NerbyPlacesModel {
   final String name;
   final String location;
   final String image;
-  final double latitude;
-  final double longitude;
-  double? rating; // Rating can be null
-  double? distance; // Distance can be null
+  final double? latitude;  // Make nullable
+  final double? longitude; // Make nullable
+  double? rating;
+  double? distance;
 
   NerbyPlacesModel({
     required this.name,
     required this.location,
     required this.image,
-    required this.latitude,
-    required this.longitude,
+    this.latitude,
+    this.longitude,
     this.rating,
     this.distance,
   });
@@ -22,10 +22,10 @@ class NerbyPlacesModel {
       name: json['name'],
       location: json['location'],
       image: json['image'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      rating: json['rating']?.toDouble(), // Ensure rating is handled as double if possible
-      distance: json['distance']?.toDouble(), // Ensure distance is handled as double
+      latitude: json['latitude']?.toDouble(),
+      longitude: json['longitude']?.toDouble(),
+      rating: json['rating']?.toDouble(),
+      distance: json['distance']?.toDouble(),
     );
   }
 }
