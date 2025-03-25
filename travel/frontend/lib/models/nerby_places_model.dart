@@ -1,23 +1,26 @@
 class NerbyPlacesModel {
+  final String name;
+  final String location;
   final String image;
+  final double rating;
+  final double distance;
 
-  NerbyPlacesModel({required this.image});
+  NerbyPlacesModel({
+    required this.name,
+    required this.location,
+    required this.image,
+    required this.rating,
+    required this.distance,
+  });
 
-  String? get name => null;
-
-  String? get location => null;
-
-  get rating => null;
-
-  get price => null;
+  // Add fromJson method to map JSON data to the model
+  factory NerbyPlacesModel.fromJson(Map<String, dynamic> json) {
+    return NerbyPlacesModel(
+      name: json['name'] ?? 'Unknown',
+      location: json['location'] ?? 'Unknown location',
+      image: json['image'] ?? '',
+      rating: json['rating']?.toDouble() ?? 0.0,
+      distance: json['distance']?.toDouble() ?? 0.0,
+    );
+  }
 }
-
-List<NerbyPlacesModel> nearbyPlaces = [
-  NerbyPlacesModel(image: 'assets/places/place7.jpg'),
-  NerbyPlacesModel(image: 'assets/places/place6.jpg'),
-  NerbyPlacesModel(image: 'assets/places/place5.jpg'),
-  NerbyPlacesModel(image: 'assets/places/place4.jpg'),
-  NerbyPlacesModel(image: 'assets/places/place3.jpg'),
-  NerbyPlacesModel(image: 'assets/places/place2.jpg'),
-  NerbyPlacesModel(image: 'assets/places/place1.jpg'),
-];

@@ -64,5 +64,8 @@ class RecommendedPlace(models.Model):
     phone_number = models.CharField(max_length=20,default="Unknown")  # New field for phone number
     hotel_rating = models.CharField(max_length=50,default="Unknown")  # New field for hotel rating
     
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
+    
     def __str__(self):
         return self.location

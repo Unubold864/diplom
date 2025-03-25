@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from geopy.distance import geodesic
+from django.http import JsonResponse
 
 
 class SignUpView(APIView):
@@ -87,3 +89,28 @@ class RefreshTokenView(APIView):
             return Response({'error': 'User not found for the provided refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+def nearby_places(request):
+    # Get the latitude and longitude from the request
+    lat = float(request.GET.get('lat'))
+    lon = float(request.GET.get('lon'))
+
+    # Query all the recommended places
+    places = RecommendedPlace.objects.all()
+    nearby_places = []
+
+    for place in places:
+        # Calculate the distance between the user's location and each place
+        distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
+        if distance <= 5:  # Adjust the threshold for nearby places (e.g., 5 km)
+            nearby_places.append({
+                'name': place.name,
+                'location': place.location,
+                'rating': place.rating,
+                'image': place.image.url,  # Make sure to use .url to get the image URL
+                'distance': distance,
+            })
+
+    # Return the nearby places as JSON
+    return JsonResponse(nearby_places, safe=False)
