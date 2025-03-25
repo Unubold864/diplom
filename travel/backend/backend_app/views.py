@@ -95,6 +95,8 @@ class NearbyPlacesView(APIView):
     def get(self, request):
         lat = request.GET.get('lat')
         lon = request.GET.get('lon')
+        
+        print(f"Latitude: {lat}, Longitude: {lon}")
 
         if not lat or not lon:
             return Response({"detail": "Latitude and longitude are required."}, status=status.HTTP_400_BAD_REQUEST)
