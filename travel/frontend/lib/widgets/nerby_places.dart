@@ -21,45 +21,58 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
     _nearbyPlacesFuture = fetchNearbyPlaces();
   }
 
-  // Method to fetch nearby places
   Future<List<NerbyPlacesModel>> fetchNearbyPlaces() async {
-    Position position = await _getCurrentLocation(); // Get user's location
+    try {
+      Position position = await _getCurrentLocation();
 
-    final response = await http.get(
-      Uri.parse(
-          'http://127.0.0.1:8000/api/nearby_places/?lat=${position.latitude}&lon=${position.longitude}'),
-      headers: {'Accept-Charset': 'utf-8'},
-    );
+      final response = await http.get(
+        Uri.parse(
+          'http://127.0.0.1:8000/api/nearby_places/?lat=${position.latitude}&lon=${position.longitude}',
+        ),
+        headers: {'Accept-Charset': 'utf-8'},
+      );
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
 
-      // Calculate distance for each place and add it to the model
-      return data.map((item) {
-        var place = NerbyPlacesModel.fromJson(item);
+        return data.map((item) {
+          var place = NerbyPlacesModel.fromJson(item);
 
-        // Calculate distance between current location and place location
-        double distanceInKm = Geolocator.distanceBetween(
-          position.latitude,
-          position.longitude,
-          place.latitude,
-          place.longitude,
-        ) / 1000; // Convert meters to kilometers
+          // Safely calculate distance
+          try {
+            double distanceInKm =
+                Geolocator.distanceBetween(
+                  position.latitude,
+                  position.longitude,
+                  place.latitude,
+                  place.longitude,
+                ) /
+                1000;
 
-        place.distance = distanceInKm;  // Set the distance in the model
-        return place;
-      }).toList();
-    } else {
-      throw Exception('Failed to load nearby places');
+            place.distance = distanceInKm;
+          } catch (e) {
+            // If distance calculation fails, set distance to null
+            place.distance = null;
+          }
+
+          return place;
+        }).toList();
+      } else {
+        throw Exception(
+          'Failed to load nearby places (Status code: ${response.statusCode})',
+        );
+      }
+    } catch (e) {
+      // Log the error and rethrow or return an empty list
+      print('Error fetching nearby places: $e');
+      return [];
     }
   }
 
-  // Method to get current location
   Future<Position> _getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Location services are disabled.');
@@ -74,7 +87,6 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
       }
     }
 
-    // Get the current position
     return await Geolocator.getCurrentPosition();
   }
 
@@ -145,7 +157,9 @@ class _NearbyPlaceCard extends StatelessWidget {
               children: [
                 // Image
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
                   child: Image.asset(
                     place.image,
                     height: 100,
@@ -167,7 +181,10 @@ class _NearbyPlaceCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 // Details
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -194,20 +211,30 @@ class _NearbyPlaceCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(Icons.location_on, color: Colors.green, size: 16),
+                          Icon(
+                            Icons.location_on,
+                            color: Colors.green,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           // Display dynamic distance
                           Text(
                             place.distance != null
                                 ? "${place.distance!.toStringAsFixed(1)} km" // Show distance with 1 decimal place
                                 : "Distance not available", // Show 'Distance not available' if distance is null
-                            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700]),
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey[700],
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.yellow.shade50,
                           borderRadius: BorderRadius.circular(12),
@@ -215,13 +242,20 @@ class _NearbyPlaceCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.star, color: Colors.yellow.shade700, size: 16),
+                            Icon(
+                              Icons.star,
+                              color: Colors.yellow.shade700,
+                              size: 16,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               place.rating != null
                                   ? place.rating!.toString()
                                   : "N/A", // Show N/A if rating is null
-                              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
@@ -237,4 +271,3 @@ class _NearbyPlaceCard extends StatelessWidget {
     );
   }
 }
-
