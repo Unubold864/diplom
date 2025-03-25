@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignUpView, LoginView, RecommendedPlaceListView, UserProfileView
+from .views import SignUpView, LoginView, RecommendedPlaceListView, UserProfileView, NearbyPlacesView
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/recommended_places/', RecommendedPlaceListView.as_view(), name='recommended-places-list'),
     path('api/profile/', UserProfileView.as_view(), name='user-profile'),
+    path('api/nearby_places/', NearbyPlacesView.as_view(), name='nearby-places-list'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

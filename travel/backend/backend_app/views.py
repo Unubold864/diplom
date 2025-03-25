@@ -91,26 +91,33 @@ class RefreshTokenView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         
-def nearby_places(request):
-    # Get the latitude and longitude from the request
-    lat = float(request.GET.get('lat'))
-    lon = float(request.GET.get('lon'))
+class NearbyPlacesView(APIView):
+    def get(self, request):
+        lat = request.GET.get('lat')
+        lon = request.GET.get('lon')
 
-    # Query all the recommended places
-    places = RecommendedPlace.objects.all()
-    nearby_places = []
+        if not lat or not lon:
+            return Response({"detail": "Latitude and longitude are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    for place in places:
-        # Calculate the distance between the user's location and each place
-        distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
-        if distance <= 5:  # Adjust the threshold for nearby places (e.g., 5 km)
-            nearby_places.append({
-                'name': place.name,
-                'location': place.location,
-                'rating': place.rating,
-                'image': place.image.url,  # Make sure to use .url to get the image URL
-                'distance': distance,
-            })
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except ValueError:
+            return Response({"detail": "Invalid latitude or longitude."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Return the nearby places as JSON
-    return JsonResponse(nearby_places, safe=False)
+        places = RecommendedPlace.objects.all()
+        nearby_places = []
+
+        for place in places:
+            # Assuming your model has latitude and longitude fields
+            distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
+            if distance <= 5:  # Filter for places within 5 km, adjust as needed
+                nearby_places.append({
+                    'name': place.name,
+                    'location': place.location,
+                    'rating': place.rating,
+                    'image': place.image.url if place.image else None,
+                    'distance': distance,
+                })
+
+        return Response(nearby_places, status=status.HTTP_200_OK)
