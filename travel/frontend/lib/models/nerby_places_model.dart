@@ -2,25 +2,30 @@ class NerbyPlacesModel {
   final String name;
   final String location;
   final String image;
-  final double rating;
-  final double distance;
+  final double latitude;
+  final double longitude;
+  double? rating; // Rating can be null
+  double? distance; // Distance can be null
 
   NerbyPlacesModel({
     required this.name,
     required this.location,
     required this.image,
-    required this.rating,
-    required this.distance,
+    required this.latitude,
+    required this.longitude,
+    this.rating,
+    this.distance,
   });
 
-  // Add fromJson method to map JSON data to the model
   factory NerbyPlacesModel.fromJson(Map<String, dynamic> json) {
     return NerbyPlacesModel(
-      name: json['name'] ?? 'Unknown',
-      location: json['location'] ?? 'Unknown location',
-      image: json['image'] ?? '',
-      rating: json['rating']?.toDouble() ?? 0.0,
-      distance: json['distance']?.toDouble() ?? 0.0,
+      name: json['name'],
+      location: json['location'],
+      image: json['image'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      rating: json['rating']?.toDouble(), // Ensure rating is handled as double if possible
+      distance: json['distance']?.toDouble(), // Ensure distance is handled as double
     );
   }
 }

@@ -33,7 +33,22 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-      return data.map((item) => NerbyPlacesModel.fromJson(item)).toList();
+
+      // Calculate distance for each place and add it to the model
+      return data.map((item) {
+        var place = NerbyPlacesModel.fromJson(item);
+
+        // Calculate distance between current location and place location
+        double distanceInKm = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          place.latitude,
+          place.longitude,
+        ) / 1000; // Convert meters to kilometers
+
+        place.distance = distanceInKm;  // Set the distance in the model
+        return place;
+      }).toList();
     } else {
       throw Exception('Failed to load nearby places');
     }
@@ -109,7 +124,7 @@ class _NearbyPlaceCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            // Handle tap event
+            // Handle tap event (e.g., navigate to detail page)
           },
           child: Container(
             width: 180,
@@ -181,8 +196,11 @@ class _NearbyPlaceCard extends StatelessWidget {
                         children: [
                           Icon(Icons.location_on, color: Colors.green, size: 16),
                           const SizedBox(width: 4),
+                          // Display dynamic distance
                           Text(
-                            "2.5 km",
+                            place.distance != null
+                                ? "${place.distance!.toStringAsFixed(1)} km" // Show distance with 1 decimal place
+                                : "Distance not available", // Show 'Distance not available' if distance is null
                             style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700]),
                           ),
                         ],
@@ -200,7 +218,9 @@ class _NearbyPlaceCard extends StatelessWidget {
                             Icon(Icons.star, color: Colors.yellow.shade700, size: 16),
                             const SizedBox(width: 4),
                             Text(
-                              place.rating.toString(),
+                              place.rating != null
+                                  ? place.rating!.toString()
+                                  : "N/A", // Show N/A if rating is null
                               style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
                             ),
                           ],
@@ -217,3 +237,4 @@ class _NearbyPlaceCard extends StatelessWidget {
     );
   }
 }
+
