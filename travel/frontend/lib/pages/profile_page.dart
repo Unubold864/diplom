@@ -2,12 +2,111 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
-  // Define Persian Green as the primary color (matching HomePage)
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  // Define Persian Green as the primary color
   final Color persianGreen = const Color(0xFF00A896);
+
+  // User profile data
+  Map<String, dynamic> _userData = {
+    'name': 'Loading...',
+    'email': 'loading@example.com',
+  };
+
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('access_token');
+
+      if (accessToken == null) {
+        _showErrorDialog('No access token found. Please log in again');
+        // Redirect to login page
+        return;
+      }
+
+      print('Access Token: $accessToken');
+
+      // Make API call to fetch user profile
+      final response = await http.get(
+        Uri.parse(
+          'http://127.0.0.1:8000/api/profile/',
+        ), // Replace with your actual backend URL
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _userData = json.decode(response.body);
+        });
+      } else {
+        _showErrorDialog('Failed to load profile ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching profile: $e');
+      _showErrorDialog('Error connecting to server $e');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text('Error', style: GoogleFonts.poppins(color: Colors.red)),
+            content: Text(message, style: GoogleFonts.poppins()),
+            actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'Okay',
+                  style: GoogleFonts.poppins(color: persianGreen),
+                ),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> _logout() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Clear stored token
+      await prefs.remove('access_token');
+      await prefs.remove('refresh_token');
+
+      // Navigate to login page and remove all previous routes
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    } catch (e) {
+      _showErrorDialog('Logout failed');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +161,8 @@ class ProfilePage extends StatelessWidget {
             _buildAccountSection(),
             const SizedBox(height: 30),
             _buildPreferencesSection(),
+            const SizedBox(height: 30),
+            _buildLogoutButton(),
           ],
         ),
       ),
@@ -75,15 +176,11 @@ class ProfilePage extends StatelessWidget {
           CircleAvatar(
             radius: 60,
             backgroundColor: persianGreen.withOpacity(0.1),
-            child: Icon(
-              ionicons['person'],
-              size: 70,
-              color: persianGreen,
-            ),
+            child: Icon(ionicons['person'], size: 70, color: persianGreen),
           ),
           const SizedBox(height: 15),
           Text(
-            "John Doe",
+            _userData['name'] ?? 'User',
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -91,13 +188,29 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Text(
-            "john.doe@example.com",
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            _userData['email'] ?? 'email@example.com',
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return ElevatedButton(
+      onPressed: _logout,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: persianGreen,
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      child: Text(
+        'Logout',
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -107,19 +220,25 @@ class ProfilePage extends StatelessWidget {
       title: "Profile",
       items: [
         _buildProfileItem(
-          icon: ionicons['person_outline'] ?? Icons.person_outline,
+          icon: ionicons['person_outline'] ?? Icons.person,
           title: "Edit Profile",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement edit profile
+          },
         ),
         _buildProfileItem(
-          icon: ionicons['shield_outline'] ?? Icons.shield_outlined,
+          icon: ionicons['shield_outline'] ?? Icons.shield,
           title: "Privacy",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement privacy settings
+          },
         ),
         _buildProfileItem(
-          icon: ionicons['lock_closed_outline'] ?? Icons.lock_outline,
+          icon: ionicons['lock_closed_outline'] ?? Icons.lock,
           title: "Security",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement security settings
+          },
         ),
       ],
     );
@@ -132,17 +251,23 @@ class ProfilePage extends StatelessWidget {
         _buildProfileItem(
           icon: ionicons['card_outline'] ?? Icons.credit_card,
           title: "Payment Methods",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement payment methods
+          },
         ),
         _buildProfileItem(
-          icon: ionicons['bookmark_outline'] ?? Icons.bookmark_outline,
+          icon: ionicons['bookmark_outline'] ?? Icons.bookmark,
           title: "Bookings",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement bookings
+          },
         ),
         _buildProfileItem(
-          icon: ionicons['heart_outline'] ?? Icons.favorite_outline,
+          icon: ionicons['heart_outline'] ?? Icons.favorite_border,
           title: "My Favorites",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement favorites
+          },
         ),
       ],
     );
@@ -155,32 +280,36 @@ class ProfilePage extends StatelessWidget {
         _buildProfileItem(
           icon: ionicons['language_outline'] ?? Icons.language,
           title: "Language",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement language selection
+          },
         ),
         _buildProfileItem(
-          icon: ionicons['moon_outline'] ?? Icons.brightness_2_outlined,
+          icon: ionicons['moon_outline'] ?? Icons.nightlight_round,
           title: "Dark Mode",
           trailing: Switch(
-            value: false,
+            value: _isDarkMode,
             activeColor: persianGreen,
             onChanged: (bool value) {
-              // TODO: Implement dark mode toggle
+              setState(() {
+                _isDarkMode = value;
+                // TODO: Implement dark mode toggle logic
+              });
             },
           ),
         ),
         _buildProfileItem(
-          icon: ionicons['notifications_outline'] ?? Icons.notifications_outlined,
+          icon: ionicons['notifications_outline'] ?? Icons.notifications,
           title: "Notifications",
-          onTap: () {},
+          onTap: () {
+            // TODO: Implement notifications settings
+          },
         ),
       ],
     );
   }
 
-  Widget _buildSection({
-    required String title,
-    required List<Widget> items,
-  }) {
+  Widget _buildSection({required String title, required List<Widget> items}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -220,22 +349,14 @@ class ProfilePage extends StatelessWidget {
     Widget? trailing,
   }) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: persianGreen,
-        size: 24,
-      ),
+      leading: Icon(icon, color: persianGreen, size: 24),
       title: Text(
         title,
-        style: GoogleFonts.poppins(
-          fontSize: 16,
-          color: Colors.black87,
-        ),
+        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
       ),
-      trailing: trailing ?? Icon(
-        ionicons['chevron_forward_outline'],
-        color: Colors.grey[400],
-      ),
+      trailing:
+          trailing ??
+          Icon(ionicons['chevron_forward_outline'], color: Colors.grey[400]),
       onTap: onTap,
     );
   }

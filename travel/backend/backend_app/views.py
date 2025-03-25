@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.hashers import check_password, make_password
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
 class SignUpView(APIView):
@@ -23,23 +24,17 @@ class SignUpView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]  # Allow unauthenticated access to login
+
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
 
-        # Debug: Log the input email
-        print(f"Login attempt with email: {email}")
-        
         try:
             user = User.objects.get(email=email)
-            print(f"User found: {user.name}")
-
-            # Debug: Check the stored password hash
-            print(f"Stored password hash: {user.password}")
             
             # Use Django's built-in check_password method
             if user.check_password(password):
-                print("Password matched!")
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'access': str(refresh.access_token),
@@ -51,13 +46,23 @@ class LoginView(APIView):
                     }
                 }, status=status.HTTP_200_OK)
             else:
-                print("Password mismatch!")
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
-            print("User not found!")
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
 
 class RecommendedPlaceListView(generics.ListCreateAPIView):
     queryset = RecommendedPlace.objects.all()
     serializer_class = RecommendedPlaceSerializer
+    
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        user = request.user
+        return Response({
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+        })
