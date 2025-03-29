@@ -47,24 +47,9 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
           // Debug image URL
           print('Place image URL: ${place.image}');
 
-          if (place.latitude != null && place.longitude != null) {
-            try {
-              double distanceInMeters = Geolocator.distanceBetween(
-                position.latitude,
-                position.longitude,
-                place.latitude!,
-                place.longitude!,
-              );
-              place.distance = distanceInMeters / 1000; // Convert to km
-              print('Distance calculated: ${place.distance} km');
-            } catch (e) {
-              print('Distance calculation error: $e');
-              place.distance = null;
-            }
-          } else {
-            place.distance = null;
-          }
-
+          // Calculate distance for each place
+          calculateDistance(place, position);
+          
           return place;
         }).toList();
         
@@ -77,6 +62,35 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
     } catch (e) {
       print('Error fetching nearby places: $e');
       return [];
+    }
+  }
+
+  void calculateDistance(NerbyPlacesModel place, Position position) {
+    // Use default coordinates if place coordinates are missing
+    double placeLat = place.latitude ?? 0.0;
+    double placeLng = place.longitude ?? 0.0;
+    
+    // Check if we have valid coordinates
+    if (placeLat == 0.0 && placeLng == 0.0) {
+      // Use default distance if coordinates are missing
+      place.distance = 0.0;
+      print('Using default distance for ${place.name} due to missing coordinates');
+      return;
+    }
+    
+    try {
+      double distanceInMeters = Geolocator.distanceBetween(
+        position.latitude,
+        position.longitude,
+        placeLat,
+        placeLng,
+      );
+      place.distance = distanceInMeters / 1000; // Convert to km
+      print('Distance calculated for ${place.name}: ${place.distance} km');
+    } catch (e) {
+      // If calculation fails, use default distance
+      place.distance = 0.0;
+      print('Distance calculation error for ${place.name}: $e');
     }
   }
 
@@ -277,7 +291,7 @@ class _NearbyPlaceCard extends StatelessWidget {
                           Text(
                             place.distance != null
                                 ? '${place.distance!.toStringAsFixed(1)} км'
-                                : 'Зай тодорхойгүй',
+                                : '0.0 км', // Default text instead of "Зай тодорхойгүй"
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: Colors.grey[600],
