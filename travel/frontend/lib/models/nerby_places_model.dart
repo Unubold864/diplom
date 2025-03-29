@@ -36,6 +36,17 @@ class NerbyPlacesModel {
       print('Corrected image URL: $imageUrl');
     }
 
+    // Parse distance from JSON if it exists
+    double? distanceValue;
+    if (json['distance'] != null) {
+      try {
+        distanceValue = double.parse(json['distance'].toString());
+        print('Distance from API: $distanceValue km');
+      } catch (e) {
+        print('Error parsing distance: $e');
+      }
+    }
+
     return NerbyPlacesModel(
       name: json['name'],
       location: json['location'],
@@ -43,6 +54,7 @@ class NerbyPlacesModel {
       rating: json['rating'] != null ? double.parse(json['rating'].toString()) : null,
       latitude: json['latitude'] != null ? double.parse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.parse(json['longitude'].toString()) : null,
+      distance: distanceValue, // Set the distance from API
     );
   }
 }

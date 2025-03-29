@@ -47,8 +47,13 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
           // Debug image URL
           print('Place image URL: ${place.image}');
 
-          // Calculate distance for each place
-          calculateDistance(place, position);
+          // Only calculate distance if not provided by API
+          if (place.distance == null) {
+            place.distance = calculateDistance(place, position);
+            print('Locally calculated distance for ${place.name}: ${place.distance} km');
+          } else {
+            print('Using API distance for ${place.name}: ${place.distance} km');
+          }
           
           return place;
         }).toList();
@@ -65,17 +70,15 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
     }
   }
 
-  void calculateDistance(NerbyPlacesModel place, Position position) {
+  double calculateDistance(NerbyPlacesModel place, Position position) {
     // Use default coordinates if place coordinates are missing
     double placeLat = place.latitude ?? 0.0;
     double placeLng = place.longitude ?? 0.0;
     
     // Check if we have valid coordinates
     if (placeLat == 0.0 && placeLng == 0.0) {
-      // Use default distance if coordinates are missing
-      place.distance = 0.0;
-      print('Using default distance for ${place.name} due to missing coordinates');
-      return;
+      print('Missing coordinates for ${place.name}');
+      return 0.0;
     }
     
     try {
@@ -85,12 +88,13 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
         placeLat,
         placeLng,
       );
-      place.distance = distanceInMeters / 1000; // Convert to km
-      print('Distance calculated for ${place.name}: ${place.distance} km');
+      
+      double distanceInKm = distanceInMeters / 1000; // Convert to km
+      print('Distance calculated for ${place.name}: $distanceInKm km');
+      return distanceInKm;
     } catch (e) {
-      // If calculation fails, use default distance
-      place.distance = 0.0;
       print('Distance calculation error for ${place.name}: $e');
+      return 0.0;
     }
   }
 
@@ -289,9 +293,9 @@ class _NearbyPlaceCard extends StatelessWidget {
                           ),
                           SizedBox(width: 4),
                           Text(
-                            place.distance != null
+                            place.distance != null && place.distance! > 0
                                 ? '${place.distance!.toStringAsFixed(1)} км'
-                                : '0.0 км', // Default text instead of "Зай тодорхойгүй"
+                                : 'Ойрхон',
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: Colors.grey[600],
