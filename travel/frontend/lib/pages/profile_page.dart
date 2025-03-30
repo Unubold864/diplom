@@ -2,28 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/services/api_service.dart'; // Import the new API service
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
   // Define Persian Green as the primary color
   final Color persianGreen = const Color(0xFF00A896);
+  
+  // Create an instance of our API service
+  final ApiService _apiService = ApiService();
 
   // User profile data
   Map<String, dynamic> _userData = {
-    'name': 'Loading...',
+    'name': 'Ачаалж байна...',
     'email': 'loading@example.com',
   };
 
   bool _isDarkMode = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -31,105 +34,52 @@ class _ProfilePageState extends State<ProfilePage> {
     _fetchUserProfile();
   }
 
-  Future<bool> _refreshToken() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final refreshToken = prefs.getString('refresh_token');
-
-      if (refreshToken == null) {
-        _showErrorDialog('Session expired. Please log in again.');
-        await _logout();
-        return false;
-      }
-
-      final response = await http.post(
-        Uri.parse('http://127.0.0.1:8000/api/token/refresh/'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'refresh': refreshToken}),
-      );
-
-      if (response.statusCode == 200) {
-        final newTokens = json.decode(response.body);
-        await prefs.setString('access_token', newTokens['access']);
-        print('Token refreshed successfully');
-        return true;
-      } else {
-        _showErrorDialog('Session expired. Please log in again.');
-        await _logout();
-        return false;
-      }
-    } catch (e) {
-      print('Error refreshing token: $e');
-      _showErrorDialog('Error refreshing session. Please log in again.');
-      return false;
-    }
-  }
-
   Future<void> _fetchUserProfile() async {
+    if (!mounted) return;
+    
+    setState(() => _isLoading = true);
+    
     try {
-      final prefs = await SharedPreferences.getInstance();
-      var accessToken = prefs.getString('access_token');
+      // Use the API service to make a GET request
+      final response = await _apiService.get('/profile/');
 
-      print('Current Access Token: $accessToken');
-
-      if (accessToken == null || accessToken.isEmpty) {
-        _showErrorDialog('Please log in again');
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-        });
-        return;
-      }
-
-      // First attempt with current token
-      var response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/api/profile/'),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // If token expired, try to refresh
-      if (response.statusCode == 401) {
-        print('Access token expired, attempting refresh...');
-        final refreshSuccess = await _refreshToken();
-        
-        if (refreshSuccess) {
-          // Retry with new token
-          accessToken = prefs.getString('access_token');
-          response = await http.get(
-            Uri.parse('http://127.0.0.1:8000/api/profile/'),
-            headers: {
-              'Authorization': 'Bearer $accessToken',
-              'Content-Type': 'application/json',
-            },
-          );
-        } else {
-          return; // Refresh failed, already handled
-        }
-      }
+      if (!mounted) return;
+      setState(() => _isLoading = false);
 
       if (response.statusCode == 200) {
-        setState(() => _userData = json.decode(response.body));
+        try {
+          final data = json.decode(response.body);
+          setState(() => _userData = data);
+        } catch (e) {
+          print('JSON задлах үед алдаа гарлаа: $e');
+          _showErrorDialog('Профайл мэдээлэл задлах үед алдаа гарлаа');
+        }
       } else {
-        _showErrorDialog('Failed to load profile: ${response.statusCode}');
+        print('Серверийн хариу: ${response.body}');
+        _showErrorDialog('Профайл ачаалахад алдаа гарлаа: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching profile: $e');
-      _showErrorDialog('Error connecting to server: $e');
+      setState(() => _isLoading = false);
+      print('Профайл ачаалах үед алдаа гарлаа: $e');
+      if (mounted) {
+        _showErrorDialog('Серверт холбогдоход алдаа гарлаа: $e');
+      }
     }
   }
 
   void _showErrorDialog(String message) {
+    if (!mounted) return;
+    
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Text('Error', style: GoogleFonts.poppins(color: Colors.red)),
+        title: Text('Алдаа', style: GoogleFonts.poppins(color: Colors.red)),
         content: Text(message, style: GoogleFonts.poppins()),
         actions: <Widget>[
           TextButton(
             child: Text(
-              'Okay',
+              'Ойлголоо',
               style: GoogleFonts.poppins(color: persianGreen),
             ),
             onPressed: () {
@@ -143,19 +93,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _logout() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-
-      // Clear stored token
-      await prefs.remove('access_token');
-      await prefs.remove('refresh_token');
-
-      // Navigate to login page and remove all previous routes
-      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      // Use API service to clear tokens
+      await _apiService.clearTokens();
+      
+      // Navigate to login page
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/login');
+      }
     } catch (e) {
-      _showErrorDialog('Logout failed');
+      print('Гарах үед алдаа гарлаа: $e');
+      if (mounted) {
+        _showErrorDialog('Системээс гарах үед алдаа гарлаа');
+      }
     }
   }
 
+  // The rest of your UI code stays the same
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         title: Text(
-          "Profile",
+          "Профайл",
           style: GoogleFonts.poppins(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -186,34 +139,50 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           CustomIconButton(
             icon: Icon(
-              ionicons['settings_outline'],
+              ionicons['settings_outline'] ?? Icons.settings,
               color: persianGreen,
               size: 24,
             ),
             onTap: () {
-              // TODO: Implement settings navigation
+              // TODO: Тохиргоо хуудас руу шилжих
             },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildProfileHeader(),
-            const SizedBox(height: 30),
-            _buildProfileSection(),
-            const SizedBox(height: 30),
-            _buildAccountSection(),
-            const SizedBox(height: 30),
-            _buildPreferencesSection(),
-            const SizedBox(height: 30),
-            _buildLogoutButton(),
-          ],
+      body: SafeArea(
+        child: RefreshIndicator(
+          color: persianGreen,
+          onRefresh: _fetchUserProfile,
+          child: _isLoading 
+              ? _buildLoadingState()
+              : SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildProfileHeader(),
+                      const SizedBox(height: 30),
+                      _buildProfileSection(),
+                      const SizedBox(height: 30),
+                      _buildAccountSection(),
+                      const SizedBox(height: 30),
+                      _buildPreferencesSection(),
+                      const SizedBox(height: 30),
+                      _buildLogoutButton(),
+                      const SizedBox(height: 50),
+                    ],
+                  ),
+                ),
         ),
       ),
+    );
+  }
+
+  // The rest of your widget building methods remain the same
+  Widget _buildLoadingState() {
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 
@@ -224,11 +193,11 @@ class _ProfilePageState extends State<ProfilePage> {
           CircleAvatar(
             radius: 60,
             backgroundColor: persianGreen.withOpacity(0.1),
-            child: Icon(ionicons['person'], size: 70, color: persianGreen),
+            child: Icon(ionicons['person'] ?? Icons.person, size: 70, color: persianGreen),
           ),
           const SizedBox(height: 15),
           Text(
-            _userData['name'] ?? 'User',
+            _userData['name'] ?? 'Хэрэглэгч',
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -253,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       child: Text(
-        'Logout',
+        'Гарах',
         style: GoogleFonts.poppins(
           fontSize: 16,
           fontWeight: FontWeight.bold,
@@ -265,27 +234,27 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildProfileSection() {
     return _buildSection(
-      title: "Profile",
+      title: "Профайл",
       items: [
         _buildProfileItem(
-          icon: ionicons['person_outline'] ?? Icons.person,
-          title: "Edit Profile",
+          icon: ionicons['person_outline'] ?? Icons.person_outline,
+          title: "Профайл засах",
           onTap: () {
-            // TODO: Implement edit profile
+            // TODO: Профайл засах хуудас руу шилжих
           },
         ),
         _buildProfileItem(
-          icon: ionicons['shield_outline'] ?? Icons.shield,
-          title: "Privacy",
+          icon: ionicons['shield_outline'] ?? Icons.shield_outlined,
+          title: "Нууцлал",
           onTap: () {
-            // TODO: Implement privacy settings
+            // TODO: Нууцлалын тохиргоо хуудас руу шилжих
           },
         ),
         _buildProfileItem(
-          icon: ionicons['lock_closed_outline'] ?? Icons.lock,
-          title: "Security",
+          icon: ionicons['lock_closed_outline'] ?? Icons.lock_outline,
+          title: "Аюулгүй байдал",
           onTap: () {
-            // TODO: Implement security settings
+            // TODO: Аюулгүй байдлын тохиргоо хуудас руу шилжих
           },
         ),
       ],
@@ -294,27 +263,27 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildAccountSection() {
     return _buildSection(
-      title: "Account",
+      title: "Бүртгэл",
       items: [
         _buildProfileItem(
           icon: ionicons['card_outline'] ?? Icons.credit_card,
-          title: "Payment Methods",
+          title: "Төлбөрийн хэрэгслүүд",
           onTap: () {
-            // TODO: Implement payment methods
+            // TODO: Төлбөрийн хэрэгслүүдийн хуудас руу шилжих
           },
         ),
         _buildProfileItem(
-          icon: ionicons['bookmark_outline'] ?? Icons.bookmark,
-          title: "Bookings",
+          icon: ionicons['bookmark_outline'] ?? Icons.bookmark_border,
+          title: "Захиалгууд",
           onTap: () {
-            // TODO: Implement bookings
+            // TODO: Захиалгуудын хуудас руу шилжих
           },
         ),
         _buildProfileItem(
           icon: ionicons['heart_outline'] ?? Icons.favorite_border,
-          title: "My Favorites",
+          title: "Миний дуртай",
           onTap: () {
-            // TODO: Implement favorites
+            // TODO: Таалагдсан зүйлсийн хуудас руу шилжих
           },
         ),
       ],
@@ -323,34 +292,34 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildPreferencesSection() {
     return _buildSection(
-      title: "Preferences",
+      title: "Тохиргоо",
       items: [
         _buildProfileItem(
           icon: ionicons['language_outline'] ?? Icons.language,
-          title: "Language",
+          title: "Хэл",
           onTap: () {
-            // TODO: Implement language selection
+            // TODO: Хэл сонгох хуудас руу шилжих
           },
         ),
         _buildProfileItem(
-          icon: ionicons['moon_outline'] ?? Icons.nightlight_round,
-          title: "Dark Mode",
+          icon: ionicons['moon_outline'] ?? Icons.dark_mode_outlined,
+          title: "Харанхуй горим",
           trailing: Switch(
             value: _isDarkMode,
             activeColor: persianGreen,
             onChanged: (bool value) {
               setState(() {
                 _isDarkMode = value;
-                // TODO: Implement dark mode toggle logic
+                // TODO: Харанхуй горим тохируулах логик
               });
             },
           ),
         ),
         _buildProfileItem(
-          icon: ionicons['notifications_outline'] ?? Icons.notifications,
-          title: "Notifications",
+          icon: ionicons['notifications_outline'] ?? Icons.notifications_outlined,
+          title: "Мэдэгдлүүд",
           onTap: () {
-            // TODO: Implement notifications settings
+            // TODO: Мэдэгдлүүдийн тохиргоо хуудас руу шилжих
           },
         ),
       ],
@@ -403,7 +372,7 @@ class _ProfilePageState extends State<ProfilePage> {
         style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
       ),
       trailing: trailing ??
-          Icon(ionicons['chevron_forward_outline'], color: Colors.grey[400]),
+          Icon(ionicons['chevron_forward_outline'] ?? Icons.chevron_right, color: Colors.grey[400]),
       onTap: onTap,
     );
   }
