@@ -127,7 +127,7 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 220,
+      height: 350, // Increased height for vertical list
       child: FutureBuilder<List<NerbyPlacesModel>>(
         future: _nearbyPlacesFuture,
         builder: (context, snapshot) {
@@ -152,10 +152,10 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
             final nearbyPlaces = snapshot.data!;
             return ListView.separated(
               physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.vertical, // Changed to vertical scrolling
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               itemCount: nearbyPlaces.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 16),
+              separatorBuilder: (context, index) => const SizedBox(height: 16), // Changed width to height
               itemBuilder: (context, index) {
                 return _NearbyPlaceCard(place: nearbyPlaces[index]);
               },
@@ -182,7 +182,7 @@ class _NearbyPlaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 180,
+      width: double.infinity, // Take full width for vertical scrolling
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -201,24 +201,25 @@ class _NearbyPlaceCard extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
+            child: Row(  // Changed to Row to have image on left and details on right
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Зураг
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
+                  borderRadius: const BorderRadius.horizontal(
+                    left: Radius.circular(16),
                   ),
                   child: place.image != null && place.image!.isNotEmpty
                       ? Image.network(
                           place.image!,
-                          height: 100,
-                          width: double.infinity,
+                          height: 120,
+                          width: 120,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             print('Image error for ${place.name}: $error');
                             return Container(
-                              height: 100,
+                              height: 120,
+                              width: 120,
                               color: Colors.grey[200],
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -239,7 +240,8 @@ class _NearbyPlaceCard extends StatelessWidget {
                           },
                         )
                       : Container(
-                          height: 100,
+                          height: 120,
+                          width: 120,
                           color: Colors.grey[200],
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -258,76 +260,78 @@ class _NearbyPlaceCard extends StatelessWidget {
                           ),
                         ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        place.name ?? 'Нэргүй газар',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        place.location ?? 'Байршил тодорхойгүй',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Colors.green,
-                            size: 16,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          place.name ?? 'Нэргүй газар',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                          SizedBox(width: 4),
-                          Text(
-                            place.distance != null && place.distance! > 0
-                                ? '${place.distance!.toStringAsFixed(1)} км'
-                                : 'Ойрхон',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          place.location ?? 'Байршил тодорхойгүй',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[600],
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.yellow[50],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        SizedBox(height: 6),
+                        Row(
                           children: [
-                            Icon(Icons.star, color: Colors.amber, size: 16),
+                            Icon(
+                              Icons.location_on,
+                              color: Colors.green,
+                              size: 16,
+                            ),
                             SizedBox(width: 4),
                             Text(
-                              place.rating?.toStringAsFixed(1) ?? '-.-',
+                              place.distance != null && place.distance! > 0
+                                  ? '${place.distance!.toStringAsFixed(1)} км'
+                                  : 'Ойрхон',
                               style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                                color: Colors.grey[600],
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 6),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.yellow[50],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.star, color: Colors.amber, size: 16),
+                              SizedBox(width: 4),
+                              Text(
+                                place.rating?.toStringAsFixed(1) ?? '-.-',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
