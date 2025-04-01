@@ -24,8 +24,8 @@ class _HomePageState extends State<HomePage> {
   // Define the pages for navigation
   final List<Widget> _pages = [
     const HomeContent(), // The existing home content
+    const Scaffold(body: Center(child: Text('Notifications Page'))),
     const Scaffold(body: Center(child: Text('Saved Page'))),
-    const Scaffold(body: Center(child: Text('Favorites Page'))),
     const ProfilePage(), // Added ProfilePage
   ];
 
@@ -74,8 +74,8 @@ class _HomePageState extends State<HomePage> {
           unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
           items: [
             _buildNavItem(context, Icons.home_outlined, "Home", _selectedIndex == 0),
-            _buildNavItem(context, Icons.bookmark_border, "Saved", _selectedIndex == 1),
-            _buildNavItem(context, Icons.favorite_border, "Favorites", _selectedIndex == 2),
+            _buildNavItem(context, Icons.bookmark_border, "Notifications", _selectedIndex == 1),
+            _buildNavItem(context, Icons.favorite_border, "Saved", _selectedIndex == 2),
             _buildNavItem(context, Icons.person_outline, "Profile", _selectedIndex == 3),
           ],
         ),
