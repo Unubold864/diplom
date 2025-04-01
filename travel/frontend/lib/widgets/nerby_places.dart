@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/nerby_places_model.dart';
+import 'package:frontend/pages/tourist_details_page.dart'; // Import the details page
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -186,9 +187,7 @@ class _NearbyPlaceCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            // Дэлгэрэнгүй хуудас руу шилжих
-          },
+          onTap: () => _navigateToDetails(context),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -334,6 +333,23 @@ class _NearbyPlaceCard extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToDetails(BuildContext context) {
+    // Navigate to tourist details page similar to recommended places
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TouristDetailsPage(
+          image: place.image ?? 'https://via.placeholder.com/400',
+          name: place.name ?? 'Unknown Place',
+          location: place.location ?? 'Unknown Location',
+          description: place.description ?? 'No description available for this place.',
+          phoneNumber: '+976 12345678', // Default phone number or get from API if available
+          hotelRating: place.rating?.toString() ?? '0.0',
         ),
       ),
     );

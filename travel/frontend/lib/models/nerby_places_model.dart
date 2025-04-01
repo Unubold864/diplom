@@ -5,6 +5,8 @@ class NerbyPlacesModel {
   final double? rating;
   final double? latitude;
   final double? longitude;
+  final String? description; // Added description field
+  final String? phoneNumber;  // Added phone number field
   double? distance;
 
   NerbyPlacesModel({
@@ -14,6 +16,8 @@ class NerbyPlacesModel {
     this.rating,
     this.latitude,
     this.longitude,
+    this.description,
+    this.phoneNumber,
     this.distance,
   });
 
@@ -54,6 +58,8 @@ class NerbyPlacesModel {
       rating: json['rating'] != null ? double.parse(json['rating'].toString()) : null,
       latitude: json['latitude'] != null ? double.parse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.parse(json['longitude'].toString()) : null,
+      description: json['description'], // Parse description from JSON
+      phoneNumber: json['phone_number'], // Parse phone number from JSON
       distance: distanceValue, // Set the distance from API
     );
   }
