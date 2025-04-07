@@ -59,10 +59,10 @@ class _HomePageState extends State<HomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildFloatingNavItem(Icons.home_outlined, "Home", 0),
-            _buildFloatingNavItem(Icons.notifications_outlined, "Alerts", 1),
-            _buildFloatingNavItem(Icons.bookmark_outlined, "Saved", 2),
-            _buildFloatingNavItem(Icons.person_outlined, "Profile", 3),
+            _buildFloatingNavItem(Icons.home_outlined, "Нүүр", 0),
+            _buildFloatingNavItem(Icons.notifications_outlined, "Мэдэгдэл", 1),
+            _buildFloatingNavItem(Icons.bookmark_outlined, "Хадгалсан", 2),
+            _buildFloatingNavItem(Icons.person_outlined, "Профайл", 3),
           ],
         ),
       ),
