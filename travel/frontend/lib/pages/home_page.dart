@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/profile_page.dart'; // Import the ProfilePage
+import 'package:frontend/pages/profile_page.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:frontend/widgets/location_card.dart';
 import 'package:frontend/widgets/nerby_places.dart';
@@ -8,7 +8,7 @@ import 'package:frontend/widgets/tourist_places.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 
-class HomePage extends StatefulWidget { // Changed to StatefulWidget
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
@@ -16,17 +16,14 @@ class HomePage extends StatefulWidget { // Changed to StatefulWidget
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0; // Track the selected bottom navigation item
-
-  // Define Persian Green as the primary color
+  int _selectedIndex = 0;
   final Color persianGreen = const Color(0xFF00A896);
 
-  // Define the pages for navigation
   final List<Widget> _pages = [
-    const HomeContent(), // The existing home content
+    const HomeContent(),
     const Scaffold(body: Center(child: Text('Notifications Page'))),
     const Scaffold(body: Center(child: Text('Saved Page'))),
-    const ProfilePage(), // Added ProfilePage
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -38,62 +35,77 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex], // Display the selected page
-      bottomNavigationBar: _buildBottomNavigationBar(context),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: _buildFloatingNavigationBar(),
     );
   }
 
-  Widget _buildBottomNavigationBar(BuildContext context) {
+  Widget _buildFloatingNavigationBar() {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1), // Subtle shadow
-            blurRadius: 10,
-            offset: const Offset(0, -5),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex, // Add this line
-          onTap: _onItemTapped, // Add this line
-          elevation: 0,
-          backgroundColor: Colors.white,
-          type: BottomNavigationBarType.fixed,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedItemColor: persianGreen, // Persian Green for selected items
-          unselectedItemColor: Colors.grey[400],
-          selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
-          unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
-          items: [
-            _buildNavItem(context, Icons.home_outlined, "Home", _selectedIndex == 0),
-            _buildNavItem(context, Icons.bookmark_border, "Notifications", _selectedIndex == 1),
-            _buildNavItem(context, Icons.favorite_border, "Saved", _selectedIndex == 2),
-            _buildNavItem(context, Icons.person_outline, "Profile", _selectedIndex == 3),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildFloatingNavItem(Icons.home_outlined, "Home", 0),
+            _buildFloatingNavItem(Icons.notifications_outlined, "Alerts", 1),
+            _buildFloatingNavItem(Icons.bookmark_outlined, "Saved", 2),
+            _buildFloatingNavItem(Icons.person_outlined, "Profile", 3),
           ],
         ),
       ),
     );
   }
 
-  // Helper method to build a navigation item
-  BottomNavigationBarItem _buildNavItem(
-      BuildContext context, IconData icon, String label, bool isSelected) {
-    return BottomNavigationBarItem(
-      icon: Icon(icon),
-      label: label,
+  Widget _buildFloatingNavItem(IconData icon, String label, int index) {
+    final isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? persianGreen.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? persianGreen : Colors.grey,
+              size: 20,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: persianGreen,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
 
-// Extract the original home content to a separate widget
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
@@ -177,7 +189,6 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  // Keep the existing helper methods from the original HomePage
   Widget _buildSectionHeader(
     BuildContext context, {
     required String title,
