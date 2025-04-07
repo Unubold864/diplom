@@ -3,81 +3,149 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
 class LocationCard extends StatelessWidget {
-  const LocationCard({Key? key}) : super(key: key);
+  const LocationCard({super.key});
 
   // Define Persian Green as the primary color
   final Color persianGreen = const Color(0xFF00A896);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.white, Colors.white.withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: () {
+        // Navigate to Map Screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MapScreen(),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Lottie Animation
-            Container(
-              width: 80,
-              height: 80,
-              child: Center(
-                child: Lottie.asset(
-                  'assets/map1.json', // Replace with your Lottie file
-                  fit: BoxFit.cover,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.white.withOpacity(0.8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Lottie Animation with tap feedback
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: persianGreen.withOpacity(0.1),
+                ),
+                child: Center(
+                  child: Lottie.asset(
+                    'assets/map1.json',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
-            // Location Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        color: persianGreen, // Persian Green icon
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Location",
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87, // Dark text for better contrast
+              const SizedBox(width: 16),
+              // Location Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          color: persianGreen,
+                          size: 24,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Улаанбаатар, Монгол",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      color: Colors.grey[700], // Subdued text color
+                        const SizedBox(width: 8),
+                        Text(
+                          "Your Location",
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      "Улаанбаатар, Монгол",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Tap to view map",
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: persianGreen,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              // Chevron icon
+              Icon(
+                Icons.chevron_right,
+                color: persianGreen,
+                size: 28,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Basic Map Screen (You'll need to implement your actual map functionality)
+class MapScreen extends StatelessWidget {
+  const MapScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Map View",
+          style: GoogleFonts.poppins(),
+        ),
+        backgroundColor: const Color(0xFF00A896),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.map,
+              size: 100,
+              color: const Color(0xFF00A896),
             ),
+            const SizedBox(height: 20),
+            Text(
+              "Map View Would Appear Here",
+              style: GoogleFonts.poppins(fontSize: 18),
+            ),
+            // You would replace this with your actual map widget
+            // For example: GoogleMap(initialCameraPosition: _kGooglePlex),
           ],
         ),
       ),
