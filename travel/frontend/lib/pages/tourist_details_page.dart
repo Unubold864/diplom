@@ -9,7 +9,7 @@ class TouristDetailsPage extends StatefulWidget {
     required this.location,
     required this.description,
     required this.phoneNumber,
-    required this.hotelRating,
+    required this.rating, required String hotelRating,
   });
 
   final String image;
@@ -17,246 +17,43 @@ class TouristDetailsPage extends StatefulWidget {
   final String location;
   final String description;
   final String phoneNumber;
-  final String hotelRating;
+  final double rating;
 
   @override
   State<TouristDetailsPage> createState() => _TouristDetailsPageState();
 }
 
 class _TouristDetailsPageState extends State<TouristDetailsPage> {
+  final Color primaryColor = const Color(0xFF00A896); // Persian Green
+  final Color secondaryColor = const Color(0xFF02C39A); // Lighter Green
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Image
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: Image.network(
-              widget.image,
-              fit: BoxFit.cover,
-            ),
-          ),
-          
-          // Back Button
-          Positioned(
-            top: 40,
-            left: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ),
-          
-          // More Options Button
-          Positioned(
-            top: 40,
-            right: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-                onPressed: () {},
-              ),
-            ),
-          ),
-          
-          // Content Container
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.35,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-              ),
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+      backgroundColor: Colors.white,
+      body: CustomScrollView(
+        slivers: [
+          // Header Image with Back Button
+          SliverAppBar(
+            expandedHeight: 300,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
                 children: [
-                  // Header with name and rating
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 18),
-                            const SizedBox(width: 4),
-                            Text(
-                              "4.8",
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Image.network(
+                    widget.image,
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(height: 10),
-                  
-                  // Location
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, color: Colors.blue, size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        widget.location,
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  // Description Section
-                  Text(
-                    "Description",
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.description,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  // What's Included Section
-                  Text(
-                    "What's included?",
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  
-                  // Amenities Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildAmenityItem(Icons.wifi, "Wi-Fi"),
-                      _buildAmenityItem(Icons.pool, "Pool"),
-                      _buildAmenityItem(Icons.fastfood, "Food"),
-                      _buildAmenityItem(Icons.local_taxi, "Transport"),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // Gallery Images (horizontally scrollable)
-                  SizedBox(
-                    height: 100,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildGalleryImage(widget.image),
-                        _buildGalleryImage(widget.image),
-                        _buildGalleryImage(widget.image),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // Contact information
-                  Card(
-                    elevation: 0,
-                    color: Colors.grey[100],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          const CircleAvatar(
-                            backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/32.jpg'),
-                            radius: 25,
-                          ),
-                          const SizedBox(width: 15),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Tour Guide",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.phoneNumber,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: Colors.blue[50],
-                                radius: 20,
-                                child: IconButton(
-                                  icon: const Icon(Icons.message, color: Colors.blue),
-                                  onPressed: () {},
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                radius: 20,
-                                child: IconButton(
-                                  icon: const Icon(Icons.call, color: Colors.white),
-                                  onPressed: () {},
-                                ),
-                              ),
-                            ],
-                          ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.7),
+                          Colors.transparent,
                         ],
                       ),
                     ),
@@ -264,110 +61,319 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                 ],
               ),
             ),
-          ),
-          
-          // Bottom Bar with Price and Book Button
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, -3),
-                  ),
-                ],
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircleAvatar(
+                backgroundColor: Colors.black.withOpacity(0.4),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
-              child: Row(
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black.withOpacity(0.4),
+                  child: IconButton(
+                    icon: const Icon(Icons.favorite_border, color: Colors.white),
+                    onPressed: () {},
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                  // Title and Rating
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        "\$313",
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                      Expanded(
+                        child: Text(
+                          widget.name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
-                      Text(
-                        "/ Person",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.star,
+                                color: Colors.amber, size: 20),
+                            const SizedBox(width: 4),
+                            Text(
+                              widget.rating.toString(),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+
+                  const SizedBox(height: 8),
+
+                  // Location
+                  Row(
+                    children: [
+                      Icon(Icons.location_on,
+                          color: primaryColor, size: 18),
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.location,
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[600],
+                          fontSize: 16,
                         ),
                       ),
-                      child: Text(
-                        "Book Now",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // About Section
+                  Text(
+                    "About",
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.description,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                      height: 1.6,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Features
+                  Text(
+                    "Features",
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.8,
+                    children: [
+                      _buildFeatureItem(Icons.wifi, "Wi-Fi"),
+                      _buildFeatureItem(Icons.restaurant, "Restaurant"),
+                      _buildFeatureItem(Icons.pool, "Pool"),
+                      _buildFeatureItem(Icons.local_parking, "Parking"),
+                      _buildFeatureItem(Icons.ac_unit, "AC"),
+                      _buildFeatureItem(Icons.beach_access, "Beach"),
+                      _buildFeatureItem(Icons.fitness_center, "Gym"),
+                      _buildFeatureItem(Icons.spa, "Spa"),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Gallery
+                  Text(
+                    "Gallery",
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 120,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 4,
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder: (_, index) => ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: Image.network(
+                            widget.image,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 24),
+
+                  // Contact Host
+                  Text(
+                    "Contact Host",
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 30,
+                          backgroundImage:
+                              NetworkImage('https://randomuser.me/api/portraits/men/32.jpg'),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "John Smith",
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                widget.phoneNumber,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.message, color: primaryColor),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.call, color: primaryColor),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 80), // Space for bottom button
                 ],
               ),
             ),
           ),
         ],
       ),
+
+      // Bottom Booking Bar
+      bottomSheet: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "\$120",
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: primaryColor,
+                  ),
+                ),
+                Text(
+                  "per night",
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                "Book Now",
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
-  
-  Widget _buildAmenityItem(IconData icon, String label) {
+
+  Widget _buildFeatureItem(IconData icon, String label) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.blue[50],
-            borderRadius: BorderRadius.circular(15),
+            color: primaryColor.withOpacity(0.1),
+            shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.blue),
+          child: Icon(icon, color: primaryColor),
         ),
         const SizedBox(height: 8),
         Text(
           label,
           style: GoogleFonts.poppins(fontSize: 12),
+          textAlign: TextAlign.center,
         ),
       ],
-    );
-  }
-  
-  Widget _buildGalleryImage(String imageUrl) {
-    return Container(
-      width: 100,
-      margin: const EdgeInsets.only(right: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        image: DecorationImage(
-          image: NetworkImage(imageUrl),
-          fit: BoxFit.cover,
-        ),
-      ),
     );
   }
 }

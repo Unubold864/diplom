@@ -402,7 +402,7 @@ class _NearbyPlaceCard extends StatelessWidget {
           location: place.location ?? 'Unknown Location',
           description: place.description ?? 'No description available.',
           phoneNumber: '+976 12345678',
-          hotelRating: place.rating?.toString() ?? '0.0',
+          hotelRating: place.rating?.toString() ?? '0.0', rating: 5,
         ),
       ),
     );

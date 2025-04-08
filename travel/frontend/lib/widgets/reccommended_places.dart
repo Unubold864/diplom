@@ -196,7 +196,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
           location: place.location,
           description: place.description,
           phoneNumber: place.phoneNumber,
-          hotelRating: place.hotelRating,
+          hotelRating: place.hotelRating, rating: 5,
         ),
       ),
     );
