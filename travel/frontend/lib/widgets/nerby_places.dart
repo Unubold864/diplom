@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/nerby_places_model.dart';
-import 'package:frontend/pages/tourist_details_page.dart'; // Import the details page
+import 'package:frontend/pages/tourist_details_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 
 class NerbyPlaces extends StatefulWidget {
-  const NerbyPlaces({Key? key}) : super(key: key);
+  const NerbyPlaces({super.key});
 
   @override
   _NerbyPlacesState createState() => _NerbyPlacesState();
@@ -45,15 +45,9 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
           print('Place item: $item');
           var place = NerbyPlacesModel.fromJson(item);
           
-          // Debug image URL
-          print('Place image URL: ${place.image}');
-
-          // Only calculate distance if not provided by API
           if (place.distance == null) {
             place.distance = calculateDistance(place, position);
-            print('Locally calculated distance for ${place.name}: ${place.distance} km');
-          } else {
-            print('Using API distance for ${place.name}: ${place.distance} km');
+            print('Calculated distance for ${place.name}: ${place.distance} km');
           }
           
           return place;
@@ -72,11 +66,9 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
   }
 
   double calculateDistance(NerbyPlacesModel place, Position position) {
-    // Use default coordinates if place coordinates are missing
     double placeLat = place.latitude ?? 0.0;
     double placeLng = place.longitude ?? 0.0;
     
-    // Check if we have valid coordinates
     if (placeLat == 0.0 && placeLng == 0.0) {
       print('Missing coordinates for ${place.name}');
       return 0.0;
@@ -90,7 +82,7 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
         placeLng,
       );
       
-      double distanceInKm = distanceInMeters / 1000; // Convert to km
+      double distanceInKm = distanceInMeters / 1000;
       print('Distance calculated for ${place.name}: $distanceInKm km');
       return distanceInKm;
     } catch (e) {
@@ -126,50 +118,101 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 350, // Increased height for vertical list
-      child: FutureBuilder<List<NerbyPlacesModel>>(
-        future: _nearbyPlacesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, color: Colors.red, size: 40),
-                  SizedBox(height: 8),
-                  Text(
-                    'Алдаа гарлаа: ${snapshot.error}',
-                    style: GoogleFonts.poppins(),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            final nearbyPlaces = snapshot.data!;
-            return ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.vertical, // Changed to vertical scrolling
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-              itemCount: nearbyPlaces.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16), // Changed width to height
-              itemBuilder: (context, index) {
-                return _NearbyPlaceCard(place: nearbyPlaces[index]);
-              },
-            );
-          } else {
-            return Center(
-              child: Text(
-                'Ойролцоо газар олдсонгүй',
-                style: GoogleFonts.poppins(),
-              ),
-            );
-          }
-        },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        //   child: Text(
+        //     'Ойролцоох газрууд',
+        //     style: GoogleFonts.poppins(
+        //       fontSize: 20,
+        //       fontWeight: FontWeight.bold,
+        //       color: Colors.black87,
+        //     ),
+        //   ),
+        // ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 220,
+          child: FutureBuilder<List<NerbyPlacesModel>>(
+            future: _nearbyPlacesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
+              } else if (snapshot.hasError) {
+                return _buildErrorWidget(snapshot.error.toString());
+              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                return _buildPlacesList(snapshot.data!);
+              } else {
+                return _buildEmptyState();
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade400),
       ),
+    );
+  }
+
+  Widget _buildErrorWidget(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, color: Colors.red.shade400, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            'Алдаа гарлаа: $error',
+            style: GoogleFonts.poppins(
+              color: Colors.red.shade700,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.location_off, color: Colors.grey.shade400, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            'Ойролцоо газар олдсонгүй',
+            style: GoogleFonts.poppins(
+              color: Colors.grey.shade600,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlacesList(List<NerbyPlacesModel> places) {
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: places.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: _NearbyPlaceCard(place: places[index]),
+        );
+      },
     );
   }
 }
@@ -177,173 +220,179 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
 class _NearbyPlaceCard extends StatelessWidget {
   final NerbyPlacesModel place;
 
-  const _NearbyPlaceCard({Key? key, required this.place}) : super(key: key);
+  const _NearbyPlaceCard({required this.place});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity, // Take full width for vertical scrolling
-      child: Material(
-        color: Colors.transparent,
+      width: 180,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           onTap: () => _navigateToDetails(context),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(  // Changed to Row to have image on left and details on right
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Зураг
-                ClipRRect(
-                  borderRadius: const BorderRadius.horizontal(
-                    left: Radius.circular(16),
-                  ),
-                  child: place.image != null && place.image!.isNotEmpty
-                      ? Image.network(
-                          place.image!,
-                          height: 120,
-                          width: 120,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            print('Image error for ${place.name}: $error');
-                            return Container(
-                              height: 120,
-                              width: 120,
-                              color: Colors.grey[200],
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.image_not_supported,
-                                    color: Colors.grey,
-                                    size: 30,
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Зураг ачаалсангүй',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        )
-                      : Container(
-                          height: 120,
-                          width: 120,
-                          color: Colors.grey[200],
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.image_not_supported,
-                                color: Colors.grey,
-                                size: 30,
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Зураг байхгүй',
-                                style: TextStyle(fontSize: 10),
-                              ),
-                            ],
-                          ),
-                        ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          place.name ?? 'Нэргүй газар',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          place.location ?? 'Байршил тодорхойгүй',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              color: Colors.green,
-                              size: 16,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              place.distance != null && place.distance! > 0
-                                  ? '${place.distance!.toStringAsFixed(1)} км'
-                                  : 'Ойрхон',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image with gradient overlay
+              Stack(
+                children: [
+                  _buildPlaceImage(),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.7),
+                            Colors.transparent,
                           ],
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: _buildDistanceBadge(),
+                  ),
+                ],
+              ),
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      place.name ?? 'Нэргүй газар',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      place.location ?? 'Байршил тодорхойгүй',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star,
+                          color: Colors.amber.shade600,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          place.rating?.toStringAsFixed(1) ?? '-.-',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.yellow[50],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 16),
-                              SizedBox(width: 4),
-                              Text(
-                                place.rating?.toStringAsFixed(1) ?? '-.-',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 14,
+                          color: Colors.blue.shade400,
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
+  Widget _buildPlaceImage() {
+    return place.image != null && place.image!.isNotEmpty
+        ? Image.network(
+            place.image!,
+            height: 120,
+            width: 180,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildPlaceholderImage();
+            },
+          )
+        : _buildPlaceholderImage();
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      height: 120,
+      width: 180,
+      color: Colors.grey.shade200,
+      child: Center(
+        child: Icon(
+          Icons.image_not_supported,
+          color: Colors.grey.shade400,
+          size: 40,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDistanceBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.location_on,
+            color: Colors.blue.shade600,
+            size: 14,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            place.distance != null && place.distance! > 0
+                ? '${place.distance!.toStringAsFixed(1)} км'
+                : 'Ойрхон',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _navigateToDetails(BuildContext context) {
-    // Navigate to tourist details page similar to recommended places
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -351,8 +400,8 @@ class _NearbyPlaceCard extends StatelessWidget {
           image: place.image ?? 'https://via.placeholder.com/400',
           name: place.name ?? 'Unknown Place',
           location: place.location ?? 'Unknown Location',
-          description: place.description ?? 'No description available for this place.',
-          phoneNumber: '+976 12345678', // Default phone number or get from API if available
+          description: place.description ?? 'No description available.',
+          phoneNumber: '+976 12345678',
           hotelRating: place.rating?.toString() ?? '0.0',
         ),
       ),
