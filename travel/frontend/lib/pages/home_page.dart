@@ -170,7 +170,7 @@ class HomeContent extends StatelessWidget {
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
-              title: "Recommended Places",
+              title: "Санал болгох газрууд",
               onViewAll: () {},
             ),
             const SizedBox(height: 20),
@@ -178,7 +178,7 @@ class HomeContent extends StatelessWidget {
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
-              title: "Nearby",
+              title: "Ойролцоох газрууд",
               onViewAll: () {},
             ),
             const SizedBox(height: 20),
