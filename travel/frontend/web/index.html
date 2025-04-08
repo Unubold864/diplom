@@ -31,6 +31,17 @@
 
   <title>frontend</title>
   <link rel="manifest" href="manifest.json">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKADU6YSAtT6eDVWkObqEO1gZ_rfpvxr4&libraries=places,geometry"></script>
+  <script>
+    // Initialize maps when Flutter is ready
+    window.addEventListener('load', function() {
+      if (google && google.maps) {
+        console.log('Google Maps API loaded successfully');
+      } else {
+        console.error('Google Maps API failed to load');
+      }
+    });
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
