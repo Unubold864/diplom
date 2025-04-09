@@ -74,7 +74,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: ${response.body}')),
+          SnackBar(content: Text('Нэвтрэхэд алдаа гарлаа: ${response.body}')),
         );
       }
     } catch (e) {
@@ -95,7 +95,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
             const SizedBox(height: 40),
             // Welcome Text
             const Text(
-              'Welcome back!',
+              'Тавтай морилно уу!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -104,7 +104,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Please login to continue',
+              'Нэвтрэх талбарт утгаа оруулан нэвтрэнэ үү!',
               style: TextStyle(fontSize: 14, color: Colors.blue),
             ),
             const SizedBox(height: 40),
@@ -149,7 +149,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                         ),
                         labelColor: Colors.blue,
                         unselectedLabelColor: Colors.grey,
-                        tabs: const [Tab(text: 'Login'), Tab(text: 'Signup')],
+                        tabs: const [Tab(text: 'Нэвтрэх'), Tab(text: 'Бүртгүүлэх')],
                         onTap: (index) {
                           if (index == 1) {
                             // Navigate to signup
@@ -175,7 +175,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                             children: [
                               // Email Field
                               const Text(
-                                'Email Address',
+                                'Мейл хаяг',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -186,7 +186,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                               TextField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
-                                  hintText: 'Enter your email',
+                                  hintText: 'Мейл хаягаа оруулна уу',
                                   hintStyle: TextStyle(
                                     color: Colors.grey.shade400,
                                   ),
@@ -211,7 +211,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
                               // Password Field
                               const Text(
-                                'Password',
+                                'Нууц үг',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -223,7 +223,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 controller: _passwordController,
                                 obscureText: _obscureText,
                                 decoration: InputDecoration(
-                                  hintText: 'Enter your password',
+                                  hintText: 'Нууц үгээ оруулна уу',
                                   hintStyle: TextStyle(
                                     color: Colors.grey.shade400,
                                   ),
@@ -279,7 +279,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                         MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
-                                    'Forgot Password?',
+                                    'Нууц үгээ мартсан уу?',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.blue,
@@ -303,7 +303,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                     elevation: 0,
                                   ),
                                   child: const Text(
-                                    'LOGIN',
+                                    'НЭВТРЭХ',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -317,7 +317,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                               // Sign in with
                               Center(
                                 child: Text(
-                                  'SIGN IN WITH',
+                                  'нэвтрэх',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey.shade500,

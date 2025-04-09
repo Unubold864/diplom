@@ -86,7 +86,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
             const SizedBox(height: 40),
             // Welcome Text
             const Text(
-              'Create an Account',
+              'Бүртгүүлэх',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Sign up to get started',
+              'Бүртгүүлэх талбарт утгаа оруулан бүртгүүлэн үү!',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.blue,
@@ -167,7 +167,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                               children: [
                                 // Name Field
                                 const Text(
-                                  'Full Name',
+                                  'Нэр',
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -178,7 +178,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                 TextFormField(
                                   controller: _nameController,
                                   decoration: InputDecoration(
-                                    hintText: 'Enter your full name',
+                                    hintText: 'Нэр ээ оруулна уу',
                                     hintStyle: TextStyle(color: Colors.grey.shade400),
                                     prefixIcon: const Icon(
                                       Icons.person_outline,
@@ -206,7 +206,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                 
                                 // Email Field
                                 const Text(
-                                  'Email Address',
+                                  'Мейл хаяг',
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -217,7 +217,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                 TextFormField(
                                   controller: _emailController,
                                   decoration: InputDecoration(
-                                    hintText: 'Enter your email',
+                                    hintText: 'Мейл хаяг',
                                     hintStyle: TextStyle(color: Colors.grey.shade400),
                                     prefixIcon: const Icon(
                                       Icons.email_outlined,
@@ -237,7 +237,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                   keyboardType: TextInputType.emailAddress,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter your email';
+                                      return 'Мейл хаяг аа оруулна уу';
                                     }
                                     if (!value.contains('@')) {
                                       return 'Please enter a valid email';
@@ -249,7 +249,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                 
                                 // Password Field
                                 const Text(
-                                  'Password',
+                                  'Нууц үг',
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -261,7 +261,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                   controller: _passwordController,
                                   obscureText: _obscurePassword,
                                   decoration: InputDecoration(
-                                    hintText: 'Enter your password',
+                                    hintText: 'Нууц үгээ оруулна уу',
                                     hintStyle: TextStyle(color: Colors.grey.shade400),
                                     prefixIcon: const Icon(
                                       Icons.lock_outline,
@@ -303,7 +303,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                 
                                 // Confirm Password Field
                                 const Text(
-                                  'Confirm Password',
+                                  'Нууц үг давтах',
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -315,7 +315,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                   controller: _confirmPasswordController,
                                   obscureText: _obscureConfirmPassword,
                                   decoration: InputDecoration(
-                                    hintText: 'Confirm your password',
+                                    hintText: 'Нууц үгээ дахин оруулна уу',
                                     hintStyle: TextStyle(color: Colors.grey.shade400),
                                     prefixIcon: const Icon(
                                       Icons.lock_outline,
@@ -374,7 +374,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                       elevation: 0,
                                     ),
                                     child: const Text(
-                                      'SIGN UP',
+                                      'БҮРТГҮҮЛЭХ',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -390,7 +390,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Already have an account?',
+                                      'Бүртгэл ээ аль хэдийнээ үүсгэсэн үү?',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade600,
@@ -401,7 +401,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                                         Navigator.pop(context);
                                       },
                                       child: const Text(
-                                        'Login',
+                                        'Нэвтрэх',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
