@@ -131,7 +131,7 @@ class HomeContent extends StatelessWidget {
           ),
         ),
         title: Text(
-          "Diplom",
+          "Диплом",
           style: GoogleFonts.poppins(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -209,7 +209,7 @@ class HomeContent extends StatelessWidget {
         TextButton(
           onPressed: onViewAll,
           child: Text(
-            "View All",
+            "Бүгдийг харах",
             style: GoogleFonts.poppins(
               fontSize: 14,
               color: persianGreen,

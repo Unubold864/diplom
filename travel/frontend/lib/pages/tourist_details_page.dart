@@ -155,7 +155,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
 
                   // About Section
                   Text(
-                    "About",
+                    "Тайлбар",
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -175,7 +175,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
 
                   // Features
                   Text(
-                    "Features",
+                    "Нэмэлт",
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -188,14 +188,14 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                     crossAxisCount: 4,
                     childAspectRatio: 0.8,
                     children: [
-                      _buildFeatureItem(Icons.wifi, "Wi-Fi"),
-                      _buildFeatureItem(Icons.restaurant, "Restaurant"),
-                      _buildFeatureItem(Icons.pool, "Pool"),
-                      _buildFeatureItem(Icons.local_parking, "Parking"),
-                      _buildFeatureItem(Icons.ac_unit, "AC"),
-                      _buildFeatureItem(Icons.beach_access, "Beach"),
-                      _buildFeatureItem(Icons.fitness_center, "Gym"),
-                      _buildFeatureItem(Icons.spa, "Spa"),
+                      _buildFeatureItem(Icons.wifi, "Интернет"),
+                      _buildFeatureItem(Icons.restaurant, "Ресторан"),
+                      _buildFeatureItem(Icons.pool, "Усан сан"),
+                      _buildFeatureItem(Icons.local_parking, "Зогсоол"),
+                      //_buildFeatureItem(Icons.ac_unit, "AC"),
+                      //_buildFeatureItem(Icons.beach_access, "Beach"),
+                      _buildFeatureItem(Icons.fitness_center, "Жим"),
+                      _buildFeatureItem(Icons.spa, "Спа"),
                     ],
                   ),
 
@@ -203,7 +203,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
 
                   // Gallery
                   Text(
-                    "Gallery",
+                    "Зураг",
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -233,7 +233,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
 
                   // Contact Host
                   Text(
-                    "Contact Host",
+                    "Холбогдох утас",
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -259,7 +259,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "John Smith",
+                                "Өнөболд",
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -322,7 +322,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   ),
                 ),
                 Text(
-                  "per night",
+                  "хоногийн үнэ",
                   style: GoogleFonts.poppins(
                     color: Colors.grey[600],
                   ),
@@ -342,7 +342,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                 ),
               ),
               child: Text(
-                "Book Now",
+                "Захиалах",
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

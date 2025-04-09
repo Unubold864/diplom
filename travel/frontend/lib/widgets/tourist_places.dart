@@ -16,10 +16,10 @@ class TouristPlacesModel {
 }
 
 List<TouristPlacesModel> touristPlaces = [
-  TouristPlacesModel(name: "All", image: "assets/icons/mountain.png"),
-  TouristPlacesModel(name: "Hiking", image: "assets/icons/beach.png"),
-  TouristPlacesModel(name: "Forest", image: "assets/icons/desert.png"),
-  TouristPlacesModel(name: "Camp", image: "assets/icons/forest.png"),
+  TouristPlacesModel(name: "Бүгд", image: "assets/icons/mountain.png"),
+  TouristPlacesModel(name: "Явган аялал", image: "assets/icons/beach.png"),
+  TouristPlacesModel(name: "Ой мод", image: "assets/icons/desert.png"),
+  TouristPlacesModel(name: "Амралтын газар", image: "assets/icons/forest.png"),
 ];
 
 void main() {
