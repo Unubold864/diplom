@@ -75,14 +75,14 @@ class _TouristPlacesState extends State<TouristPlaces> {
 
   IconData _getIconForCategory(String name) {
     switch (name.toLowerCase()) {
-      case 'all':
-        return Icons.explore;
-      case 'hiking':
-        return Icons.directions_walk;
-      case 'forest':
-        return Icons.park;
-      case 'camp':
-        return Icons.cottage;
+      case 'hotel':
+        return Icons.hotel;
+      case 'car':
+        return Icons.car_rental;
+      case 'flight':
+        return Icons.flight;
+      case 'train':
+        return Icons.train;
       default:
         return Icons.location_on;
     }
