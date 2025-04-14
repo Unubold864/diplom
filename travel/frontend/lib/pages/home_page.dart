@@ -162,18 +162,22 @@ class HomeContent extends StatelessWidget {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: 16),
             child: CircleAvatar(
               backgroundColor: Colors.white24,
               radius: 16,
-              child: Icon(Icons.notifications_active, color: Colors.white, size: 18),
+              child: Icon(
+                Icons.notifications_outlined,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Row(
               children: [
                 Expanded(
@@ -185,13 +189,13 @@ class HomeContent extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 12),
                         const Icon(Icons.search, color: Colors.grey),
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextField(
                             decoration: InputDecoration(
-                              hintText: "Search here...",
+                              hintText: "Search Hotel, Flights etc...",
                               border: InputBorder.none,
                               hintStyle: TextStyle(
                                 color: Colors.grey,
