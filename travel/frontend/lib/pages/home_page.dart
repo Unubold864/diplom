@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/profile_page.dart';
-import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:frontend/widgets/location_card.dart';
 import 'package:frontend/widgets/nerby_places.dart';
 import 'package:frontend/widgets/reccommended_places.dart';
 import 'package:frontend/widgets/tourist_places.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ionicons_named/ionicons_named.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -77,7 +75,8 @@ class _HomePageState extends State<HomePage> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? persianGreen.withOpacity(0.1) : Colors.transparent,
+          color:
+              isSelected ? persianGreen.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -117,46 +116,108 @@ class HomeContent extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-        ),
-        title: Text(
-          "Диплом",
-          style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+        backgroundColor: const Color(0xFF1FBCB8), // Teal color from the image
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            const Icon(
+              Icons.location_on_outlined,
+              color: Colors.white,
+              size: 18,
+            ),
+            const SizedBox(width: 4),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Location",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      "New York, USA",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
         actions: [
-          CustomIconButton(
-            icon: Icon(
-              ionicons['search_outline'],
-              color: persianGreen,
-              size: 24,
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: CircleAvatar(
+              backgroundColor: Colors.white24,
+              radius: 16,
+              child: Icon(Icons.swap_horiz, color: Colors.white, size: 18),
             ),
-            onTap: () {},
-          ),
-          CustomIconButton(
-            icon: Icon(
-              ionicons['notifications_outline'],
-              color: persianGreen,
-              size: 24,
-            ),
-            showBadge: true,
-            onTap: () {},
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 10),
+                        const Icon(Icons.search, color: Colors.grey),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: "Search here...",
+                              border: InputBorder.none,
+                              hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.tune, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
