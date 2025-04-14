@@ -166,7 +166,7 @@ class HomeContent extends StatelessWidget {
             child: CircleAvatar(
               backgroundColor: Colors.white24,
               radius: 16,
-              child: Icon(Icons.swap_horiz, color: Colors.white, size: 18),
+              child: Icon(Icons.notifications_active, color: Colors.white, size: 18),
             ),
           ),
         ],
