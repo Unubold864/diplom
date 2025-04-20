@@ -5,9 +5,9 @@ class NerbyPlacesModel {
   final double? rating;
   final double? latitude;
   final double? longitude;
-  final String? description; // Added description field
-  final String? phoneNumber; 
-  final List<String> images; // Added phone number field
+  final String? description;
+  final String? phoneNumber;
+  final List<String> images;
   double? distance;
 
   NerbyPlacesModel({
@@ -24,46 +24,59 @@ class NerbyPlacesModel {
   });
 
   factory NerbyPlacesModel.fromJson(Map<String, dynamic> json) {
-    print('Parsing JSON: $json'); // Debug print
-    
-    // Extract image URL and debug it
-    String? imageUrl = json['image'];
-    print('Original image URL: $imageUrl');
-    
-    // Ensure the image URL is properly formed
+    // Process main image
+    String? imageUrl = json['image'] is String ? json['image'] : null;
     if (imageUrl != null && !imageUrl.startsWith('http')) {
-      // If the URL is relative, convert it to absolute
-      // Modify this base URL to match your backend
-      if (imageUrl.startsWith('/')) {
-        imageUrl = 'http://127.0.0.1:8000$imageUrl';
-      } else {
-        imageUrl = 'http://127.0.0.1:8000/$imageUrl';
-      }
-      print('Corrected image URL: $imageUrl');
+      imageUrl = 'http://127.0.0.1:8000${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
     }
 
-    // Parse distance from JSON if it exists
+    // Process gallery images
+    List<String> galleryImages = [];
+    if (json['images'] != null && json['images'] is List) {
+      for (var img in json['images']) {
+        if (img is String) {
+          String imgUrl = img;
+          if (!imgUrl.startsWith('http')) {
+            imgUrl = 'http://127.0.0.1:8000${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
+          }
+          galleryImages.add(imgUrl);
+        } else if (img is Map && img['image'] is String) {
+          String imgUrl = img['image'];
+          if (!imgUrl.startsWith('http')) {
+            imgUrl = 'http://127.0.0.1:8000${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
+          }
+          galleryImages.add(imgUrl);
+        }
+      }
+    }
+
+    // Process distance
     double? distanceValue;
     if (json['distance'] != null) {
       try {
-        distanceValue = double.parse(json['distance'].toString());
-        print('Distance from API: $distanceValue km');
+        distanceValue = json['distance'] is double 
+            ? json['distance'] 
+            : double.tryParse(json['distance'].toString());
       } catch (e) {
         print('Error parsing distance: $e');
       }
     }
 
     return NerbyPlacesModel(
-      name: json['name'],
-      location: json['location'],
+      name: json['name']?.toString(),
+      location: json['location']?.toString(),
       image: imageUrl,
-      rating: json['rating'] != null ? double.parse(json['rating'].toString()) : null,
-      latitude: json['latitude'] != null ? double.parse(json['latitude'].toString()) : null,
-      longitude: json['longitude'] != null ? double.parse(json['longitude'].toString()) : null,
-      description: json['description'], // Parse description from JSON
-      phoneNumber: json['phone_number'], // Parse phone number from JSON
-      distance: distanceValue, // Set the distance from API
-      images: (json['images'] as List<dynamic>?)?.cast<String>() ?? [],
+      rating: json['rating'] is double ? json['rating'] : 
+             json['rating'] is int ? json['rating'].toDouble() : 
+             json['rating'] != null ? double.tryParse(json['rating'].toString()) : null,
+      latitude: json['latitude'] is double ? json['latitude'] : 
+               json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] is double ? json['longitude'] : 
+                json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+      description: json['description']?.toString(),
+      phoneNumber: json['phone_number']?.toString(),
+      distance: distanceValue,
+      images: galleryImages,
     );
   }
 }

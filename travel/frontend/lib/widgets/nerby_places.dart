@@ -383,19 +383,26 @@ class _NearbyPlaceCard extends StatelessWidget {
   }
 
   void _navigateToDetails(BuildContext context) {
+    // Combine all images (main + gallery)
+    final allImages = [
+      if (place.image != null && place.image!.isNotEmpty) place.image!,
+      ...place.images.where((img) => img.isNotEmpty),
+    ];
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder:
             (context) => TouristDetailsPage(
-              image: place.image ?? 'https://via.placeholder.com/400',
-              images: place.images,
+              image:
+                  place.image ?? (allImages.isNotEmpty ? allImages.first : ''),
+              images: allImages,
               name: place.name ?? 'Unknown Place',
               location: place.location ?? 'Unknown Location',
-              description: place.description ?? 'No description available.',
-              phoneNumber: place.phoneNumber ?? '+976 12345678',
-              hotelRating: place.rating?.toString() ?? '0.0',
+              description: place.description ?? 'No description available',
+              phoneNumber: place.phoneNumber ?? 'Not available',
               rating: place.rating ?? 0.0,
+              hotelRating: place.rating?.toString() ?? '0.0',
             ),
       ),
     );
