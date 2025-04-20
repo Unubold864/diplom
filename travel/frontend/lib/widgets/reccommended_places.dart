@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReccommendedPlaces extends StatefulWidget {
   const ReccommendedPlaces({super.key});
@@ -15,171 +16,328 @@ class ReccommendedPlaces extends StatefulWidget {
 
 class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
   late Future<List<ReccommendedPlacesModel>> _recommendedPlacesFuture;
+  List<int> _likedPlacesIds = [];
 
   @override
   void initState() {
     super.initState();
-    _recommendedPlacesFuture = fetchRecommendedPlaces();
+    _recommendedPlacesFuture = _loadRecommendedPlaces();
+    _loadLikedPlaces();
   }
 
-  Future<List<ReccommendedPlacesModel>> fetchRecommendedPlaces() async {
-    final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
-      headers: {'Accept-Charset': 'utf-8'}, // Ensure UTF-8 encoding
-    );
+  Future<void> _loadLikedPlaces() async {
+    final prefs = await SharedPreferences.getInstance();
+    final likedIds = prefs.getStringList('likedPlaces') ?? [];
+    setState(() {
+      _likedPlacesIds = likedIds.map(int.parse).toList();
+    });
+  }
 
-    if (response.statusCode == 200) {
-      // Use utf8.decode to properly decode the response body with UTF-8
-      List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-      return data
-          .map((item) => ReccommendedPlacesModel.fromJson(item))
-          .toList();
-    } else {
-      throw Exception('Failed to load recommended places');
+  Future<void> _toggleLike(int placeId) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (_likedPlacesIds.contains(placeId)) {
+        _likedPlacesIds.remove(placeId);
+      } else {
+        _likedPlacesIds.add(placeId);
+      }
+    });
+    await prefs.setStringList(
+      'likedPlaces',
+      _likedPlacesIds.map((id) => id.toString()).toList(),
+    );
+  }
+
+  Future<List<ReccommendedPlacesModel>> _loadRecommendedPlaces() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
+        headers: {'Accept-Charset': 'utf-8'},
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+        return data
+            .map((item) => ReccommendedPlacesModel.fromJson(item))
+            .toList();
+      } else {
+        throw Exception('Failed to load: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch places: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 260,
-      child: FutureBuilder<List<ReccommendedPlacesModel>>(
-        future: _recommendedPlacesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final recommendedPlaces = snapshot.data!;
-            return ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => _RecommendedPlaceCard(
-                place: recommendedPlaces[index],
-              ),
-              separatorBuilder: (_, __) => const SizedBox(width: 16),
-              itemCount: recommendedPlaces.length,
-            );
-          } else {
-            return const Center(child: Text('No recommended places available.'));
-          }
-        },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Text(
+            'Recommended Places',
+            style: GoogleFonts.poppins(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 280,
+          child: FutureBuilder<List<ReccommendedPlacesModel>>(
+            future: _recommendedPlacesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
+              } else if (snapshot.hasError) {
+                return _buildErrorWidget(snapshot.error.toString());
+              } else if (snapshot.hasData) {
+                return _buildPlacesList(snapshot.data!);
+              } else {
+                return _buildEmptyState();
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(_persianGreen),
       ),
     );
   }
+
+  Widget _buildErrorWidget(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, color: Colors.red, size: 40),
+          const SizedBox(height: 10),
+          Text(
+            'Failed to load places',
+            style: GoogleFonts.poppins(color: Colors.red),
+          ),
+          Text(
+            error,
+            style: GoogleFonts.poppins(color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off, color: Colors.grey, size: 40),
+          const SizedBox(height: 10),
+          Text(
+            'No recommended places found',
+            style: GoogleFonts.poppins(color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlacesList(List<ReccommendedPlacesModel> places) {
+    return ListView.separated(
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemBuilder: (context, index) => _RecommendedPlaceCard(
+        place: places[index],
+        isLiked: _likedPlacesIds.contains(places[index].id),
+        onLikePressed: () => _toggleLike(places[index].id as int),
+      ),
+      separatorBuilder: (_, __) => const SizedBox(width: 16),
+      itemCount: places.length,
+    );
+  }
+
+  // Define Persian Green as the primary color
+  final Color _persianGreen = const Color(0xFF00A896);
 }
 
 class _RecommendedPlaceCard extends StatelessWidget {
   final ReccommendedPlacesModel place;
+  final bool isLiked;
+  final VoidCallback onLikePressed;
 
   const _RecommendedPlaceCard({
     Key? key,
     required this.place,
+    required this.isLiked,
+    required this.onLikePressed,
   }) : super(key: key);
-
-  // Define Persian Green as the primary color
-  final Color persianGreen = const Color(0xFF00A896);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 240,
-      child: Material(
-        color: Colors.transparent,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () => _navigateToDetails(context),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
+          child: Stack(
+            children: [
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Image
+                  // Image with gradient overlay
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      place.image,
-                      width: double.maxFinite,
-                      height: 160,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 160,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.error_outline, color: Colors.grey),
-                        );
-                      },
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: Stack(
+                      children: [
+                        _buildPlaceImage(),
+                        _buildImageGradient(),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  // Title and Rating
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title
+                        Text(
                           place.name,
                           style: GoogleFonts.poppins(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      Icon(
-                        Icons.star,
-                        color: Colors.yellow.shade700,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        place.rating.toString(),
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey.shade700,
+                        const SizedBox(height: 8),
+                        // Rating and Location
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: Colors.amber[600],
+                              size: 18,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              place.rating.toString(),
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const Spacer(),
+                            Icon(
+                              ionicons['location_outline'],
+                              color: Colors.grey[600],
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                place.location,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Location
-                  Row(
-                    children: [
-                      Icon(
-                        ionicons['location_outline'],
-                        color: persianGreen,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          place.location,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
+              // Like button
+              Positioned(
+                top: 10,
+                right: 10,
+                child: IconButton(
+                  icon: Icon(
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? Colors.red : Colors.white,
+                    size: 24,
+                  ),
+                  onPressed: onLikePressed,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceImage() {
+    return Image.network(
+      place.image,
+      width: double.maxFinite,
+      height: 160,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          height: 160,
+          color: Colors.grey[200],
+          child: Center(
+            child: Icon(Icons.photo, color: Colors.grey[400], size: 40),
+          ),
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          height: 160,
+          color: Colors.grey[200],
+          child: Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildImageGradient() {
+    return Positioned.fill(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              Colors.black.withOpacity(0.3),
+            ],
+            stops: const [0.6, 1],
           ),
         ),
       ),
@@ -196,7 +354,8 @@ class _RecommendedPlaceCard extends StatelessWidget {
           location: place.location,
           description: place.description,
           phoneNumber: place.phoneNumber,
-          hotelRating: place.hotelRating, rating: 5,
+          hotelRating: place.hotelRating,
+          rating: place.rating,
         ),
       ),
     );

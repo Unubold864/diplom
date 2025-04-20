@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/profile_page.dart';
+import 'package:frontend/pages/saved_page.dart';
 import 'package:frontend/widgets/location_card.dart';
 import 'package:frontend/widgets/nerby_places.dart';
 import 'package:frontend/widgets/reccommended_places.dart';
-import 'package:frontend/widgets/tourist_places.dart';
+//import 'package:frontend/widgets/tourist_places.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const HomeContent(),
     const Scaffold(body: Center(child: Text('Notifications Page'))),
-    const Scaffold(body: Center(child: Text('Saved Page'))),
+    const SavedPage(),
     const ProfilePage(),
   ];
 

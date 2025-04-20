@@ -30,6 +30,8 @@ class ReccommendedPlacesModel {
     );
   }
 
+  Object? get id => null;
+
   Map<String, dynamic> toJson() {
     return {
       'name': name,
