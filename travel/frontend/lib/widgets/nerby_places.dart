@@ -41,18 +41,21 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
         final utf8Decoded = utf8.decode(response.bodyBytes);
         List<dynamic> data = json.decode(utf8Decoded);
 
-        List<NerbyPlacesModel> places = data.map((item) {
-          print('Place item: $item');
-          var place = NerbyPlacesModel.fromJson(item);
-          
-          if (place.distance == null) {
-            place.distance = calculateDistance(place, position);
-            print('Calculated distance for ${place.name}: ${place.distance} km');
-          }
-          
-          return place;
-        }).toList();
-        
+        List<NerbyPlacesModel> places =
+            data.map((item) {
+              print('Place item: $item');
+              var place = NerbyPlacesModel.fromJson(item);
+
+              if (place.distance == null) {
+                place.distance = calculateDistance(place, position);
+                print(
+                  'Calculated distance for ${place.name}: ${place.distance} km',
+                );
+              }
+
+              return place;
+            }).toList();
+
         return places;
       } else {
         throw Exception(
@@ -68,12 +71,12 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
   double calculateDistance(NerbyPlacesModel place, Position position) {
     double placeLat = place.latitude ?? 0.0;
     double placeLng = place.longitude ?? 0.0;
-    
+
     if (placeLat == 0.0 && placeLng == 0.0) {
       print('Missing coordinates for ${place.name}');
       return 0.0;
     }
-    
+
     try {
       double distanceInMeters = Geolocator.distanceBetween(
         position.latitude,
@@ -81,7 +84,7 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
         placeLat,
         placeLng,
       );
-      
+
       double distanceInKm = distanceInMeters / 1000;
       print('Distance calculated for ${place.name}: $distanceInKm km');
       return distanceInKm;
@@ -228,9 +231,7 @@ class _NearbyPlaceCard extends StatelessWidget {
       width: 180,
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
@@ -260,11 +261,7 @@ class _NearbyPlaceCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    child: _buildDistanceBadge(),
-                  ),
+                  Positioned(bottom: 8, left: 8, child: _buildDistanceBadge()),
                 ],
               ),
               // Content
@@ -330,14 +327,14 @@ class _NearbyPlaceCard extends StatelessWidget {
   Widget _buildPlaceImage() {
     return place.image != null && place.image!.isNotEmpty
         ? Image.network(
-            place.image!,
-            height: 120,
-            width: 180,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return _buildPlaceholderImage();
-            },
-          )
+          place.image!,
+          height: 120,
+          width: 180,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildPlaceholderImage();
+          },
+        )
         : _buildPlaceholderImage();
   }
 
@@ -363,20 +360,13 @@ class _NearbyPlaceCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4),
         ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.location_on,
-            color: Colors.blue.shade600,
-            size: 14,
-          ),
+          Icon(Icons.location_on, color: Colors.blue.shade600, size: 14),
           const SizedBox(width: 4),
           Text(
             place.distance != null && place.distance! > 0
@@ -396,14 +386,17 @@ class _NearbyPlaceCard extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TouristDetailsPage(
-          image: place.image ?? 'https://via.placeholder.com/400',
-          name: place.name ?? 'Unknown Place',
-          location: place.location ?? 'Unknown Location',
-          description: place.description ?? 'No description available.',
-          phoneNumber: '+976 12345678',
-          hotelRating: place.rating?.toString() ?? '0.0', rating: 5,
-        ),
+        builder:
+            (context) => TouristDetailsPage(
+              image: place.image ?? 'https://via.placeholder.com/400',
+              images: place.images,
+              name: place.name ?? 'Unknown Place',
+              location: place.location ?? 'Unknown Location',
+              description: place.description ?? 'No description available.',
+              phoneNumber: place.phoneNumber ?? '+976 12345678',
+              hotelRating: place.rating?.toString() ?? '0.0',
+              rating: place.rating ?? 0.0,
+            ),
       ),
     );
   }

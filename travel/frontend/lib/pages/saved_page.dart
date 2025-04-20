@@ -272,19 +272,20 @@ class _SavedPageState extends State<SavedPage> {
   }
 
   void _navigateToDetails(BuildContext context, ReccommendedPlacesModel place) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TouristDetailsPage(
-          image: place.image,
-          name: place.name,
-          location: place.location,
-          description: place.description,
-          phoneNumber: place.phoneNumber,
-          hotelRating: place.hotelRating,
-          rating: place.rating,
-        ),
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => TouristDetailsPage(
+        image: place.image,  // Main image
+        images: place.images,  // Additional images
+        name: place.name,
+        location: place.location,
+        description: place.description,
+        phoneNumber: place.phoneNumber,
+        hotelRating: place.hotelRating,
+        rating: place.rating,
       ),
-    );
-  }
+    ),
+  );
+}
 }

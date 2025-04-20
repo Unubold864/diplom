@@ -54,7 +54,7 @@ class LoginView(APIView):
         
 
 class RecommendedPlaceListView(generics.ListCreateAPIView):
-    queryset = RecommendedPlace.objects.all()
+    queryset = RecommendedPlace.objects.all().prefetch_related('images')
     serializer_class = RecommendedPlaceSerializer
     
 

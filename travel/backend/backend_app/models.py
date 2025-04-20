@@ -63,9 +63,16 @@ class RecommendedPlace(models.Model):
     description = models.TextField(default="Unknown")  # New field for description
     phone_number = models.CharField(max_length=20,default="Unknown")  # New field for phone number
     hotel_rating = models.CharField(max_length=50,default="Unknown")  # New field for hotel rating
-    
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
     
     def __str__(self):
         return self.location
+    
+    
+class PlaceImage(models.Model):
+    place = models.ForeignKey(RecommendedPlace, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='place_images/')
+    
+    def __str__(self):
+        return f"Image for {self.place.name}"

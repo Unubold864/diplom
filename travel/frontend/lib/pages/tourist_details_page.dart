@@ -5,6 +5,7 @@ class TouristDetailsPage extends StatefulWidget {
   const TouristDetailsPage({
     super.key,
     required this.image,
+    required this.images, // New parameter for gallery images
     required this.name,
     required this.location,
     required this.description,
@@ -13,7 +14,8 @@ class TouristDetailsPage extends StatefulWidget {
     required this.hotelRating,
   });
 
-  final String image;
+  final String image; // Main image
+  final List<String> images; // Gallery images
   final String name;
   final String location;
   final String description;
@@ -30,6 +32,23 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
   final Color backgroundColor = Colors.white;
   final Color textColor = Colors.black87;
   final Color secondaryTextColor = Colors.grey[600]!;
+
+  void _showImageDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: InteractiveViewer(
+          panEnabled: true,
+          minScale: 0.5,
+          maxScale: 3.0,
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,35 +242,43 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   const SizedBox(height: 24),
 
                   // Gallery
-                  Text(
-                    "Зураг",
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
+                  if (widget.images.isNotEmpty) ...[
+                    Text(
+                      "Зураг",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 100,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 4,
-                      separatorBuilder: (_, __) => const SizedBox(width: 10),
-                      itemBuilder: (_, index) => ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: Image.network(
-                            widget.image,
-                            fit: BoxFit.cover,
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 100,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.images.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 10),
+                        itemBuilder: (_, index) => GestureDetector(
+                          onTap: () => _showImageDialog(context, widget.images[index]),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Image.network(
+                                widget.images[index],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  color: Colors.grey[200],
+                                  child: const Icon(Icons.broken_image, size: 30),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                  ],
 
                   // Divider
                   Divider(color: Colors.grey[300], height: 1),

@@ -339,19 +339,20 @@ class _RecommendedPlaceCard extends StatelessWidget {
   }
 
   void _navigateToDetails(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TouristDetailsPage(
-          image: place.image,
-          name: place.name,
-          location: place.location,
-          description: place.description,
-          phoneNumber: place.phoneNumber,
-          hotelRating: place.hotelRating,
-          rating: place.rating,
-        ),
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => TouristDetailsPage(
+        image: place.image, // Main image
+        images: place.images, // Gallery images
+        name: place.name,
+        location: place.location,
+        description: place.description,
+        phoneNumber: place.phoneNumber,
+        hotelRating: place.hotelRating,
+        rating: place.rating,
       ),
-    );
-  }
+    ),
+  );
+}
 }

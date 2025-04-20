@@ -6,7 +6,8 @@ class NerbyPlacesModel {
   final double? latitude;
   final double? longitude;
   final String? description; // Added description field
-  final String? phoneNumber;  // Added phone number field
+  final String? phoneNumber; 
+  final List<String> images; // Added phone number field
   double? distance;
 
   NerbyPlacesModel({
@@ -19,6 +20,7 @@ class NerbyPlacesModel {
     this.description,
     this.phoneNumber,
     this.distance,
+    this.images = const [],
   });
 
   factory NerbyPlacesModel.fromJson(Map<String, dynamic> json) {
@@ -61,6 +63,7 @@ class NerbyPlacesModel {
       description: json['description'], // Parse description from JSON
       phoneNumber: json['phone_number'], // Parse phone number from JSON
       distance: distanceValue, // Set the distance from API
+      images: (json['images'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 }

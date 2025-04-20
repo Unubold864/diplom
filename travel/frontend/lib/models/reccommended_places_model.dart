@@ -9,6 +9,7 @@ class ReccommendedPlacesModel {
   final String description;
   final String phoneNumber;
   final String hotelRating;
+  final List<String> images;
 
   ReccommendedPlacesModel({
     required this.id,
@@ -19,9 +20,27 @@ class ReccommendedPlacesModel {
     required this.description,
     required this.phoneNumber,
     required this.hotelRating,
+    this.images = const [],
   });
 
   factory ReccommendedPlacesModel.fromJson(Map<String, dynamic> json) {
+    // Handle image URLs
+    String mainImage = json['image'] ?? '';
+    if (mainImage.isNotEmpty && !mainImage.startsWith('http')) {
+      mainImage = 'http://127.0.0.1:8000${mainImage.startsWith('/') ? '' : '/'}$mainImage';
+    }
+
+    // Process gallery images
+    List<String> galleryImages = [];
+    if (json['images'] != null) {
+      for (var img in json['images']) {
+        String imgUrl = img['image'];
+        if (!imgUrl.startsWith('http')) {
+          imgUrl = 'http://127.0.0.1:8000${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
+        }
+        galleryImages.add(imgUrl);
+      }
+    }
     return ReccommendedPlacesModel(
       id: json['id']?.toString() ?? const Uuid().v4(),
       name: json['name'] ?? 'Unknown Place',
@@ -31,6 +50,7 @@ class ReccommendedPlacesModel {
       description: json['description'] ?? 'No description available',
       phoneNumber: json['phone_number'] ?? 'Not available',
       hotelRating: json['hotel_rating'] ?? 'Not rated',
+      images: (json['images'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 
