@@ -17,8 +17,6 @@ class ReccommendedPlaces extends StatefulWidget {
 class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
   late Future<List<ReccommendedPlacesModel>> _recommendedPlacesFuture;
   List<String> _likedPlacesIds = [];
-
-  // Define Persian Green as the primary color
   final Color _persianGreen = const Color(0xFF00A896);
 
   @override
@@ -36,6 +34,8 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
   }
 
   Future<void> _toggleLike(String placeId) async {
+    if (placeId.isEmpty) return;
+    
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       if (_likedPlacesIds.contains(placeId)) {
@@ -56,11 +56,9 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-        return data
-            .map((item) => ReccommendedPlacesModel.fromJson(item))
-            .toList();
+        return data.map((item) => ReccommendedPlacesModel.fromJson(item)).toList();
       } else {
-        throw Exception('Failed to load: ${response.statusCode}');
+        throw Exception('Failed to load places: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to fetch places: $e');
@@ -80,7 +78,7 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, color: Colors.red, size: 40),
+          const Icon(Icons.error_outline, color: Colors.red, size: 40),
           const SizedBox(height: 10),
           Text(
             'Failed to load places',
@@ -101,7 +99,7 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off, color: Colors.grey, size: 40),
+          const Icon(Icons.search_off, color: Colors.grey, size: 40),
           const SizedBox(height: 10),
           Text(
             'No recommended places found',
@@ -119,12 +117,11 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemBuilder: (context, index) {
         final place = places[index];
-        final placeId = place.id.toString(); // Ensure ID is string
         return _RecommendedPlaceCard(
-          key: ValueKey(placeId), // Crucial: Add unique key
+          key: ValueKey(place.id),
           place: place,
-          isLiked: _likedPlacesIds.contains(placeId),
-          onLikePressed: () => _toggleLike(placeId),
+          isLiked: _likedPlacesIds.contains(place.id),
+          onLikePressed: () => _toggleLike(place.id),
         );
       },
       separatorBuilder: (_, __) => const SizedBox(width: 16),
@@ -176,7 +173,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
   final VoidCallback onLikePressed;
 
   const _RecommendedPlaceCard({
-    required Key key, // Changed to required
+    required Key key,
     required this.place,
     required this.isLiked,
     required this.onLikePressed,

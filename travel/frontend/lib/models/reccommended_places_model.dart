@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 class ReccommendedPlacesModel {
   final String id;
   final String name;
@@ -21,7 +23,7 @@ class ReccommendedPlacesModel {
 
   factory ReccommendedPlacesModel.fromJson(Map<String, dynamic> json) {
     return ReccommendedPlacesModel(
-      id: json['id']?.toString() ?? UniqueKey().toString(),
+      id: json['id']?.toString() ?? const Uuid().v4(),
       name: json['name'] ?? 'Unknown Place',
       image: json['image'] ?? '',
       rating: json['rating']?.toDouble() ?? 0.0,
