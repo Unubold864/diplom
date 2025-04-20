@@ -35,7 +35,7 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
 
   Future<void> _toggleLike(String placeId) async {
     if (placeId.isEmpty) return;
-    
+
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       if (_likedPlacesIds.contains(placeId)) {
@@ -49,14 +49,18 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
 
   Future<List<ReccommendedPlacesModel>> _loadRecommendedPlaces() async {
     try {
-      final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
-        headers: {'Accept-Charset': 'utf-8'},
-      ).timeout(const Duration(seconds: 10));
+      final response = await http
+          .get(
+            Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
+            headers: {'Accept-Charset': 'utf-8'},
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-        return data.map((item) => ReccommendedPlacesModel.fromJson(item)).toList();
+        return data
+            .map((item) => ReccommendedPlacesModel.fromJson(item))
+            .toList();
       } else {
         throw Exception('Failed to load places: ${response.statusCode}');
       }
@@ -185,9 +189,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
       width: 240,
       child: Card(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () => _navigateToDetails(context),
@@ -202,10 +204,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
                       topRight: Radius.circular(16),
                     ),
                     child: Stack(
-                      children: [
-                        _buildPlaceImage(),
-                        _buildImageGradient(),
-                      ],
+                      children: [_buildPlaceImage(), _buildImageGradient()],
                     ),
                   ),
                   Padding(
@@ -305,10 +304,11 @@ class _RecommendedPlaceCard extends StatelessWidget {
           color: Colors.grey[200],
           child: Center(
             child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
+              value:
+                  loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
             ),
           ),
         );
@@ -327,10 +327,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.transparent,
-              Colors.black.withOpacity(0.3),
-            ],
+            colors: [Colors.transparent, Colors.black.withOpacity(0.3)],
             stops: const [0.6, 1],
           ),
         ),
@@ -339,20 +336,32 @@ class _RecommendedPlaceCard extends StatelessWidget {
   }
 
   void _navigateToDetails(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => TouristDetailsPage(
-        image: place.image, // Main image
-        images: place.images, // Gallery images
-        name: place.name,
-        location: place.location,
-        description: place.description,
-        phoneNumber: place.phoneNumber,
-        hotelRating: place.hotelRating,
-        rating: place.rating,
+    // Ensure we have at least one image (main or from gallery)
+    final allImages = [
+      if (place.image.isNotEmpty) place.image,
+      ...place.images.where((img) => img.isNotEmpty),
+    ];
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => TouristDetailsPage(
+              image:
+                  place.image.isNotEmpty
+                      ? place.image
+                      : allImages.isNotEmpty
+                      ? allImages.first
+                      : '',
+              images: allImages,
+              name: place.name,
+              location: place.location,
+              description: place.description,
+              phoneNumber: place.phoneNumber,
+              rating: place.rating,
+              hotelRating: place.hotelRating,
+            ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
