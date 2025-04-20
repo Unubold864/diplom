@@ -1,13 +1,15 @@
 class ReccommendedPlacesModel {
+  final String id;
   final String name;
   final String image;
   final double rating;
   final String location;
-  final String description; // Added description
-  final String phoneNumber; // Added phone number
-  final String hotelRating; // Added hotel rating
+  final String description;
+  final String phoneNumber;
+  final String hotelRating;
 
   ReccommendedPlacesModel({
+    required this.id,
     required this.name,
     required this.image,
     required this.rating,
@@ -17,23 +19,22 @@ class ReccommendedPlacesModel {
     required this.hotelRating,
   });
 
-  // Factory constructor to create an instance from a JSON object
   factory ReccommendedPlacesModel.fromJson(Map<String, dynamic> json) {
     return ReccommendedPlacesModel(
+      id: json['id']?.toString() ?? UniqueKey().toString(),
       name: json['name'] ?? 'Unknown Place',
       image: json['image'] ?? '',
       rating: json['rating']?.toDouble() ?? 0.0,
-      location: json['location'] ?? '',
-      description: json['description'] ?? 'No description available', // Default value
-      phoneNumber: json['phone_number'] ?? 'No phone number available', // Default value
-      hotelRating: json['hotel_rating'] ?? 'No rating available', // Default value
+      location: json['location'] ?? 'Unknown Location',
+      description: json['description'] ?? 'No description available',
+      phoneNumber: json['phone_number'] ?? 'Not available',
+      hotelRating: json['hotel_rating'] ?? 'Not rated',
     );
   }
 
-  Object? get id => null;
-
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'image': image,
       'rating': rating,

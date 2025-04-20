@@ -16,7 +16,10 @@ class ReccommendedPlaces extends StatefulWidget {
 
 class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
   late Future<List<ReccommendedPlacesModel>> _recommendedPlacesFuture;
-  List<int> _likedPlacesIds = [];
+  List<String> _likedPlacesIds = [];
+
+  // Define Persian Green as the primary color
+  final Color _persianGreen = const Color(0xFF00A896);
 
   @override
   void initState() {
@@ -27,13 +30,12 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
 
   Future<void> _loadLikedPlaces() async {
     final prefs = await SharedPreferences.getInstance();
-    final likedIds = prefs.getStringList('likedPlaces') ?? [];
     setState(() {
-      _likedPlacesIds = likedIds.map(int.parse).toList();
+      _likedPlacesIds = prefs.getStringList('likedPlaces') ?? [];
     });
   }
 
-  Future<void> _toggleLike(int placeId) async {
+  Future<void> _toggleLike(String placeId) async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       if (_likedPlacesIds.contains(placeId)) {
@@ -42,10 +44,7 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
         _likedPlacesIds.add(placeId);
       }
     });
-    await prefs.setStringList(
-      'likedPlaces',
-      _likedPlacesIds.map((id) => id.toString()).toList(),
-    );
+    await prefs.setStringList('likedPlaces', _likedPlacesIds);
   }
 
   Future<List<ReccommendedPlacesModel>> _loadRecommendedPlaces() async {
@@ -66,43 +65,6 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
     } catch (e) {
       throw Exception('Failed to fetch places: $e');
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text(
-            'Recommended Places',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 280,
-          child: FutureBuilder<List<ReccommendedPlacesModel>>(
-            future: _recommendedPlacesFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildLoadingIndicator();
-              } else if (snapshot.hasError) {
-                return _buildErrorWidget(snapshot.error.toString());
-              } else if (snapshot.hasData) {
-                return _buildPlacesList(snapshot.data!);
-              } else {
-                return _buildEmptyState();
-              }
-            },
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildLoadingIndicator() {
@@ -155,18 +117,57 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemBuilder: (context, index) => _RecommendedPlaceCard(
-        place: places[index],
-        isLiked: _likedPlacesIds.contains(places[index].id),
-        onLikePressed: () => _toggleLike(places[index].id as int),
-      ),
+      itemBuilder: (context, index) {
+        final place = places[index];
+        final placeId = place.id.toString(); // Ensure ID is string
+        return _RecommendedPlaceCard(
+          key: ValueKey(placeId), // Crucial: Add unique key
+          place: place,
+          isLiked: _likedPlacesIds.contains(placeId),
+          onLikePressed: () => _toggleLike(placeId),
+        );
+      },
       separatorBuilder: (_, __) => const SizedBox(width: 16),
       itemCount: places.length,
     );
   }
 
-  // Define Persian Green as the primary color
-  final Color _persianGreen = const Color(0xFF00A896);
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Text(
+            'Recommended Places',
+            style: GoogleFonts.poppins(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 280,
+          child: FutureBuilder<List<ReccommendedPlacesModel>>(
+            future: _recommendedPlacesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
+              } else if (snapshot.hasError) {
+                return _buildErrorWidget(snapshot.error.toString());
+              } else if (snapshot.hasData) {
+                return _buildPlacesList(snapshot.data!);
+              } else {
+                return _buildEmptyState();
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _RecommendedPlaceCard extends StatelessWidget {
@@ -175,7 +176,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
   final VoidCallback onLikePressed;
 
   const _RecommendedPlaceCard({
-    Key? key,
+    required Key key, // Changed to required
     required this.place,
     required this.isLiked,
     required this.onLikePressed,
@@ -198,7 +199,6 @@ class _RecommendedPlaceCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Image with gradient overlay
                   ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
@@ -216,7 +216,6 @@ class _RecommendedPlaceCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Title
                         Text(
                           place.name,
                           style: GoogleFonts.poppins(
@@ -228,7 +227,6 @@ class _RecommendedPlaceCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 8),
-                        // Rating and Location
                         Row(
                           children: [
                             Icon(
@@ -269,7 +267,6 @@ class _RecommendedPlaceCard extends StatelessWidget {
                   ),
                 ],
               ),
-              // Like button
               Positioned(
                 top: 10,
                 right: 10,
