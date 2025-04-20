@@ -231,7 +231,7 @@ class HomeContent extends StatelessWidget {
           children: [
             const LocationCard(),
             const SizedBox(height: 25),
-            const TouristPlaces(),
+            //const TouristPlaces(),
             const SizedBox(height: 30),
             _buildSectionHeader(
               context,
