@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TouristDetailsPage extends StatefulWidget {
   const TouristDetailsPage({
     super.key,
     required this.image,
-    required this.images, // New parameter for gallery images
+    required this.images,
     required this.name,
     required this.location,
     required this.description,
@@ -14,8 +15,8 @@ class TouristDetailsPage extends StatefulWidget {
     required this.hotelRating,
   });
 
-  final String image; // Main image
-  final List<String> images; // Gallery images
+  final String image;
+  final List<String> images;
   final String name;
   final String location;
   final String description;
@@ -28,26 +29,83 @@ class TouristDetailsPage extends StatefulWidget {
 }
 
 class _TouristDetailsPageState extends State<TouristDetailsPage> {
-  final Color primaryColor = const Color(0xFF00A896); // Persian Green
+  final Color primaryColor = const Color(0xFF00A896);
   final Color backgroundColor = Colors.white;
   final Color textColor = Colors.black87;
   final Color secondaryTextColor = Colors.grey[600]!;
+  bool _isBooking = false;
 
   void _showImageDialog(BuildContext context, String imageUrl) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(20),
         child: InteractiveViewer(
           panEnabled: true,
           minScale: 0.5,
           maxScale: 3.0,
-          child: Image.network(
-            imageUrl,
-            fit: BoxFit.contain,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: Colors.black54,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: Colors.grey[200],
+                child: const Icon(Icons.broken_image, size: 50, color: Colors.white),
+              ),
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _bookNow() async {
+    setState(() => _isBooking = true);
+    await Future.delayed(const Duration(seconds: 2)); // Simulate booking process
+    setState(() => _isBooking = false);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${widget.name} захиалга амжилттай', 
+          style: GoogleFonts.poppins()),
+        backgroundColor: primaryColor,
+      ),
+    );
+  }
+
+  Future<void> _makePhoneCall() async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: widget.phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Утасны дугаар буруу байна', 
+            style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -56,7 +114,6 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
       backgroundColor: backgroundColor,
       body: CustomScrollView(
         slivers: [
-          // Header Image with Back Button
           SliverAppBar(
             expandedHeight: 300,
             floating: false,
@@ -68,9 +125,17 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   Image.network(
                     widget.image,
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                        ),
+                      );
+                    },
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[200],
-                      child: const Icon(Icons.image, size: 50),
+                      child: const Icon(Icons.image, size: 50, color: Colors.grey),
                     ),
                   ),
                   DecoratedBox(
@@ -101,14 +166,12 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
             ),
           ),
 
-          // Content
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title and Rating
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -153,7 +216,6 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
 
                   const SizedBox(height: 12),
 
-                  // Location
                   Row(
                     children: [
                       Icon(Icons.location_on, color: primaryColor, size: 18),
@@ -173,13 +235,9 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   ),
 
                   const SizedBox(height: 24),
-
-                  // Divider
                   Divider(color: Colors.grey[300], height: 1),
-
                   const SizedBox(height: 24),
 
-                  // About Section
                   Text(
                     "Тайлбар",
                     style: GoogleFonts.poppins(
@@ -199,13 +257,9 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   ),
 
                   const SizedBox(height: 24),
-
-                  // Divider
                   Divider(color: Colors.grey[300], height: 1),
-
                   const SizedBox(height: 24),
 
-                  // Features
                   Text(
                     "Үйлчилгээ",
                     style: GoogleFonts.poppins(
@@ -234,15 +288,10 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
-
-                  // Divider
-                  Divider(color: Colors.grey[300], height: 1),
-
-                  const SizedBox(height: 24),
-
-                  // Gallery
                   if (widget.images.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Divider(color: Colors.grey[300], height: 1),
+                    const SizedBox(height: 24),
                     Text(
                       "Зураг",
                       style: GoogleFonts.poppins(
@@ -267,9 +316,20 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                               child: Image.network(
                                 widget.images[index],
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Container(
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          primaryColor),
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
                                   color: Colors.grey[200],
-                                  child: const Icon(Icons.broken_image, size: 30),
+                                  child: const Icon(Icons.broken_image,
+                                      size: 30, color: Colors.grey),
                                 ),
                               ),
                             ),
@@ -277,15 +337,12 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
                   ],
 
-                  // Divider
+                  const SizedBox(height: 24),
                   Divider(color: Colors.grey[300], height: 1),
-
                   const SizedBox(height: 24),
 
-                  // Contact
                   Text(
                     "Холбогдох",
                     style: GoogleFonts.poppins(
@@ -305,8 +362,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                       children: [
                         const CircleAvatar(
                           radius: 24,
-                          backgroundImage: NetworkImage(
-                              'https://randomuser.me/api/portraits/men/32.jpg'),
+                          child: Icon(Icons.person, size: 30),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -335,12 +391,11 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                         ),
                         IconButton(
                           icon: Icon(Icons.call, color: primaryColor),
-                          onPressed: () {},
+                          onPressed: _makePhoneCall,
                         ),
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 80),
                 ],
               ),
@@ -349,7 +404,6 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
         ],
       ),
 
-      // Bottom Booking Bar
       bottomSheet: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
@@ -389,7 +443,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
               SizedBox(
                 width: 150,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _isBooking ? null : _bookNow,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
@@ -398,13 +452,22 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
-                    "Захиалах",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: _isBooking
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          "Захиалах",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ],
