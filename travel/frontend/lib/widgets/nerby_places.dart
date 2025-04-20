@@ -384,6 +384,10 @@ class _NearbyPlaceCard extends StatelessWidget {
 
   void _navigateToDetails(BuildContext context) {
     // Combine all images (main + gallery)
+    print('Name: ${place.name}');
+    print('Description being passed: ${place.description}');
+    print('Description length: ${place.description?.length}');
+    print('Images count: ${place.images.length}');
     final allImages = [
       if (place.image != null && place.image!.isNotEmpty) place.image!,
       ...place.images.where((img) => img.isNotEmpty),

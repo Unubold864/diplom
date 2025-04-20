@@ -99,27 +99,47 @@ class NearbyPlacesView(APIView):
         print(f"Latitude: {lat}, Longitude: {lon}")
 
         if not lat or not lon:
-            return Response({"detail": "Latitude and longitude are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Latitude and longitude are required."}, 
+                          status=status.HTTP_400_BAD_REQUEST)
 
         try:
             lat = float(lat)
             lon = float(lon)
         except ValueError:
-            return Response({"detail": "Invalid latitude or longitude."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid latitude or longitude."}, 
+                          status=status.HTTP_400_BAD_REQUEST)
 
         places = RecommendedPlace.objects.all()
         nearby_places = []
 
         for place in places:
-            # Assuming your model has latitude and longitude fields
-            distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
-            if distance <= 5:  # Filter for places within 5 km, adjust as needed
-                nearby_places.append({
-                    'name': place.name,
-                    'location': place.location,
-                    'rating': place.rating,
-                    'image': place.image.url if place.image else None,
-                    'distance': distance,
-                })
+            # Skip places without coordinates
+            if place.latitude is None or place.longitude is None:
+                continue
+                
+            try:
+                distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
+                if distance <= 5:  # 5 km radius
+                    place_data = {
+                        'id': place.id,
+                        'name': place.name,
+                        'location': place.location,
+                        'description': place.description,  # Added description
+                        'phone_number': place.phone_number,  # Added phone number
+                        'rating': place.rating,
+                        'image': request.build_absolute_uri(place.image.url) if place.image else None,
+                        'distance': round(distance, 2),  # Rounded to 2 decimal places
+                        'latitude': place.latitude,
+                        'longitude': place.longitude,
+                        'images': [request.build_absolute_uri(img.image.url) 
+                                  for img in place.images.all()]  # Gallery images
+                    }
+                    nearby_places.append(place_data)
+            except Exception as e:
+                print(f"Error processing place {place.id}: {str(e)}")
+                continue
 
+        # Sort by distance (nearest first)
+        nearby_places.sort(key=lambda x: x['distance'])
+        
         return Response(nearby_places, status=status.HTTP_200_OK)

@@ -24,6 +24,7 @@ class NerbyPlacesModel {
   });
 
   factory NerbyPlacesModel.fromJson(Map<String, dynamic> json) {
+    
     // Process main image
     String? imageUrl = json['image'] is String ? json['image'] : null;
     if (imageUrl != null && !imageUrl.startsWith('http')) {
@@ -62,6 +63,18 @@ class NerbyPlacesModel {
       }
     }
 
+    print('Raw description from API: ${json['description']}');
+    
+    // Process description
+    String? description;
+    if (json['description'] != null) {
+      if (json['description'] is String) {
+        description = json['description'];
+      } else {
+        description = json['description'].toString();
+      }
+    }
+
     return NerbyPlacesModel(
       name: json['name']?.toString(),
       location: json['location']?.toString(),
@@ -73,7 +86,7 @@ class NerbyPlacesModel {
                json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] is double ? json['longitude'] : 
                 json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
-      description: json['description']?.toString(),
+      description: json['description']?.toString() ?? 'No description available',
       phoneNumber: json['phone_number']?.toString(),
       distance: distanceValue,
       images: galleryImages,
