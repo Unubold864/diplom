@@ -92,4 +92,6 @@ class NerbyPlacesModel {
       images: galleryImages,
     );
   }
+
+  get id => null;
 }

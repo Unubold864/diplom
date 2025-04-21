@@ -360,7 +360,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
               phoneNumber: place.phoneNumber,
               rating: place.rating,
               hotelRating: place.hotelRating,
-              placeId: place.id,
+              placeId: int.parse(place.id),
             ),
       ),
     );
