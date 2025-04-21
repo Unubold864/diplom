@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignUpView, LoginView, RecommendedPlaceListView, UserProfileView, NearbyPlacesView
+from .views import SignUpView, LoginView, RecommendedPlaceListView, UserProfileView, NearbyPlacesView, PlaceListCreate, RestaurantList
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -13,6 +13,8 @@ urlpatterns = [
     path('api/recommended_places/', RecommendedPlaceListView.as_view(), name='recommended-places-list'),
     path('api/profile/', UserProfileView.as_view(), name='user-profile'),
     path('api/nearby_places/', NearbyPlacesView.as_view(), name='nearby-places-list'),
+    path('api/places/', PlaceListCreate.as_view(), name='place-list'),
+    path('api/restaurants/', RestaurantList.as_view(), name='restaurant-list'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -76,3 +76,29 @@ class PlaceImage(models.Model):
     
     def __str__(self):
         return f"Image for {self.place.name}"
+    
+    
+class Place(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=200)
+    description = models.TextField()
+    phone_number = models.CharField(max_length=20)
+    rating = models.FloatField()
+    hotel_rating = models.CharField(max_length=20)
+    main_image = models.URLField()
+    
+    def __str__(self):
+        return self.name
+
+class Restaurant(models.Model):
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='restaurants')
+    name = models.CharField(max_length=100)
+    rating = models.FloatField()
+    cuisine = models.CharField(max_length=100)
+    image_url = models.URLField()
+    description = models.TextField()
+    opening_hours = models.CharField(max_length=50)
+    phone = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return f"{self.name} ({self.place.name})"

@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User, RecommendedPlace
-from .serializers import UserSerializer, RecommendedPlaceSerializer
+from .models import User, RecommendedPlace, Place, Restaurant
+from .serializers import PlaceSerializer, UserSerializer, RecommendedPlaceSerializer, PlaceImageSerializer, RestaurantSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework.permissions import AllowAny
@@ -143,3 +143,15 @@ class NearbyPlacesView(APIView):
         nearby_places.sort(key=lambda x: x['distance'])
         
         return Response(nearby_places, status=status.HTTP_200_OK)
+    
+
+class PlaceListCreate(generics.ListCreateAPIView):
+    queryset = Place.objects.all()
+    serializer_class = PlaceSerializer
+
+class RestaurantList(generics.ListAPIView):
+    serializer_class = RestaurantSerializer
+    
+    def get_queryset(self):
+        place_name = self.request.query_params.get('place', '')
+        return Restaurant.objects.filter(place__name__icontains=place_name)
