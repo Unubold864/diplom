@@ -407,6 +407,7 @@ class _NearbyPlaceCard extends StatelessWidget {
               phoneNumber: place.phoneNumber ?? 'Not available',
               rating: place.rating ?? 0.0,
               hotelRating: place.rating?.toString() ?? '0.0',
+              placeId: place.id,
             ),
       ),
     );

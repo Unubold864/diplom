@@ -284,6 +284,7 @@ class _SavedPageState extends State<SavedPage> {
         phoneNumber: place.phoneNumber,
         hotelRating: place.hotelRating,
         rating: place.rating,
+        placeId: place.id,
       ),
     ),
   );
