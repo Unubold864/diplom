@@ -91,11 +91,11 @@ class Place(models.Model):
         return self.name
 
 class Restaurant(models.Model):
-    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='restaurants')
+    place = models.ForeignKey(RecommendedPlace, on_delete=models.CASCADE, related_name='restaurants')
     name = models.CharField(max_length=100)
     rating = models.FloatField()
     cuisine = models.CharField(max_length=100)
-    image_url = models.URLField()
+    image = models.ImageField(max_length=200, default="Unknown")
     description = models.TextField()
     opening_hours = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
