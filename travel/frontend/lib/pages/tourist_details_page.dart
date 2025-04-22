@@ -64,24 +64,26 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes)) as List;
+        print('Restaurants data: $data'); // Debug print
+
         setState(() {
           _restaurants =
-              data
-                  .map(
-                    (item) => {
-                      'name': item['name'],
-                      'rating': item['rating']?.toDouble() ?? 0.0,
-                      'cuisine': item['cuisine'],
-                      'image':
-                          item['image_url'] ??
-                          'https://via.placeholder.com/150',
-                      'description':
-                          item['description'] ?? 'No description available',
-                      'openHours': item['opening_hours'] ?? 'Not specified',
-                      'phone': item['phone'] ?? 'No phone number',
-                    },
-                  )
-                  .toList();
+              data.map((item) {
+                // Debug print for image URL
+                print('Restaurant ${item['name']} image: ${item['image_url']}');
+
+                return {
+                  'name': item['name'],
+                  'rating': item['rating']?.toDouble() ?? 0.0,
+                  'cuisine': item['cuisine'],
+                  'image':
+                      item['image_url'] ?? 'https://via.placeholder.com/150',
+                  'description':
+                      item['description'] ?? 'No description available',
+                  'openHours': item['opening_hours'] ?? 'Not specified',
+                  'phone': item['phone'] ?? 'No phone number',
+                };
+              }).toList();
         });
       } else {
         setState(() {

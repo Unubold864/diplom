@@ -38,13 +38,15 @@ class RecommendedPlaceSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 
+from rest_framework import serializers
+
 class RestaurantSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = Restaurant
         fields = '__all__'
-
+    
     def get_image_url(self, obj):
         request = self.context.get('request')
         if obj.image_url:

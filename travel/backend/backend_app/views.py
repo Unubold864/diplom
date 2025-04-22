@@ -153,5 +153,10 @@ class RestaurantList(generics.ListAPIView):
     serializer_class = RestaurantSerializer
     
     def get_queryset(self):
-        place_name = self.request.query_params.get('place', '')
-        return Restaurant.objects.filter(place__name__icontains=place_name)
+        place_id = self.request.query_params.get('place_id')
+        if place_id:
+            return Restaurant.objects.filter(place_id=place_id)
+        return Restaurant.objects.none()
+    
+    def get_serializer_context(self):
+        return {'request': self.request}

@@ -96,21 +96,21 @@ class Restaurant(models.Model):
     rating = models.FloatField()
     cuisine = models.CharField(max_length=100)
     image = models.ImageField(
-        upload_to='restaurants/',  # This will create a 'restaurants' subfolder in MEDIA_ROOT
+        upload_to='restaurants/',
         max_length=200,
-        blank=True,  # Allow empty images
-        null=True,   # Allow NULL in database
-        default=None  # Explicit default
+        blank=True,
+        null=True,
+        default=None
     )
+    description = models.TextField()
+    opening_hours = models.CharField(max_length=50)
+    phone = models.CharField(max_length=20)
+    
     @property
     def image_url(self):
         if self.image and hasattr(self.image, 'url'):
             return self.image.url
-        return None  # Or return a default image path
-    
-    description = models.TextField()
-    opening_hours = models.CharField(max_length=50)
-    phone = models.CharField(max_length=20)
+        return None
     
     def __str__(self):
         return f"{self.name} ({self.place.name})"
