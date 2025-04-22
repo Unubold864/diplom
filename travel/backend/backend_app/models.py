@@ -87,6 +87,8 @@ class Place(models.Model):
     hotel_rating = models.CharField(max_length=20)
     main_image = models.URLField()
     
+    
+    
     def __str__(self):
         return self.name
 
