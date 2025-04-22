@@ -39,9 +39,17 @@ class RecommendedPlaceSerializer(serializers.ModelSerializer):
         
 
 class RestaurantSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Restaurant
         fields = '__all__'
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image_url:
+            return request.build_absolute_uri(obj.image_url)
+        return None
 
 class PlaceSerializer(serializers.ModelSerializer):
     restaurants = RestaurantSerializer(many=True, read_only=True)

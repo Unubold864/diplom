@@ -275,10 +275,34 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                                   left: Radius.circular(12),
                                 ),
                                 child: Image.network(
-                                  restaurant['image'],
+                                  restaurant['image'] ??
+                                      'https://via.placeholder.com/150',
                                   width: 100,
                                   height: 100,
                                   fit: BoxFit.cover,
+                                  headers: const {
+                                    'Accept': 'image/*',
+                                  }, // Important for some servers
+                                  loadingBuilder: (
+                                    context,
+                                    child,
+                                    loadingProgress,
+                                  ) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value:
+                                            loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    loadingProgress
+                                                        .expectedTotalBytes!
+                                                : null,
+                                      ),
+                                    );
+                                  },
                                   errorBuilder:
                                       (context, error, stackTrace) => Container(
                                         width: 100,
