@@ -393,6 +393,9 @@ class _NearbyPlaceCard extends StatelessWidget {
       ...place.images.where((img) => img.isNotEmpty),
     ];
 
+    // Ensure we have a valid placeId
+    final placeId = place.id ?? 0; // Provide default value if null
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -407,7 +410,7 @@ class _NearbyPlaceCard extends StatelessWidget {
               phoneNumber: place.phoneNumber ?? 'Not available',
               rating: place.rating ?? 0.0,
               hotelRating: place.rating?.toString() ?? '0.0',
-              placeId: place.id,
+              placeId: placeId, // Use the safe value here
             ),
       ),
     );
