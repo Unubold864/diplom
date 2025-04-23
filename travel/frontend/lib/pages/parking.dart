@@ -35,20 +35,23 @@ class _ParkingPageState extends State<ParkingPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes)) as List;
+        print(data); // Debug output
+
         setState(() {
           _parkings =
-              data
-                  .map(
-                    (parking) => {
-                      'name': parking['name'] ?? 'Зогсоол',
-                      'type': parking['type'] ?? 'Төрөл тодорхойгүй',
-                      'capacity': parking['capacity'] ?? 'Томъёогүй',
-                      'price': parking['price'] ?? 'Үнэгүй',
-                      'distance': parking['distance'] ?? 'Зай тодорхойгүй',
-                      'isCovered': parking['is_covered'] ?? false,
-                    },
-                  )
-                  .toList();
+              data.map((parking) {
+                return {
+                  'name': parking['name'] ?? 'Зогсоол',
+                  'type':
+                      parking['type_display'] ??
+                      parking['type'] ??
+                      'Төрөл тодорхойгүй',
+                  'capacity': parking['capacity']?.toString() ?? 'Томъёогүй',
+                  'price': parking['price'] ?? 'Үнэгүй',
+                  'distance': parking['distance'] ?? 'Зай тодорхойгүй',
+                  'isCovered': parking['is_covered'] ?? false,
+                };
+              }).toList();
         });
       } else {
         setState(() {
@@ -60,6 +63,7 @@ class _ParkingPageState extends State<ParkingPage> {
       setState(() {
         _errorMessage = 'Алдаа: ${e.toString()}';
       });
+      print('Error fetching parkings: $e');
     } finally {
       setState(() {
         _isLoading = false;

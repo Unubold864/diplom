@@ -66,11 +66,9 @@ class HotelSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class ParkingSerializer(serializers.ModelSerializer):
-    type = serializers.SerializerMethodField()
+    type_display = serializers.CharField(source='get_type_display', read_only=True)
     
     class Meta:
         model = Parking
-        fields = '__all__'
-    
-    def get_type(self, obj):
-        return obj.get_type_display()
+        fields = ['id', 'name', 'type', 'type_display', 'capacity', 
+                 'price', 'distance', 'is_covered', 'place']

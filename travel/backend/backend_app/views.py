@@ -176,11 +176,14 @@ class HotelList(generics.ListAPIView):
     def get_serializer_context(self):
         return {'request': self.request}
     
-# views.py
 class ParkingList(generics.ListAPIView):
     serializer_class = ParkingSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['place_id']
-    
+    filterset_fields = ['place']  # Change back to 'place' instead of 'place_id'
+
     def get_queryset(self):
-        return Parking.objects.all()
+        queryset = Parking.objects.all()
+        place_id = self.request.query_params.get('place')
+        if place_id:
+            queryset = queryset.filter(place_id=place_id)
+        return queryset
