@@ -918,10 +918,11 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
         } else if (label == "Зочид буудал") {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const HotelPage()),
+            MaterialPageRoute(
+              builder: (context) => HotelPage(placeId: widget.placeId),
+            ),
           );
         }
-        // Add other feature item actions here if needed
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

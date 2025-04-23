@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, RecommendedPlace, PlaceImage, Place, Restaurant
+from .models import User, RecommendedPlace, PlaceImage, Place, Restaurant, Hotel
 
 class UserSerializer(serializers.ModelSerializer):
     # Password field that is write-only (won't be returned in responses)
@@ -58,4 +58,9 @@ class PlaceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Place
+        fields = '__all__'
+        
+class HotelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hotel
         fields = '__all__'

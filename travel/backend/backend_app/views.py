@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User, RecommendedPlace, Place, Restaurant
-from .serializers import PlaceSerializer, UserSerializer, RecommendedPlaceSerializer, PlaceImageSerializer, RestaurantSerializer
+from .models import User, RecommendedPlace, Place, Restaurant, Hotel
+from .serializers import PlaceSerializer, UserSerializer, RecommendedPlaceSerializer, PlaceImageSerializer, RestaurantSerializer, HotelSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework.permissions import AllowAny
@@ -11,6 +11,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from geopy.distance import geodesic
 from django.http import JsonResponse
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class SignUpView(APIView):
@@ -160,3 +161,15 @@ class RestaurantList(generics.ListAPIView):
     
     def get_serializer_context(self):
         return {'request': self.request}
+    
+class HotelList(generics.ListAPIView):
+    serializer_class = HotelSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['place_id']
+
+    def get_queryset(self):
+        queryset = Hotel.objects.all()
+        place_id = self.request.query_params.get('place_id')
+        if place_id is not None:
+            queryset = queryset.filter(place_id=place_id)
+        return queryset
