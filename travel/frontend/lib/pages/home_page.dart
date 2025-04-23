@@ -4,7 +4,6 @@ import 'package:frontend/pages/saved_page.dart';
 import 'package:frontend/widgets/location_card.dart';
 import 'package:frontend/widgets/nerby_places.dart';
 import 'package:frontend/widgets/reccommended_places.dart';
-//import 'package:frontend/widgets/tourist_places.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatefulWidget {
@@ -76,8 +75,7 @@ class _HomePageState extends State<HomePage> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color:
-              isSelected ? persianGreen.withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? persianGreen.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -106,18 +104,116 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final Color persianGreen = const Color(0xFF00A896);
+  State<HomeContent> createState() => _HomeContentState();
+}
 
+class _HomeContentState extends State<HomeContent> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _searchResults = [];
+  List<Map<String, dynamic>> _allPlaces = [];
+  String? _errorMessage;
+  final Color persianGreen = const Color(0xFF00A896);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAllPlaces();
+    _searchController.addListener(() {
+      if (_searchController.text.isEmpty) {
+        _performSearch('');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadAllPlaces() async {
+    try {
+      // Replace with your actual data loading logic
+      await Future.delayed(const Duration(seconds: 1)); // Simulate loading
+      
+      // Mock data - replace with your real data
+      final recommended = [
+        {
+          'id': 1,
+          'name': 'Төв цэнгэлдэх хүрээлэн',
+          'type': 'Цэнгэлдэх хүрээлэн',
+          'description': 'Улаанбаатар хотын төвд байрлах цэнгэлдэх хүрээлэн',
+          'distance': '1.5 км',
+          'rating': 4.5,
+        },
+        {
+          'id': 2,
+          'name': 'Гандан хийд',
+          'type': 'Шашны сүм',
+          'description': 'Монголын томоохон буддын сүм',
+          'distance': '3.2 км',
+          'rating': 4.7,
+        },
+      ];
+
+      final nearby = [
+        {
+          'id': 3,
+          'name': 'Сүхбаатарын талбай',
+          'type': 'Түүхэн дурсгал',
+          'description': 'Улаанбаатар хотын төв талбай',
+          'distance': '0.5 км',
+          'rating': 4.3,
+        },
+        {
+          'id': 4,
+          'name': 'Үндэсний музей',
+          'type': 'Музей',
+          'description': 'Монголын түүх, соёлын өв',
+          'distance': '2.1 км',
+          'rating': 4.6,
+        },
+      ];
+
+      setState(() {
+        _allPlaces = [...recommended, ...nearby];
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Алдаа гарлаа: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _performSearch(String query) {
+    setState(() {
+      _isSearching = query.isNotEmpty;
+      _searchResults = _isSearching
+          ? _allPlaces.where((place) {
+              final searchLower = query.toLowerCase();
+              return place['name'].toLowerCase().contains(searchLower) ||
+                     place['type'].toLowerCase().contains(searchLower) ||
+                     (place['description']?.toLowerCase()?.contains(searchLower) ?? false);
+            }).toList()
+          : [];
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF1FBCB8), // Teal color from the image
+        backgroundColor: const Color(0xFF1FBCB8),
         automaticallyImplyLeading: false,
         title: Row(
           children: [
@@ -132,7 +228,7 @@ class HomeContent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  "Location",
+                  "Байршил",
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.white70,
@@ -142,7 +238,7 @@ class HomeContent extends StatelessWidget {
                 Row(
                   children: [
                     const Text(
-                      "New York, USA",
+                      "Улаанбаатар, Монгол",
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.white,
@@ -195,16 +291,26 @@ class HomeContent extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextField(
+                            controller: _searchController,
                             decoration: InputDecoration(
-                              hintText: "Search Hotel, Flights etc...",
+                              hintText: "Газраар хайх...",
                               border: InputBorder.none,
                               hintStyle: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 14,
                               ),
                             ),
+                            onChanged: _performSearch,
                           ),
                         ),
+                        if (_searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () {
+                              _searchController.clear();
+                              _performSearch('');
+                            },
+                          ),
                       ],
                     ),
                   ),
@@ -224,34 +330,97 @@ class HomeContent extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const LocationCard(),
-            const SizedBox(height: 25),
-            //const TouristPlaces(),
-            const SizedBox(height: 30),
-            _buildSectionHeader(
-              context,
-              title: "Санал болгох газрууд",
-              onViewAll: () {},
-            ),
-            const SizedBox(height: 20),
-            const ReccommendedPlaces(),
-            const SizedBox(height: 30),
-            _buildSectionHeader(
-              context,
-              title: "Ойролцоох газрууд",
-              onViewAll: () {},
-            ),
-            const SizedBox(height: 20),
-            const NerbyPlaces(),
-          ],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(child: Text(_errorMessage!))
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const LocationCard(),
+                      const SizedBox(height: 25),
+                      
+                      if (_isSearching) ...[
+                        _buildSearchResults(),
+                      ] else ...[
+                        _buildSectionHeader(
+                          context,
+                          title: "Санал болгох газрууд",
+                          onViewAll: () {},
+                        ),
+                        const SizedBox(height: 20),
+                        const ReccommendedPlaces(),
+                        const SizedBox(height: 30),
+                        _buildSectionHeader(
+                          context,
+                          title: "Ойролцоох газрууд",
+                          onViewAll: () {},
+                        ),
+                        const SizedBox(height: 20),
+                        const NerbyPlaces(),
+                      ],
+                    ],
+                  ),
+                ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Хайлтын үр дүн (${_searchResults.length})',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-      ),
+        const SizedBox(height: 16),
+        if (_searchResults.isEmpty)
+          Center(
+            child: Text(
+              'Хайлтанд тохирох үр дүн олдсонгүй',
+              style: GoogleFonts.poppins(color: Colors.grey),
+            ),
+          )
+        else
+          ..._searchResults.map((place) => Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: const Icon(Icons.place, color: Color(0xFF00A896)),
+                  title: Text(
+                    place['name'],
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(place['type']),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 16),
+                          Text(' ${place['rating']}'),
+                          const SizedBox(width: 16),
+                          const Icon(Icons.directions_walk, size: 16),
+                          Text(' ${place['distance']}'),
+                        ],
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    // Handle place selection
+                  },
+                ),
+              )),
+      ],
     );
   }
 
@@ -260,7 +429,6 @@ class HomeContent extends StatelessWidget {
     required String title,
     required VoidCallback onViewAll,
   }) {
-    final Color persianGreen = const Color(0xFF00A896);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
