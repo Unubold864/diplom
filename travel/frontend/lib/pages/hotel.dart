@@ -29,26 +29,37 @@ class _HotelPageState extends State<HotelPage> {
   Future<void> _fetchHotels() async {
     try {
       final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/api/hotels/?place_id=${widget.placeId}'),
+        Uri.parse('http://127.0.0.1:8000/api/hotels/?place=${widget.placeId}'),
         headers: {'Accept': 'application/json; charset=utf-8'},
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes)) as List;
+        print('API Response: $data'); // Debug print
+
         setState(() {
-          _hotels = data.map((hotel) => {
-            'name': hotel['name'],
-            'rating': hotel['rating']?.toDouble() ?? 0.0,
-            'price': hotel['price'] ?? 'Үнэлгээ байхгүй',
-            'image': hotel['image_url'] ?? 'https://via.placeholder.com/150',
-            'description': hotel['description'] ?? 'Тайлбар байхгүй',
-            'address': hotel['address'] ?? 'Хаяг байхгүй',
-            'phone': hotel['phone'] ?? 'Утасны дугаар байхгүй',
-          }).toList();
+          _hotels =
+              data.map((hotel) {
+                // Debug print each hotel's image URL
+                print(
+                  'Hotel ${hotel['name']} image: ${hotel['image_url'] ?? hotel['image']}',
+                );
+
+                return {
+                  'name': hotel['name'],
+                  'rating': hotel['rating']?.toDouble() ?? 0.0,
+                  'price': hotel['price'] ?? 'Үнэлгээ байхгүй',
+                  'image': _getImageUrl(hotel), // Use helper function
+                  'description': hotel['description'] ?? 'Тайлбар байхгүй',
+                  'address': hotel['address'] ?? 'Хаяг байхгүй',
+                  'phone': hotel['phone'] ?? 'Утасны дугаар байхгүй',
+                };
+              }).toList();
         });
       } else {
         setState(() {
-          _errorMessage = 'Мэдээлэл авахад алдаа гарлаа: ${response.statusCode}';
+          _errorMessage =
+              'Мэдээлэл авахад алдаа гарлаа: ${response.statusCode}';
         });
       }
     } catch (e) {
@@ -62,76 +73,113 @@ class _HotelPageState extends State<HotelPage> {
     }
   }
 
+  String _getImageUrl(Map<String, dynamic> hotel) {
+    // Try different possible image fields
+    final url = hotel['image_url'] ?? hotel['image'];
+
+    if (url == null) {
+      return 'https://via.placeholder.com/150';
+    }
+
+    // If URL is relative, make it absolute
+    if (url.startsWith('/')) {
+      return 'http://127.0.0.1:8000$url';
+    }
+
+    return url;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Зочид буудлууд',
-          style: GoogleFonts.poppins(),
-        ),
+        title: Text('Зочид буудлууд', style: GoogleFonts.poppins()),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _errorMessage != null
               ? Center(child: Text(_errorMessage!))
               : _hotels.isEmpty
-                  ? const Center(child: Text('Зочид буудал олдсонгүй'))
-                  : ListView.builder(
-                      itemCount: _hotels.length,
-                      itemBuilder: (context, index) {
-                        final hotel = _hotels[index];
-                        return Card(
-                          margin: const EdgeInsets.all(8),
-                          child: Column(
+              ? const Center(child: Text('Зочид буудал олдсонгүй'))
+              : ListView.builder(
+                itemCount: _hotels.length,
+                itemBuilder: (context, index) {
+                  final hotel = _hotels[index];
+                  return Card(
+                    margin: const EdgeInsets.all(8),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              hotel['image'],
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (
+                                context,
+                                child,
+                                loadingProgress,
+                              ) {
+                                if (loadingProgress == null) return child;
+                                return CircularProgressIndicator(
+                                  value:
+                                      loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress
+                                                  .expectedTotalBytes!
+                                          : null,
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                print('Image load error: $error');
+                                print('URL: ${hotel['image']}');
+                                return const Icon(Icons.hotel, size: 60);
+                              },
+                            ),
+                          ),
+                          title: Text(
+                            hotel['name'],
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ListTile(
-                                leading: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    hotel['image'],
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => 
-                                      const Icon(Icons.hotel, size: 60),
+                              Text(hotel['address']),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 16,
                                   ),
-                                ),
-                                title: Text(
-                                  hotel['name'],
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(hotel['address']),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.star, color: Colors.amber, size: 16),
-                                        Text(' ${hotel['rating']}'),
-                                        const Spacer(),
-                                        Text(
-                                          hotel['price'],
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      ],
+                                  Text(' ${hotel['rating']}'),
+                                  const Spacer(),
+                                  Text(
+                                    hotel['price'],
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green,
                                     ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  _showHotelDetails(context, hotel);
-                                },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        );
-                      },
+                          onTap: () {
+                            _showHotelDetails(context, hotel);
+                          },
+                        ),
+                      ],
                     ),
+                  );
+                },
+              ),
     );
   }
 
@@ -172,12 +220,12 @@ class _HotelPageState extends State<HotelPage> {
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => 
-                      Container(
-                        height: 200,
-                        color: Colors.grey[200],
-                        child: const Icon(Icons.hotel, size: 50),
-                      ),
+                    errorBuilder:
+                        (context, error, stackTrace) => Container(
+                          height: 200,
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.hotel, size: 50),
+                        ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -211,10 +259,7 @@ class _HotelPageState extends State<HotelPage> {
                 const SizedBox(height: 16),
                 Text(
                   hotel['description'],
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    height: 1.5,
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 15, height: 1.5),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(

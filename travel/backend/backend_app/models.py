@@ -122,7 +122,19 @@ class Hotel(models.Model):
     name = models.CharField(max_length=255)
     rating = models.FloatField()
     price = models.CharField(max_length=100)
-    image_url = models.URLField(max_length=500, blank=True, null=True)
+    image = models.ImageField(
+        upload_to='hotels/',
+        max_length=200,
+        blank=True,
+        null=True,
+        default=None
+    )
+    
+    @property
+    def image_url(self):
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url
+        return None
     description = models.TextField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)

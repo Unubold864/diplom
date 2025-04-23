@@ -173,3 +173,5 @@ class HotelList(generics.ListAPIView):
         if place_id is not None:
             queryset = queryset.filter(place_id=place_id)
         return queryset
+    def get_serializer_context(self):
+        return {'request': self.request}
