@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend/pages/hotel.dart';
 
 class TouristDetailsPage extends StatefulWidget {
   const TouristDetailsPage({
@@ -696,14 +697,13 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                     mainAxisSpacing: 8,
                     crossAxisSpacing: 8,
                     children: [
-                      _buildFeatureItem(Icons.wifi, "Интернет"),
+                      _buildFeatureItem(Icons.hotel, "Зочид буудал"),
                       _buildFeatureItem(Icons.restaurant, "Ресторан"),
-                      _buildFeatureItem(Icons.pool, "Усан сан"),
                       _buildFeatureItem(Icons.local_parking, "Зогсоол"),
-                      _buildFeatureItem(Icons.fitness_center, "Фитнес"),
-                      _buildFeatureItem(Icons.spa, "Спа"),
-                      _buildFeatureItem(Icons.air, "Агааржуулалт"),
-                      _buildFeatureItem(Icons.breakfast_dining, "Өглөөний цай"),
+                      // _buildFeatureItem(Icons.fitness_center, "Фитнес"),
+                      // _buildFeatureItem(Icons.spa, "Спа"),
+                      // _buildFeatureItem(Icons.air, "Агааржуулалт"),
+                      // _buildFeatureItem(Icons.breakfast_dining, "Өглөөний цай"),
                     ],
                   ),
 
@@ -915,7 +915,13 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
       onTap: () {
         if (label == "Ресторан") {
           _showRestaurants(context);
+        } else if (label == "Зочид буудал") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HotelPage()),
+          );
         }
+        // Add other feature item actions here if needed
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
