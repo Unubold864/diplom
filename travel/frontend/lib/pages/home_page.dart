@@ -224,7 +224,7 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             // Logo or app name can go here
             Text(
-              'Explore Mongolia',
+              'Сайн байна уу',
               style: GoogleFonts.poppins(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
