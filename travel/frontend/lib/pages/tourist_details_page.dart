@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/pages/hotel.dart';
+import 'package:frontend/pages/parking.dart';
 
 class TouristDetailsPage extends StatefulWidget {
   const TouristDetailsPage({
@@ -920,6 +921,13 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
             context,
             MaterialPageRoute(
               builder: (context) => HotelPage(placeId: widget.placeId),
+            ),
+          );
+        } else if (label == "Зогсоол") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ParkingPage(placeId: widget.placeId),
             ),
           );
         }
