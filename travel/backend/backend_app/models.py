@@ -141,3 +141,23 @@ class Hotel(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.place.name})"
+    
+# models.py
+class Parking(models.Model):
+    PARKING_TYPES = [
+        ('street', 'Гудамжны зогсоол'),
+        ('lot', 'Зогсоолын талбай'),
+        ('underground', 'Газрын доорхи'),
+        ('private', 'Хувийн зогсоол'),
+    ]
+    
+    place = models.ForeignKey(RecommendedPlace, on_delete=models.CASCADE, related_name='parkings')
+    name = models.CharField(max_length=100, verbose_name="Нэр")
+    type = models.CharField(max_length=20, choices=PARKING_TYPES, verbose_name="Төрөл")
+    capacity = models.PositiveIntegerField(verbose_name="Багтаамж")
+    price = models.CharField(max_length=100, verbose_name="Үнэ")
+    distance = models.CharField(max_length=50, verbose_name="Зай")
+    is_covered = models.BooleanField(default=False, verbose_name="Дээвэртэй эсэх")
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_type_display()})"

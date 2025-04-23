@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User, RecommendedPlace, Place, Restaurant, Hotel
-from .serializers import PlaceSerializer, UserSerializer, RecommendedPlaceSerializer, PlaceImageSerializer, RestaurantSerializer, HotelSerializer
+from .models import User, RecommendedPlace, Place, Restaurant, Hotel, Parking
+from .serializers import PlaceSerializer, UserSerializer, RecommendedPlaceSerializer, PlaceImageSerializer, RestaurantSerializer, HotelSerializer, ParkingSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework.permissions import AllowAny
@@ -175,3 +175,12 @@ class HotelList(generics.ListAPIView):
         return queryset
     def get_serializer_context(self):
         return {'request': self.request}
+    
+# views.py
+class ParkingList(generics.ListAPIView):
+    serializer_class = ParkingSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['place_id']
+    
+    def get_queryset(self):
+        return Parking.objects.all()

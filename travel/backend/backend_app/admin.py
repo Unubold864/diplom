@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, RecommendedPlace, PlaceImage, Place, Restaurant, Hotel
+from .models import User, RecommendedPlace, PlaceImage, Place, Restaurant, Hotel, Parking
 
 # Custom User Admin
 class UserAdmin(admin.ModelAdmin):
@@ -21,3 +21,4 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Place)
 admin.site.register(Restaurant)
 admin.site.register(Hotel)
+admin.site.register(Parking)
