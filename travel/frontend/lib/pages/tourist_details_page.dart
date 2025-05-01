@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/pages/hotel.dart';
 import 'package:frontend/pages/parking.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TouristDetailsPage extends StatefulWidget {
   const TouristDetailsPage({
@@ -51,6 +52,8 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
   }
 
   Future<void> _fetchRestaurants() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
     setState(() {
       _isLoadingRestaurants = true;
       _restaurantError = null;
@@ -61,7 +64,10 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
         Uri.parse(
           'http://127.0.0.1:8000/api/restaurants/?place_id=${widget.placeId}',
         ),
-        headers: {'Accept': 'application/json; charset=utf-8'},
+        headers: {
+          'Accept': 'application/json; charset=utf-8',
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ParkingPage extends StatefulWidget {
   final int placeId;
@@ -26,12 +27,17 @@ class _ParkingPageState extends State<ParkingPage> {
   }
 
   Future<void> _fetchParkings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
     try {
       final response = await http.get(
         Uri.parse(
           'http://127.0.0.1:8000/api/parkings/?place=${widget.placeId}',
         ),
-        headers: {'Accept': 'application/json; charset=utf-8'},
+        headers: {
+          'Accept': 'application/json; charset=utf-8',
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {
