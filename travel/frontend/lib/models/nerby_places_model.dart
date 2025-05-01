@@ -8,6 +8,7 @@ class NerbyPlacesModel {
   final double? longitude;
   final String? description;
   final String? phoneNumber;
+  final String? hotelRating; // ✅ шинээр нэмсэн талбар
   final List<String> images;
   double? distance;
 
@@ -21,63 +22,54 @@ class NerbyPlacesModel {
     this.longitude,
     this.description,
     this.phoneNumber,
+    this.hotelRating,
     this.distance,
     this.images = const [],
   });
 
   factory NerbyPlacesModel.fromJson(Map<String, dynamic> json) {
-    // Process main image
+    // ✅ Main image
     String? imageUrl = json['image'] is String ? json['image'] : null;
     if (imageUrl != null && !imageUrl.startsWith('http')) {
-      imageUrl =
-          'http://127.0.0.1:8000${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
+      imageUrl = 'http://127.0.0.1:8000${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
     }
 
-    // Process gallery images
+    // ✅ Gallery images
     List<String> galleryImages = [];
     if (json['images'] != null && json['images'] is List) {
       for (var img in json['images']) {
         if (img is String) {
           String imgUrl = img;
           if (!imgUrl.startsWith('http')) {
-            imgUrl =
-                'http://127.0.0.1:8000${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
+            imgUrl = 'http://127.0.0.1:8000${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
           }
           galleryImages.add(imgUrl);
         } else if (img is Map && img['image'] is String) {
           String imgUrl = img['image'];
           if (!imgUrl.startsWith('http')) {
-            imgUrl =
-                'http://127.0.0.1:8000${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
+            imgUrl = 'http://127.0.0.1:8000${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
           }
           galleryImages.add(imgUrl);
         }
       }
     }
 
-    // Process distance
+    // ✅ Distance parse
     double? distanceValue;
     if (json['distance'] != null) {
       try {
-        distanceValue =
-            json['distance'] is double
-                ? json['distance']
-                : double.tryParse(json['distance'].toString());
+        distanceValue = json['distance'] is double
+            ? json['distance']
+            : double.tryParse(json['distance'].toString());
       } catch (e) {
         print('Error parsing distance: $e');
       }
     }
 
-    print('Raw description from API: ${json['description']}');
-
-    // Process description
+    // ✅ Description parse
     String? description;
     if (json['description'] != null) {
-      if (json['description'] is String) {
-        description = json['description'];
-      } else {
-        description = json['description'].toString();
-      }
+      description = json['description'].toString();
     }
 
     return NerbyPlacesModel(
@@ -85,29 +77,26 @@ class NerbyPlacesModel {
       name: json['name']?.toString(),
       location: json['location']?.toString(),
       image: imageUrl,
-      rating:
-          json['rating'] is double
-              ? json['rating']
-              : json['rating'] is int
+      rating: json['rating'] is double
+          ? json['rating']
+          : json['rating'] is int
               ? json['rating'].toDouble()
               : json['rating'] != null
-              ? double.tryParse(json['rating'].toString())
-              : null,
-      latitude:
-          json['latitude'] is double
-              ? json['latitude']
-              : json['latitude'] != null
+                  ? double.tryParse(json['rating'].toString())
+                  : null,
+      latitude: json['latitude'] is double
+          ? json['latitude']
+          : json['latitude'] != null
               ? double.tryParse(json['latitude'].toString())
               : null,
-      longitude:
-          json['longitude'] is double
-              ? json['longitude']
-              : json['longitude'] != null
+      longitude: json['longitude'] is double
+          ? json['longitude']
+          : json['longitude'] != null
               ? double.tryParse(json['longitude'].toString())
               : null,
-      description:
-          json['description']?.toString() ?? 'No description available',
+      description: description ?? 'No description available',
       phoneNumber: json['phone_number']?.toString(),
+      hotelRating: json['hotel_rating']?.toString(), // ✅ нэмсэн хэсэг
       distance: distanceValue,
       images: galleryImages,
     );

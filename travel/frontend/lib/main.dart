@@ -5,7 +5,9 @@ import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/pages/profile_page.dart';
 import 'package:frontend/pages/sign_up.dart';
 import 'package:frontend/pages/forget_password.dart';
-import 'package:frontend/services/api_service.dart'; // Import the API service
+
+// ✅ Navigator key энд үүснэ
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(const MyApp());
@@ -19,8 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Travel App',
       debugShowCheckedModeBanner: false,
-      // Use the global navigator key from ApiService
-      navigatorKey: ApiService.navigatorKey,
+      navigatorKey: navigatorKey, // ✅ энд ашиглана
       theme: ThemeData(
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.mulishTextTheme(Theme.of(context).textTheme),

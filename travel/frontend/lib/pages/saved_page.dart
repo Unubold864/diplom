@@ -27,13 +27,21 @@ class _SavedPageState extends State<SavedPage> {
   Future<List<ReccommendedPlacesModel>> _fetchLikedPlaces() async {
     final prefs = await SharedPreferences.getInstance();
     final likedIds = prefs.getStringList('likedPlaces') ?? [];
+    final token = prefs.getString('access_token');
+
+    if (token == null) {
+      throw Exception('Access token not found.');
+    }
 
     if (likedIds.isEmpty) return [];
 
     try {
       final response = await http.get(
         Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
-        headers: {'Accept-Charset': 'utf-8'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept-Charset': 'utf-8',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -50,10 +58,10 @@ class _SavedPageState extends State<SavedPage> {
     }
   }
 
-  Future<void> _removeLikedPlace(int placeId) async {
+  Future<void> _removeLikedPlace(String placeId) async {
     final prefs = await SharedPreferences.getInstance();
     final likedIds = prefs.getStringList('likedPlaces') ?? [];
-    likedIds.remove(placeId.toString());
+    likedIds.remove(placeId);
     await prefs.setStringList('likedPlaces', likedIds);
     setState(() {
       _likedPlacesFuture = _fetchLikedPlaces();
@@ -86,13 +94,16 @@ class _SavedPageState extends State<SavedPage> {
         elevation: 0,
         backgroundColor: _backgroundColor,
         foregroundColor: Colors.black87,
-        iconTheme: IconThemeData(color: Colors.black87),
       ),
       body: FutureBuilder<List<ReccommendedPlacesModel>>(
         future: _likedPlacesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoadingIndicator();
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(_primaryColor),
+              ),
+            );
           } else if (snapshot.hasError) {
             return _buildErrorWidget(snapshot.error.toString());
           } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -101,14 +112,6 @@ class _SavedPageState extends State<SavedPage> {
             return _buildEmptyState();
           }
         },
-      ),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(_primaryColor),
       ),
     );
   }
@@ -122,44 +125,24 @@ class _SavedPageState extends State<SavedPage> {
           children: [
             Icon(Icons.error_outline, size: 50, color: Colors.red[400]),
             const SizedBox(height: 16),
-            Text(
-              'Алдаа гарлаа',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
+            Text('Алдаа гарлаа',
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            Text(
-              error,
-              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
+            Text(error,
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+                textAlign: TextAlign.center),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed:
-                  () => setState(() {
-                    _likedPlacesFuture = _fetchLikedPlaces();
-                  }),
+              onPressed: () {
+                setState(() {
+                  _likedPlacesFuture = _fetchLikedPlaces();
+                });
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _primaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
               ),
-              child: Text(
-                'Дахин оролдох',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: Text('Дахин оролдох', style: GoogleFonts.poppins()),
             ),
           ],
         ),
@@ -172,218 +155,111 @@ class _SavedPageState extends State<SavedPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.favorite_border_rounded,
-            size: 60,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.favorite_border, size: 60, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text(
-            'Хадгалсан газрууд байхгүй',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
-            ),
-          ),
+          Text('Хадгалсан газрууд байхгүй',
+              style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey[600])),
           const SizedBox(height: 8),
-          Text(
-            'Дуртай газраа хадгалахын тулд\n"Like" дарна уу',
-            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[500]),
-            textAlign: TextAlign.center,
-          ),
+          Text('"Like" дарж дуртай газраа хадгалаарай',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[500])),
         ],
       ),
     );
   }
 
-  Widget _buildLikedPlacesGrid(List<ReccommendedPlacesModel> likedPlaces) {
-    return Padding(
+  Widget _buildLikedPlacesGrid(List<ReccommendedPlacesModel> places) {
+    return GridView.builder(
       padding: const EdgeInsets.all(16),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.75,
-        ),
-        itemCount: likedPlaces.length,
-        itemBuilder: (context, index) {
-          final place = likedPlaces[index];
-          return _buildPlaceCard(place);
-        },
+      itemCount: places.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 0.75,
       ),
-    );
-  }
-
-  Widget _buildPlaceCard(ReccommendedPlacesModel place) {
-    return GestureDetector(
-      onTap: () => _navigateToDetails(context, place),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+      itemBuilder: (context, index) {
+        final place = places[index];
+        return GestureDetector(
+          onTap: () => _navigateToDetails(context, place),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Place Image
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                  child: Stack(
-                    children: [
-                      Image.network(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                      child: Image.network(
                         place.image,
                         height: 120,
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: 120,
-                            color: Colors.grey[100],
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  _primaryColor,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 120,
-                            color: Colors.grey[200],
-                            child: Center(
-                              child: Icon(
-                                Icons.photo,
-                                size: 40,
-                                color: Colors.grey[400],
-                              ),
-                            ),
-                          );
-                        },
+                        errorBuilder: (_, __, ___) => Container(
+                          height: 120,
+                          color: Colors.grey[200],
+                          child: Icon(Icons.image, color: Colors.grey[400], size: 40),
+                        ),
                       ),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(place.name,
+                              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[600]),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(place.location,
+                                    style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis),
                               ),
                             ],
                           ),
-                          child: GestureDetector(
-                            onTap: () => _removeLikedPlace(place.id as int),
-                            child: Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Place Details
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        place.name,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 14,
-                            color: Colors.grey[600],
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              place.location,
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.star, size: 16, color: Colors.amber),
+                              const SizedBox(width: 4),
+                              Text(place.rating.toString(),
+                                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+                            ],
+                          )
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.star, size: 16, color: Colors.amber[600]),
-                          const SizedBox(width: 4),
-                          Text(
-                            place.rating.toString(),
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '${place.hotelRating}',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: _primaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () => _removeLikedPlace(place.id),
+                  child: Icon(Icons.favorite, color: Colors.red, size: 24),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -391,18 +267,17 @@ class _SavedPageState extends State<SavedPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => TouristDetailsPage(
-              image: place.image,
-              images: place.images,
-              name: place.name,
-              location: place.location,
-              description: place.description,
-              phoneNumber: place.phoneNumber,
-              hotelRating: place.hotelRating,
-              rating: place.rating,
-              placeId: int.parse(place.id),
-            ),
+        builder: (_) => TouristDetailsPage(
+          image: place.image,
+          images: place.images,
+          name: place.name,
+          location: place.location,
+          description: place.description,
+          phoneNumber: place.phoneNumber,
+          hotelRating: place.hotelRating,
+          rating: place.rating,
+          placeId: int.parse(place.id),
+        ),
       ),
     );
   }

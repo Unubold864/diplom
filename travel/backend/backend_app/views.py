@@ -58,6 +58,7 @@ class RecommendedPlaceListView(generics.ListCreateAPIView):
     queryset = RecommendedPlace.objects.all().prefetch_related('images')
     serializer_class = RecommendedPlaceSerializer
     
+    
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -93,6 +94,7 @@ class RefreshTokenView(APIView):
         
         
 class NearbyPlacesView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         lat = request.GET.get('lat')
         lon = request.GET.get('lon')

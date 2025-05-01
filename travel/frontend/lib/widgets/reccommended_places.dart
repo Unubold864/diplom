@@ -1,10 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/models/reccommended_places_model.dart';
 import 'package:frontend/pages/tourist_details_page.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons_named/ionicons_named.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReccommendedPlaces extends StatefulWidget {
@@ -49,18 +49,23 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
 
   Future<List<ReccommendedPlacesModel>> _loadRecommendedPlaces() async {
     try {
-      final response = await http
-          .get(
-            Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
-            headers: {'Accept-Charset': 'utf-8'},
-          )
-          .timeout(const Duration(seconds: 10));
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+
+      if (token == null) throw Exception('Access token not found');
+
+      final response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept-Charset': 'utf-8',
+          'Accept': 'application/json',
+        },
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-        return data
-            .map((item) => ReccommendedPlacesModel.fromJson(item))
-            .toList();
+        return data.map((item) => ReccommendedPlacesModel.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load places: ${response.statusCode}');
       }
@@ -84,15 +89,8 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
         children: [
           const Icon(Icons.error_outline, color: Colors.red, size: 40),
           const SizedBox(height: 10),
-          Text(
-            'Failed to load places',
-            style: GoogleFonts.poppins(color: Colors.red),
-          ),
-          Text(
-            error,
-            style: GoogleFonts.poppins(color: Colors.grey),
-            textAlign: TextAlign.center,
-          ),
+          Text('Failed to load places', style: GoogleFonts.poppins(color: Colors.red)),
+          Text(error, style: GoogleFonts.poppins(color: Colors.grey), textAlign: TextAlign.center),
         ],
       ),
     );
@@ -105,10 +103,7 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
         children: [
           const Icon(Icons.search_off, color: Colors.grey, size: 40),
           const SizedBox(height: 10),
-          Text(
-            'No recommended places found',
-            style: GoogleFonts.poppins(color: Colors.grey),
-          ),
+          Text('No recommended places found', style: GoogleFonts.poppins(color: Colors.grey)),
         ],
       ),
     );
@@ -119,6 +114,7 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemCount: places.length,
       itemBuilder: (context, index) {
         final place = places[index];
         return _RecommendedPlaceCard(
@@ -129,7 +125,6 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
         );
       },
       separatorBuilder: (_, __) => const SizedBox(width: 16),
-      itemCount: places.length,
     );
   }
 
@@ -185,6 +180,11 @@ class _RecommendedPlaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final allImages = [
+      if (place.image.isNotEmpty) place.image,
+      ...place.images.where((img) => img.isNotEmpty),
+    ];
+
     return SizedBox(
       width: 240,
       child: Card(
@@ -192,7 +192,24 @@ class _RecommendedPlaceCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => _navigateToDetails(context),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TouristDetailsPage(
+                  image: place.image.isNotEmpty ? place.image : (allImages.isNotEmpty ? allImages.first : ''),
+                  images: allImages,
+                  name: place.name,
+                  location: place.location,
+                  description: place.description,
+                  phoneNumber: place.phoneNumber,
+                  rating: place.rating,
+                  hotelRating: place.hotelRating,
+                  placeId: int.parse(place.id),
+                ),
+              ),
+            );
+          },
           child: Stack(
             children: [
               Column(
@@ -225,11 +242,7 @@ class _RecommendedPlaceCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.amber[600],
-                              size: 18,
-                            ),
+                            Icon(Icons.star, color: Colors.amber[600], size: 18),
                             const SizedBox(width: 4),
                             Text(
                               place.rating.toString(),
@@ -239,19 +252,12 @@ class _RecommendedPlaceCard extends StatelessWidget {
                               ),
                             ),
                             const Spacer(),
-                            Icon(
-                              ionicons['location_outline'],
-                              color: Colors.grey[600],
-                              size: 16,
-                            ),
+                            Icon(ionicons['location_outline'], color: Colors.grey[600], size: 16),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 place.location,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13,
-                                  color: Colors.grey[600],
-                                ),
+                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -285,18 +291,14 @@ class _RecommendedPlaceCard extends StatelessWidget {
   Widget _buildPlaceImage() {
     return Image.network(
       place.image,
-      width: double.maxFinite,
+      width: double.infinity,
       height: 160,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          height: 160,
-          color: Colors.grey[200],
-          child: Center(
-            child: Icon(Icons.photo, color: Colors.grey[400], size: 40),
-          ),
-        );
-      },
+      errorBuilder: (context, error, stackTrace) => Container(
+        height: 160,
+        color: Colors.grey[200],
+        child: Center(child: Icon(Icons.photo, color: Colors.grey[400], size: 40)),
+      ),
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Container(
@@ -304,11 +306,9 @@ class _RecommendedPlaceCard extends StatelessWidget {
           color: Colors.grey[200],
           child: Center(
             child: CircularProgressIndicator(
-              value:
-                  loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                  : null,
             ),
           ),
         );
@@ -331,37 +331,6 @@ class _RecommendedPlaceCard extends StatelessWidget {
             stops: const [0.6, 1],
           ),
         ),
-      ),
-    );
-  }
-
-  void _navigateToDetails(BuildContext context) {
-    // Ensure we have at least one image (main or from gallery)
-    final allImages = [
-      if (place.image.isNotEmpty) place.image,
-      ...place.images.where((img) => img.isNotEmpty),
-    ];
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => TouristDetailsPage(
-              image:
-                  place.image.isNotEmpty
-                      ? place.image
-                      : allImages.isNotEmpty
-                      ? allImages.first
-                      : '',
-              images: allImages,
-              name: place.name,
-              location: place.location,
-              description: place.description,
-              phoneNumber: place.phoneNumber,
-              rating: place.rating,
-              hotelRating: place.hotelRating,
-              placeId: int.parse(place.id),
-            ),
       ),
     );
   }
