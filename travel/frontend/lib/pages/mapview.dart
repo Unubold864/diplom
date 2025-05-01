@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -48,6 +50,7 @@ class _MapScreenState extends State<MapScreen> {
   bool _isLoading = true;
   bool _isApiReady = false;
   String? _errorMessage;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -95,7 +98,7 @@ class _MapScreenState extends State<MapScreen> {
 
       if (permission == LocationPermission.deniedForever) {
         setState(() {
-          _errorMessage = 'Location permissions are permanently denied. Please enable them in app settings.';
+          _errorMessage = 'Location permissions are permanently denied.';
           _isLoading = false;
         });
         return;
@@ -104,7 +107,7 @@ class _MapScreenState extends State<MapScreen> {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      
+
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
         _isLoading = false;
@@ -115,6 +118,92 @@ class _MapScreenState extends State<MapScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _searchPlace(String query) async {
+    const apiKey = 'YOUR_GOOGLE_API_KEY';
+    final url =
+        'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(query)}&key=$apiKey';
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    if (data['status'] == 'OK') {
+      final location = data['results'][0]['geometry']['location'];
+      final latLng = LatLng(location['lat'], location['lng']);
+
+      setState(() => _currentPosition = latLng);
+      mapController.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Газрыг олсонгүй')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isApiReady) return _buildLoadingScreen();
+    if (_errorMessage != null) return _buildErrorScreen();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Location Finder", style: GoogleFonts.poppins()),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _getCurrentLocation,
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          GoogleMap(
+            onMapCreated: (controller) => mapController = controller,
+            initialCameraPosition: CameraPosition(
+              target: _currentPosition ?? const LatLng(0, 0),
+              zoom: 15.0,
+            ),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            markers: _currentPosition != null
+                ? {
+                    Marker(
+                      markerId: const MarkerId("current"),
+                      position: _currentPosition!,
+                      infoWindow: const InfoWindow(title: "You are here"),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueBlue,
+                      ),
+                    ),
+                  }
+                : {},
+          ),
+          Positioned(
+            top: 15,
+            left: 15,
+            right: 15,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(8),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Газрын нэр хайх...',
+                  contentPadding: const EdgeInsets.all(12),
+                  border: InputBorder.none,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () => _searchPlace(_searchController.text),
+                  ),
+                ),
+                onSubmitted: _searchPlace,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildLoadingScreen() {
@@ -190,114 +279,6 @@ class _MapScreenState extends State<MapScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_isApiReady) return _buildLoadingScreen();
-    if (_errorMessage != null) return _buildErrorScreen();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Location Finder", style: GoogleFonts.poppins()),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _getCurrentLocation,
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          GoogleMap(
-            onMapCreated: (controller) => mapController = controller,
-            initialCameraPosition: CameraPosition(
-              target: _currentPosition ?? const LatLng(0, 0),
-              zoom: 15.0,
-            ),
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false, // We'll add our own button
-            markers: _currentPosition != null
-                ? {
-                    Marker(
-                      markerId: const MarkerId("current"),
-                      position: _currentPosition!,
-                      infoWindow: const InfoWindow(title: "You are here"),
-                      icon: BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueBlue,
-                      ),
-                    ),
-                  }
-                : {},
-          ),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: FloatingActionButton(
-              onPressed: () {
-                if (_currentPosition != null) {
-                  mapController.animateCamera(
-                    CameraUpdate.newLatLngZoom(_currentPosition!, 15),
-                  );
-                }
-              },
-              backgroundColor: Colors.white,
-              child: Icon(Icons.my_location, color: Colors.blue[700]),
-              elevation: 2,
-            ),
-          ),
-          if (_currentPosition != null)
-            Positioned(
-              top: 20,
-              left: 20,
-              right: 20,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.location_pin, color: Colors.blue[700]),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Your Location',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Lat: ${_currentPosition!.latitude.toStringAsFixed(4)}, '
-                            'Lng: ${_currentPosition!.longitude.toStringAsFixed(4)}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }
