@@ -20,8 +20,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
   List<Map<String, dynamic>> _places = [];
 
-  Set<Marker> get _markers =>
-      _places.map((place) {
+  Set<Marker> get _markers => _places.map((place) {
         return Marker(
           markerId: MarkerId(place['name']),
           position: place['position'],
@@ -65,14 +64,14 @@ class _ExplorePageState extends State<ExplorePage> {
       if (response.statusCode == 200) {
         final List data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
-          _places =
-              data.map((place) {
-                return {
-                  'name': place['name'],
-                  'position': LatLng(place['latitude'], place['longitude']),
-                  'rating': place['rating'],
-                };
-              }).toList();
+          _places = data.map((place) {
+            return {
+              'name': place['name'],
+              'position': LatLng(place['latitude'], place['longitude']),
+              'rating': place['rating'],
+              'image': place['image'] ?? '',
+            };
+          }).toList();
         });
       } else {
         print('⚠️ Server error: ${response.statusCode}');
@@ -103,7 +102,6 @@ class _ExplorePageState extends State<ExplorePage> {
       ),
       body: Column(
         children: [
-          // 🌐 Google Map
           ClipRRect(
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(24),
@@ -126,69 +124,72 @@ class _ExplorePageState extends State<ExplorePage> {
           ),
           const SizedBox(height: 10),
           Expanded(
-            child:
-                _places.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: _places.length,
-                      itemBuilder: (context, index) {
-                        final place = _places[index];
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          margin: const EdgeInsets.only(bottom: 14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
+            child: _places.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _places.length,
+                    itemBuilder: (context, index) {
+                      final place = _places[index];
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        margin: const EdgeInsets.only(bottom: 14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              place['image'].isNotEmpty ? place['image'] : 'https://via.placeholder.com/60',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          title: Text(
+                            place['name'],
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${place['rating']}',
+                                style: GoogleFonts.poppins(fontSize: 13),
                               ),
                             ],
                           ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            leading: const CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Color(0xFF00A896),
-                              child: Icon(Icons.place, color: Colors.white),
-                            ),
-                            title: Text(
-                              place['name'],
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            subtitle: Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${place['rating']}',
-                                  style: GoogleFonts.poppins(fontSize: 13),
-                                ),
-                              ],
-                            ),
-                            onTap: () {
-                              _mapController.animateCamera(
-                                CameraUpdate.newLatLng(place['position']),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
+                          onTap: () {
+                            _mapController.animateCamera(
+                              CameraUpdate.newLatLng(place['position']),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
