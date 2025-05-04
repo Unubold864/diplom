@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -16,7 +17,13 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   late GoogleMapController _mapController;
   LatLng _initialPosition = const LatLng(47.918873, 106.917701);
-  final Color persianGreen = const Color(0xFF00A896);
+  
+  // Enhanced color scheme
+  final Color primaryColor = const Color(0xFF00A896);
+  final Color backgroundColor = const Color(0xFFF9FAFB);
+  final Color cardColor = Colors.white;
+  final Color textColor = const Color(0xFF2D3748);
+  final Color accentColor = const Color(0xFFFFC107);
 
   List<Map<String, dynamic>> _places = [];
 
@@ -90,108 +97,284 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: backgroundColor,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: persianGreen,
-        elevation: 4,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         centerTitle: true,
         title: Text(
-          '🌍 Хайх газар',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 20),
+          '🌍 Хамгийн их үнэлгээтэй ойролцоох газрууд',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600, 
+            fontSize: 20,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                offset: const Offset(1, 1),
+                blurRadius: 3.0,
+                color: Colors.black.withOpacity(0.5),
+              ),
+            ],
+          ),
+        ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
         ),
       ),
       body: Column(
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(24),
-              bottomRight: Radius.circular(24),
-            ),
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: _initialPosition,
-                  zoom: 14,
+          // Map section with gradient overlay
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(28),
+                  bottomRight: Radius.circular(28),
                 ),
-                markers: _markers,
-                onMapCreated: (controller) => _mapController = controller,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: false,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _initialPosition,
+                      zoom: 14,
+                    ),
+                    markers: _markers,
+                    onMapCreated: (controller) => _mapController = controller,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    zoomControlsEnabled: false,
+                  ),
+                ),
               ),
+              // Subtle gradient overlay for better text visibility at top
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 100,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.5),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              // Bottom decoration for map
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          
+          // Featured Places text
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.place_outlined, 
+                  color: primaryColor, 
+                  size: 24
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Онцлох Газрууд',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
+                  ),
+                ),
+                const Spacer(),
+              ],
             ),
           ),
-          const SizedBox(height: 10),
+          
+          // Places list
           Expanded(
             child: _places.isEmpty
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: primaryColor,
+                      strokeWidth: 3,
+                    ),
+                  )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemCount: _places.length,
                     itemBuilder: (context, index) {
                       final place = _places[index];
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
-                        margin: const EdgeInsets.only(bottom: 14),
+                        margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cardColor,
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: const [
+                          boxShadow: [
                             BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 8,
-                              offset: Offset(0, 4),
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              place['image'].isNotEmpty ? place['image'] : 'https://via.placeholder.com/60',
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          title: Text(
-                            place['name'],
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          subtitle: Row(
-                            children: [
-                              const Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${place['rating']}',
-                                style: GoogleFonts.poppins(fontSize: 13),
-                              ),
-                            ],
-                          ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
                           onTap: () {
                             _mapController.animateCamera(
                               CameraUpdate.newLatLng(place['position']),
                             );
                           },
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              children: [
+                                // Place image
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: Image.network(
+                                    place['image'].isNotEmpty 
+                                        ? place['image'] 
+                                        : 'https://via.placeholder.com/70',
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        width: 70,
+                                        height: 70,
+                                        color: Colors.grey[300],
+                                        child: Icon(
+                                          Icons.image_not_supported, 
+                                          color: Colors.grey[400],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                
+                                // Place details
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        place['name'],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: textColor,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.star,
+                                            color: accentColor,
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${place['rating']}',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: textColor.withOpacity(0.7),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Icon(
+                                            Icons.location_on,
+                                            color: primaryColor,
+                                            size: 14,
+                                          ),
+                                          const SizedBox(width: 4),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                
+                                // Arrow icon
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: primaryColor.withOpacity(0.5),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     },
                   ),
           ),
         ],
+      ),
+      
+      // Floating action button for current location
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [primaryColor, primaryColor.withBlue(200)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: primaryColor.withOpacity(0.4),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () async {
+              final position = await Geolocator.getCurrentPosition();
+              _mapController.animateCamera(
+                CameraUpdate.newLatLng(
+                  LatLng(position.latitude, position.longitude),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Icon(
+                Icons.my_location_rounded,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
