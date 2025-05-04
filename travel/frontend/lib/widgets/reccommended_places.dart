@@ -133,17 +133,6 @@ class _ReccommendedPlacesState extends State<ReccommendedPlaces> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text(
-            'Recommended Places',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
         SizedBox(
           height: 280,
           child: FutureBuilder<List<ReccommendedPlacesModel>>(

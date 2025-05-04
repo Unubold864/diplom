@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: _pages[_selectedIndex],
       bottomNavigationBar: _buildFloatingNavigationBar(),
     );
@@ -41,27 +41,28 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildFloatingNavigationBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
             offset: const Offset(0, 5),
+            spreadRadius: 1,
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildFloatingNavItem(Icons.home, "Нүүр", 0),
-            _buildFloatingNavItem(Icons.explore, "Үнэлгээ", 1),
-            _buildFloatingNavItem(Icons.bookmark, "Хадгалсан", 2),
-            _buildFloatingNavItem(Icons.person, "Профайл", 3),
+            _buildFloatingNavItem(Icons.home_rounded, "Нүүр", 0),
+            _buildFloatingNavItem(Icons.explore_rounded, "Үнэлгээ", 1),
+            _buildFloatingNavItem(Icons.bookmark_rounded, "Хадгалсан", 2),
+            _buildFloatingNavItem(Icons.person_rounded, "Профайл", 3),
           ],
         ),
       ),
@@ -74,23 +75,29 @@ class _HomePageState extends State<HomePage> {
       onTap: () => _onItemTapped(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 18 : 16, 
+          vertical: 10
+        ),
         decoration: BoxDecoration(
-          color:
-              isSelected ? persianGreen.withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? persianGreen.withOpacity(0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
-            Icon(icon, color: isSelected ? persianGreen : Colors.grey),
+            Icon(
+              icon, 
+              color: isSelected ? persianGreen : Colors.grey.shade400,
+              size: 22,
+            ),
             if (isSelected)
               Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: const EdgeInsets.only(left: 10.0),
                 child: Text(
                   label,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: persianGreen,
                   ),
                 ),
@@ -209,86 +216,152 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: persianGreen,
-        title: Text(
-          'Сайн байна уу',
-          style: GoogleFonts.poppins(color: Colors.white),
+      backgroundColor: Colors.white,
+      appBar: _buildAppBar(),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                color: persianGreen,
+                strokeWidth: 3,
+              ),
+            )
+          : _errorMessage != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline_rounded,
+                        size: 48,
+                        color: Colors.red.shade400,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage!,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.red.shade400,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : _buildContent(),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: persianGreen,
+      toolbarHeight: 70,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+      ),
+      title: Text(
+        'Сайн байна уу',
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 22,
+        ),
+      ),
+      actions: [
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(
+              Icons.notifications_outlined,
+              color: Colors.white,
+              size: 24,
+            ),
             onPressed: () {},
           ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(70),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: _performSearch,
-                decoration: InputDecoration(
-                  hintText: 'Хайх...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon:
-                      _searchController.text.isNotEmpty
-                          ? IconButton(
-                            icon: const Icon(Icons.clear),
+        ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          child: Container(
+            height: 52,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _performSearch,
+              style: GoogleFonts.poppins(fontSize: 15),
+              decoration: InputDecoration(
+                hintText: 'Хайх...',
+                hintStyle: GoogleFonts.poppins(
+                  color: Colors.grey.shade400,
+                  fontSize: 15,
+                ),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: persianGreen,
+                  size: 22,
+                ),
+                suffixIcon:
+                    _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.clear_rounded,
+                              color: Colors.grey.shade400,
+                              size: 20,
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               _performSearch('');
                             },
                           )
-                          : null,
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+                        : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
           ),
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _errorMessage != null
-              ? Center(child: Text(_errorMessage!))
-              : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    if (_isSearching)
-                      _buildSearchResults()
-                    else ...[
-                      _buildSectionHeader('Санал болгох газрууд'),
-                      const SizedBox(height: 10),
-                      const ReccommendedPlaces(),
-                      const SizedBox(height: 20),
-                      _buildSectionHeader('Ойролцоох газрууд'),
-                      const SizedBox(height: 10),
-                      const NerbyPlaces(),
-                    ],
-                  ],
-                ),
-              ),
+    );
+  }
+
+  Widget _buildContent() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_isSearching)
+            _buildSearchResults()
+          else ...[
+            _buildSectionHeader('Санал болгох газрууд'),
+            const SizedBox(height: 16),
+            const ReccommendedPlaces(),
+            const SizedBox(height: 32),
+            _buildSectionHeader('Ойролцоох газрууд'),
+            const SizedBox(height: 16),
+            const NerbyPlaces(),
+          ],
+        ],
+      ),
     );
   }
 
@@ -298,61 +371,154 @@ class _HomeContentState extends State<HomeContent> {
       children: [
         Text(
           'Хайлтын үр дүн (${_searchResults.length})',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         if (_searchResults.isEmpty)
           Center(
-            child: Text(
-              'Үр дүн олдсонгүй',
-              style: TextStyle(color: Colors.grey),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                Icon(
+                  Icons.search_off_rounded,
+                  size: 64,
+                  color: Colors.grey.shade300,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Үр дүн олдсонгүй',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           )
         else
-          Column(
-            children:
-                _searchResults
-                    .map(
-                      (place) => Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons.place,
-                            color: Color(0xFF00A896),
-                          ),
-                          title: Text(
-                            place['name'],
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(place['type']),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                    size: 16,
-                                  ),
-                                  Text(' ${place['rating']}'),
-                                  const SizedBox(width: 12),
-                                  const Icon(Icons.directions_walk, size: 16),
-                                  Text(' ${place['distance']}'),
-                                ],
-                              ),
-                            ],
-                          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _searchResults.length,
+            itemBuilder: (context, index) {
+              final place = _searchResults[index];
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: persianGreen.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.place_rounded,
+                      color: persianGreen,
+                      size: 28,
+                    ),
+                  ),
+                  title: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      place['name'],
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        place['type'],
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
                         ),
                       ),
-                    )
-                    .toList(),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.star_rounded,
+                                  color: Colors.amber,
+                                  size: 16,
+                                ),
+                                Text(
+                                  ' ${place['rating']}',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.amber.shade800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: persianGreen.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.directions_walk_rounded,
+                                  size: 16,
+                                  color: persianGreen,
+                                ),
+                                Text(
+                                  ' ${place['distance']}',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w500,
+                                    color: persianGreen,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
       ],
     );
@@ -364,11 +530,28 @@ class _HomeContentState extends State<HomeContent> {
       children: [
         Text(
           title,
-          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
         ),
         TextButton(
           onPressed: () {},
-          child: Text('Бүгдийг харах', style: TextStyle(color: persianGreen)),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text(
+            'Бүгдийг харах',
+            style: GoogleFonts.poppins(
+              color: persianGreen,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
         ),
       ],
     );
