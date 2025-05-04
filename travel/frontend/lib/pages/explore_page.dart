@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -41,13 +42,28 @@ class _ExplorePageState extends State<ExplorePage> {
         _initialPosition = LatLng(position.latitude, position.longitude);
       });
 
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+
+      if (token == null) {
+        print("❌ Access token байхгүй байна!");
+        return;
+      }
+
       final url = Uri.parse(
-        'http://10.0.2.2:8000/api/top_rated_nearby_places/?lat=${position.latitude}&lon=${position.longitude}',
+        'http://127.0.0.1:8000/api/top_rated_nearby_places/?lat=${position.latitude}&lon=${position.longitude}',
       );
-      final response = await http.get(url);
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
       if (response.statusCode == 200) {
-        final List data = json.decode(response.body);
+        final List data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           _places =
               data.map((place) {
@@ -75,21 +91,26 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text('🌍 Хайх газар'),
         backgroundColor: persianGreen,
-        elevation: 2,
+        elevation: 4,
+        centerTitle: true,
+        title: Text(
+          '🌍 Хайх газар',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 20),
+        ),
       ),
       body: Column(
         children: [
-          Expanded(
-            flex: 2,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
+          // 🌐 Google Map
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.4,
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
                   target: _initialPosition,
@@ -98,12 +119,13 @@ class _ExplorePageState extends State<ExplorePage> {
                 markers: _markers,
                 onMapCreated: (controller) => _mapController = controller,
                 myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                zoomControlsEnabled: false,
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Expanded(
-            flex: 1,
             child:
                 _places.isEmpty
                     ? const Center(child: CircularProgressIndicator())
@@ -112,20 +134,35 @@ class _ExplorePageState extends State<ExplorePage> {
                       itemCount: _places.length,
                       itemBuilder: (context, index) {
                         final place = _places[index];
-                        return Card(
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          margin: const EdgeInsets.only(bottom: 14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          margin: const EdgeInsets.only(bottom: 12),
                           child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
                             leading: const CircleAvatar(
+                              radius: 24,
                               backgroundColor: Color(0xFF00A896),
                               child: Icon(Icons.place, color: Colors.white),
                             ),
                             title: Text(
                               place['name'],
                               style: GoogleFonts.poppins(
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -137,7 +174,10 @@ class _ExplorePageState extends State<ExplorePage> {
                                   size: 16,
                                 ),
                                 const SizedBox(width: 4),
-                                Text('${place['rating']}'),
+                                Text(
+                                  '${place['rating']}',
+                                  style: GoogleFonts.poppins(fontSize: 13),
+                                ),
                               ],
                             ),
                             onTap: () {

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignUpView, LoginView, RecommendedPlaceListView, UserProfileView, NearbyPlacesView, PlaceListCreate, RestaurantList, HotelList, ParkingList, top_rated_nearby_places
+from .views import SignUpView, LoginView, RecommendedPlaceListView, UserProfileView, NearbyPlacesView, PlaceListCreate, RestaurantList, HotelList, ParkingList, TopRatedNearbyPlacesView
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -16,7 +16,8 @@ urlpatterns = [
     path('api/restaurants/', RestaurantList.as_view(), name='restaurant-list'),
     path('api/hotels/', HotelList.as_view(), name='hotel-list'),
     path('api/parkings/', ParkingList.as_view(), name='parking-list'),
-    path('api/top_rated_nearby_places/', top_rated_nearby_places, name='top-rated-nearby-places'),
+    path('api/top_rated_nearby_places/', TopRatedNearbyPlacesView.as_view(), name='top-rated-nearby-places'),
+
     
 ]
 

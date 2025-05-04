@@ -192,39 +192,40 @@ class ParkingList(generics.ListAPIView):
             queryset = queryset.filter(place_id=place_id)
         return queryset 
 
-@api_view(['GET'])
-def top_rated_nearby_places(request):
-    lat = request.GET.get('lat')
-    lon = request.GET.get('lon')
+class TopRatedNearbyPlacesView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    if not lat or not lon:
-        return Response({"detail": "Latitude and longitude are required."}, status=400)
+    def get(self, request):
+        lat = request.GET.get('lat')
+        lon = request.GET.get('lon')
 
-    try:
-        lat = float(lat)
-        lon = float(lon)
-    except ValueError:
-        return Response({"detail": "Invalid coordinates."}, status=400)
+        if not lat or not lon:
+            return Response({"detail": "Latitude and longitude are required."}, status=400)
 
-    results = []
-    for place in RecommendedPlace.objects.all():
-        if place.latitude is None or place.longitude is None:
-            continue
-        distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
-        if distance <= 5:  # 5 км радиустай
-            results.append({
-                'id': place.id,
-                'name': place.name,
-                'location': place.location,
-                'description': place.description,
-                'phone_number': place.phone_number,
-                'rating': place.rating,
-                'latitude': place.latitude,
-                'longitude': place.longitude,
-                'image': request.build_absolute_uri(place.image.url) if place.image else None,
-                'distance': round(distance, 2),
-            })
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except ValueError:
+            return Response({"detail": "Invalid coordinates."}, status=400)
 
-    # Ойр байрлалтай газруудыг rating-р эрэмбэлнэ
-    results.sort(key=lambda x: x['rating'], reverse=True)
-    return Response(results[:10])  # Дээд тал нь 10-г харуулна
+        results = []
+        for place in RecommendedPlace.objects.all():
+            if place.latitude is None or place.longitude is None:
+                continue
+            distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
+            if distance <= 5:
+                results.append({
+                    'id': place.id,
+                    'name': place.name,
+                    'location': place.location,
+                    'description': place.description,
+                    'phone_number': place.phone_number,
+                    'rating': place.rating,
+                    'latitude': place.latitude,
+                    'longitude': place.longitude,
+                    'image': request.build_absolute_uri(place.image.url) if place.image else None,
+                    'distance': round(distance, 2),
+                })
+
+        results.sort(key=lambda x: x['rating'], reverse=True)
+        return Response(results[:10])
