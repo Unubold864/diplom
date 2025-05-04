@@ -26,9 +26,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.mulishTextTheme(Theme.of(context).textTheme),
       ),
-      home: const Login(),
+      home: const LoginPage(),
       routes: {
-        '/login': (context) => const Login(),
+        '/login': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),
         '/profile': (context) => const ProfilePage(),
         '/signup': (context) => const SignUp(),

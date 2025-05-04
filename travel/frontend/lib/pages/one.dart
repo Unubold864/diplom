@@ -59,7 +59,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                   // Navigate to login page using the same method as the original code
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => Login()),
+                    MaterialPageRoute(builder: (context) => LoginPage()),
                   );
                 },
               ),
