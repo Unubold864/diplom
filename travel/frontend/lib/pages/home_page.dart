@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/explore_page.dart';
 import 'package:frontend/pages/profile_page.dart';
 import 'package:frontend/pages/saved_page.dart';
-import 'package:frontend/widgets/location_card.dart';
 import 'package:frontend/widgets/nerby_places.dart';
 import 'package:frontend/widgets/reccommended_places.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const HomeContent(),
-    const Scaffold(body: Center(child: Text('Мэдэгдэл'))),
+    const ExplorePage(),
     const SavedPage(),
     const ProfilePage(),
   ];
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildFloatingNavItem(Icons.home, "Нүүр", 0),
-            _buildFloatingNavItem(Icons.notifications, "Мэдэгдэл", 1),
+            _buildFloatingNavItem(Icons.explore, "Хайх газар", 1),
             _buildFloatingNavItem(Icons.bookmark, "Хадгалсан", 2),
             _buildFloatingNavItem(Icons.person, "Профайл", 3),
           ],
@@ -274,7 +274,6 @@ class _HomeContentState extends State<HomeContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const LocationCard(),
                     const SizedBox(height: 20),
                     if (_isSearching)
                       _buildSearchResults()

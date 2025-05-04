@@ -12,6 +12,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from geopy.distance import geodesic
 from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import api_view
 
 
 class SignUpView(APIView):
@@ -189,4 +190,41 @@ class ParkingList(generics.ListAPIView):
         place_id = self.request.query_params.get('place')
         if place_id:
             queryset = queryset.filter(place_id=place_id)
-        return queryset
+        return queryset 
+
+@api_view(['GET'])
+def top_rated_nearby_places(request):
+    lat = request.GET.get('lat')
+    lon = request.GET.get('lon')
+
+    if not lat or not lon:
+        return Response({"detail": "Latitude and longitude are required."}, status=400)
+
+    try:
+        lat = float(lat)
+        lon = float(lon)
+    except ValueError:
+        return Response({"detail": "Invalid coordinates."}, status=400)
+
+    results = []
+    for place in RecommendedPlace.objects.all():
+        if place.latitude is None or place.longitude is None:
+            continue
+        distance = geodesic((lat, lon), (place.latitude, place.longitude)).km
+        if distance <= 5:  # 5 км радиустай
+            results.append({
+                'id': place.id,
+                'name': place.name,
+                'location': place.location,
+                'description': place.description,
+                'phone_number': place.phone_number,
+                'rating': place.rating,
+                'latitude': place.latitude,
+                'longitude': place.longitude,
+                'image': request.build_absolute_uri(place.image.url) if place.image else None,
+                'distance': round(distance, 2),
+            })
+
+    # Ойр байрлалтай газруудыг rating-р эрэмбэлнэ
+    results.sort(key=lambda x: x['rating'], reverse=True)
+    return Response(results[:10])  # Дээд тал нь 10-г харуулна
