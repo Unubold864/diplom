@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildFloatingNavItem(Icons.home, "Нүүр", 0),
-            _buildFloatingNavItem(Icons.explore, "Хайх газар", 1),
+            _buildFloatingNavItem(Icons.explore, "Үнэлгээ", 1),
             _buildFloatingNavItem(Icons.bookmark, "Хадгалсан", 2),
             _buildFloatingNavItem(Icons.person, "Профайл", 3),
           ],
