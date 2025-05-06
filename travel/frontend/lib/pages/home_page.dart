@@ -76,17 +76,18 @@ class _HomePageState extends State<HomePage> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 18 : 16, 
-          vertical: 10
+          horizontal: isSelected ? 18 : 16,
+          vertical: 10,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? persianGreen.withOpacity(0.12) : Colors.transparent,
+          color:
+              isSelected ? persianGreen.withOpacity(0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
             Icon(
-              icon, 
+              icon,
               color: isSelected ? persianGreen : Colors.grey.shade400,
               size: 22,
             ),
@@ -189,7 +190,7 @@ class _HomeContentState extends State<HomeContent> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Алдаа гарлаа: ${e.toString()}';
+        _errorMessage = 'Алдаа гарлаа: \${e.toString()}';
         _isLoading = false;
       });
     }
@@ -218,34 +219,35 @@ class _HomeContentState extends State<HomeContent> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: persianGreen,
-                strokeWidth: 3,
-              ),
-            )
-          : _errorMessage != null
+      body:
+          _isLoading
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline_rounded,
-                        size: 48,
+                child: CircularProgressIndicator(
+                  color: persianGreen,
+                  strokeWidth: 3,
+                ),
+              )
+              : _errorMessage != null
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline_rounded,
+                      size: 48,
+                      color: Colors.red.shade400,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage!,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
                         color: Colors.red.shade400,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _errorMessage!,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.red.shade400,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+                    ),
+                  ],
+                ),
+              )
               : _buildContent(),
     );
   }
@@ -321,16 +323,16 @@ class _HomeContentState extends State<HomeContent> {
                 suffixIcon:
                     _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: Icon(
-                              Icons.clear_rounded,
-                              color: Colors.grey.shade400,
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              _searchController.clear();
-                              _performSearch('');
-                            },
-                          )
+                          icon: Icon(
+                            Icons.clear_rounded,
+                            color: Colors.grey.shade400,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                            _performSearch('');
+                          },
+                        )
                         : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -352,11 +354,25 @@ class _HomeContentState extends State<HomeContent> {
           if (_isSearching)
             _buildSearchResults()
           else ...[
-            _buildSectionHeader('Санал болгох газрууд'),
+            Text(
+              'Санал болгох газрууд',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
             const SizedBox(height: 16),
             const ReccommendedPlaces(),
             const SizedBox(height: 32),
-            _buildSectionHeader('Ойролцоох газрууд'),
+            Text(
+              'Ойролцоох газрууд',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
             const SizedBox(height: 16),
             const NerbyPlaces(),
           ],
@@ -370,7 +386,7 @@ class _HomeContentState extends State<HomeContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Хайлтын үр дүн (${_searchResults.length})',
+          'Хайлтын үр дүн (\${_searchResults.length})',
           style: GoogleFonts.poppins(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -476,7 +492,7 @@ class _HomeContentState extends State<HomeContent> {
                                   size: 16,
                                 ),
                                 Text(
-                                  ' ${place['rating']}',
+                                  " ${place['rating']}",
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w500,
                                     color: Colors.amber.shade800,
@@ -503,7 +519,7 @@ class _HomeContentState extends State<HomeContent> {
                                   color: persianGreen,
                                 ),
                                 Text(
-                                  ' ${place['distance']}',
+                                  " ${place['distance']}",
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w500,
                                     color: persianGreen,
@@ -520,39 +536,6 @@ class _HomeContentState extends State<HomeContent> {
               );
             },
           ),
-      ],
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        TextButton(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: Text(
-            'Бүгдийг харах',
-            style: GoogleFonts.poppins(
-              color: persianGreen,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-        ),
       ],
     );
   }
