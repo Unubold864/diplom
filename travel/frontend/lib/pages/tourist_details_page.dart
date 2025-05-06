@@ -863,20 +863,6 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "\$${widget.hotelRating}",
-                    style: GoogleFonts.poppins(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
-                  ),
-                  Text(
-                    "хоногийн үнэ",
-                    style: GoogleFonts.poppins(color: secondaryTextColor),
-                  ),
-                ],
               ),
               const Spacer(),
               SizedBox(
@@ -902,7 +888,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                             ),
                           )
                           : Text(
-                            "Захиалах",
+                            "Очих замыг харах",
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
