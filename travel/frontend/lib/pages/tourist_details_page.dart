@@ -863,6 +863,16 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Газрын байршил",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
+                  ),
+                ],
               ),
               const Spacer(),
               SizedBox(
