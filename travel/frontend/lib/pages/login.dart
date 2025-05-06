@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'sign_up.dart';
 import 'forget_password.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,8 +18,13 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+  bool _isLoading = false;
 
   Future<void> _login(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final url = Uri.parse('http://127.0.0.1:8000/api/login/');
     try {
       final response = await http.post(
@@ -29,6 +35,10 @@ class _LoginPageState extends State<LoginPage> {
           'password': _passwordController.text,
         }),
       );
+
+      setState(() {
+        _isLoading = false;
+      });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -44,15 +54,40 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (context) => const HomePage()),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Нэвтрэхэд алдаа гарлаа: ${response.body}')),
+        _showErrorDialog(
+          'Нэвтрэхэд алдаа гарлаа',
+          'Таны оруулсан мэдээлэл буруу байна. Дахин оролдоно уу.',
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Сервертэй холбогдож чадсангүй')),
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorDialog(
+        'Холболтын алдаа',
+        'Сервертэй холбогдож чадсангүй. Интернэт холболтоо шалгана уу.',
       );
     }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Ойлголоо'),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -62,10 +97,20 @@ class _LoginPageState extends State<LoginPage> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1E88E5), Color(0xFFBBDEFB)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+          image: DecorationImage(
+            image: AssetImage(
+              'assets/zs.jpg',
+            ), // Background image of historical landmark
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Color.fromRGBO(
+                0,
+                0,
+                0,
+                0.4,
+              ), // Darkened overlay for better text readability
+              BlendMode.darken,
+            ),
           ),
         ),
         child: SafeArea(
@@ -75,73 +120,143 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.travel_explore,
-                    size: 80,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Аяллын Апп-д тавтай морил!',
-                    style: TextStyle(
-                      fontSize: 22,
+                  // Logo and app name
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.location_on,
+                      size: 60,
                       color: Colors.white,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 28),
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Түүхэн дурсгалт газар',
+                    style: TextStyle(
+                      fontSize: 28,
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(28),
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Монголын түүхийг нээж, танилцъя',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+
+                  // Login Form
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black12,
+                          color: Colors.black.withOpacity(0.2),
                           blurRadius: 20,
-                          offset: Offset(0, 10),
+                          offset: const Offset(0, 10),
                         ),
                       ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Center(
+                          child: Text(
+                            'Нэвтрэх',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF36454F),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        // Email field
                         const Text(
                           'Имэйл хаяг',
-                          style: TextStyle(fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF36454F),
+                          ),
                         ),
                         const SizedBox(height: 8),
-                        TextField(
+                        TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
                             hintText: 'example@mail.com',
-                            prefixIcon: const Icon(Icons.email_outlined),
+                            hintStyle: TextStyle(color: Colors.grey[500]),
+                            prefixIcon: const Icon(
+                              Icons.email_outlined,
+                              color: Color(0xFF607D8B),
+                            ),
                             filled: true,
                             fillColor: Colors.grey[100],
-                            border: OutlineInputBorder(
+                            enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                color: Color(0xFF607D8B),
+                                width: 1.5,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16,
                             ),
                           ),
                           keyboardType: TextInputType.emailAddress,
                         ),
+
                         const SizedBox(height: 20),
+
+                        // Password field
                         const Text(
                           'Нууц үг',
-                          style: TextStyle(fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF36454F),
+                          ),
                         ),
                         const SizedBox(height: 8),
-                        TextField(
+                        TextFormField(
                           controller: _passwordController,
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             hintText: '•••••••',
-                            prefixIcon: const Icon(Icons.lock_outline),
+                            hintStyle: TextStyle(color: Colors.grey[500]),
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Color(0xFF607D8B),
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscureText
                                     ? Icons.visibility_off
                                     : Icons.visibility,
+                                color: Color(0xFF607D8B),
                               ),
                               onPressed:
                                   () => setState(
@@ -150,12 +265,23 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             filled: true,
                             fillColor: Colors.grey[100],
-                            border: OutlineInputBorder(
+                            enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide.none,
                             ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                color: Color(0xFF607D8B),
+                                width: 1.5,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                            ),
                           ),
                         ),
+
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
@@ -166,29 +292,59 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (_) => const ForgetPassword(),
                                   ),
                                 ),
-                            child: const Text('Нууц үгээ мартсан уу?'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Color(0xFF607D8B),
+                            ),
+                            child: const Text(
+                              'Нууц үгээ мартсан уу?',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+
+                        const SizedBox(height: 24),
+
+                        // Login button
                         SizedBox(
                           width: double.infinity,
-                          height: 50,
+                          height: 54,
                           child: ElevatedButton(
-                            onPressed: () => _login(context),
+                            onPressed:
+                                _isLoading ? null : () => _login(context),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1976D2),
+                              backgroundColor: const Color(0xFF36454F),
                               foregroundColor: Colors.white,
+                              disabledBackgroundColor: Colors.grey,
+                              elevation: 2,
+                              shadowColor: Colors.black38,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
-                            child: const Text(
-                              'НЭВТРЭХ',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                            child:
+                                _isLoading
+                                    ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                    : const Text(
+                                      'НЭВТРЭХ',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+
+                        const SizedBox(height: 24),
+
+                        // Register link
                         Center(
                           child: GestureDetector(
                             onTap:
@@ -201,13 +357,17 @@ class _LoginPageState extends State<LoginPage> {
                             child: RichText(
                               text: const TextSpan(
                                 text: 'Шинэ хэрэглэгч үү? ',
-                                style: TextStyle(color: Colors.black),
+                                style: TextStyle(
+                                  color: Color(0xFF36454F),
+                                  fontSize: 15,
+                                ),
                                 children: [
                                   TextSpan(
                                     text: 'Бүртгүүлэх',
                                     style: TextStyle(
-                                      color: Colors.blue,
+                                      color: Color(0xFF607D8B),
                                       fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
                                     ),
                                   ),
                                 ],
@@ -216,6 +376,17 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Footer text
+                  Text(
+                    '© 2025 Түүхэн дурсгалт газар',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 12,
                     ),
                   ),
                 ],

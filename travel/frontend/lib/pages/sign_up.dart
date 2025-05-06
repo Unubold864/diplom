@@ -17,6 +17,7 @@ class _SignUpState extends State<SignUp> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -28,6 +29,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<void> _signUp(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final url = Uri.parse('http://127.0.0.1:8000/api/signup/');
     try {
       final response = await http.post(
@@ -40,21 +45,65 @@ class _SignUpState extends State<SignUp> {
         }),
       );
 
+      setState(() {
+        _isLoading = false;
+      });
+
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Бүртгэл амжилттай үүслээ!')),
-        );
-        Navigator.pop(context);
+        _showSuccessDialog();
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Алдаа: ${response.body}')));
+        _showErrorDialog('Бүртгэл үүсгэхэд алдаа гарлаа', 
+            'Таны оруулсан мэдээлэл буруу эсвэл бүртгэлтэй хэрэглэгч байна.');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Сервертэй холбогдож чадсангүй')),
-      );
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorDialog('Холболтын алдаа', 
+          'Сервертэй холбогдож чадсангүй. Интернэт холболтоо шалгана уу.');
     }
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text('Амжилттай'),
+        content: const Text('Таны бүртгэл амжилттай үүслээ!'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pop(); // Return to login page
+            },
+            child: const Text('Нэвтрэх хуудас руу буцах'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Ойлголоо'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -64,45 +113,75 @@ class _SignUpState extends State<SignUp> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF42A5F5), Color(0xFF1976D2)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          image: DecorationImage(
+            image: AssetImage('assets/zs.jpg'), // Historical monument image
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Color.fromRGBO(0, 0, 0, 0.5), // Darker overlay for better text readability
+              BlendMode.darken,
+            ),
           ),
         ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.person_add_alt_1,
-                      size: 80,
-                      color: Colors.white,
+                    // App Logo & Header
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.location_on,
+                        size: 50,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Шинэ бүртгэл үүсгэх',
+                      'Түүхэн дурсгалт газар',
                       style: TextStyle(
                         fontSize: 24,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'Бүртгэл үүсгэх',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 32),
+                    
+                    // Sign Up Form Card
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(28),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.white.withOpacity(0.9),
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 12,
-                            offset: Offset(0, 6),
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
@@ -111,71 +190,118 @@ class _SignUpState extends State<SignUp> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildField(
+                            // Name Field
+                            _buildLabeledField(
                               'Нэр',
                               _nameController,
                               Icons.person_outline,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Нэр оруулна уу';
+                                }
+                                return null;
+                              },
                             ),
-                            const SizedBox(height: 16),
-                            _buildField(
-                              'Имэйл',
+                            const SizedBox(height: 20),
+                            
+                            // Email Field
+                            _buildLabeledField(
+                              'Имэйл хаяг',
                               _emailController,
                               Icons.email_outlined,
-                              type: TextInputType.emailAddress,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Имэйл хаяг оруулна уу';
+                                }
+                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                  return 'Зөв имэйл хаяг оруулна уу';
+                                }
+                                return null;
+                              },
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 20),
+                            
+                            // Password Field
                             _buildPasswordField(
                               'Нууц үг',
                               _passwordController,
                               _obscurePassword,
                               (val) => setState(() => _obscurePassword = val),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 20),
+                            
+                            // Confirm Password Field
                             _buildPasswordField(
                               'Нууц үг давтах',
                               _confirmPasswordController,
                               _obscureConfirmPassword,
-                              (val) =>
-                                  setState(() => _obscureConfirmPassword = val),
-                              confirm: _passwordController.text,
+                              (val) => setState(() => _obscureConfirmPassword = val),
+                              isConfirmPassword: true,
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 28),
+                            
+                            // Register Button
                             SizedBox(
                               width: double.infinity,
-                              height: 50,
+                              height: 54,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    _signUp(context);
-                                  }
-                                },
+                                onPressed: _isLoading
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          _signUp(context);
+                                        }
+                                      },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1976D2),
+                                  backgroundColor: const Color(0xFF36454F),
                                   foregroundColor: Colors.white,
+                                  disabledBackgroundColor: Colors.grey,
+                                  elevation: 3,
+                                  shadowColor: Colors.black38,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
-                                child: const Text(
-                                  'БҮРТГҮҮЛЭХ',
-                                  style: TextStyle(fontSize: 16),
-                                ),
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'БҮРТГҮҮЛЭХ',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1.2,
+                                        ),
+                                      ),
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 20),
+                            
+                            // Back to Login Link
                             Center(
                               child: GestureDetector(
                                 onTap: () => Navigator.pop(context),
                                 child: RichText(
                                   text: const TextSpan(
                                     text: 'Бүртгэлтэй хэрэглэгч үү? ',
-                                    style: TextStyle(color: Colors.black),
+                                    style: TextStyle(
+                                      color: Color(0xFF36454F),
+                                      fontSize: 15,
+                                    ),
                                     children: [
                                       TextSpan(
                                         text: 'Нэвтрэх',
                                         style: TextStyle(
-                                          color: Colors.blue,
+                                          color: Color(0xFF607D8B),
                                           fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.underline,
                                         ),
                                       ),
                                     ],
@@ -185,6 +311,17 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 20),
+                    
+                    // Footer text
+                    Text(
+                      '© 2025 Түүхэн дурсгалт газар',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -197,31 +334,55 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _buildField(
+  Widget _buildLabeledField(
     String label,
     TextEditingController controller,
     IconData icon, {
-    TextInputType type = TextInputType.text,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF36454F),
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          keyboardType: type,
+          keyboardType: keyboardType,
+          validator: validator,
           decoration: InputDecoration(
-            prefixIcon: Icon(icon),
             hintText: '$label оруулна уу',
-            border: const OutlineInputBorder(),
+            hintStyle: TextStyle(color: Colors.grey[400]),
+            prefixIcon: Icon(
+              icon,
+              color: const Color(0xFF607D8B),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFF607D8B), width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return '$label оруулна уу';
-            }
-            return null;
-          },
         ),
       ],
     );
@@ -232,37 +393,68 @@ class _SignUpState extends State<SignUp> {
     TextEditingController controller,
     bool obscure,
     Function(bool) onToggle, {
-    String? confirm,
+    bool isConfirmPassword = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF36454F),
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           obscureText: obscure,
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.lock_outline),
-            hintText: '$label оруулна уу',
-            border: const OutlineInputBorder(),
-            suffixIcon: IconButton(
-              icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
-              onPressed: () => onToggle(!obscure),
-            ),
-          ),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return '$label оруулна уу';
             }
-            if (confirm != null && value != confirm) {
-              return 'Нууц үг таарахгүй байна';
-            }
-            if (value.length < 6) {
+            if (!isConfirmPassword && value.length < 6) {
               return 'Нууц үг хамгийн багадаа 6 тэмдэгт байна';
+            }
+            if (isConfirmPassword && value != _passwordController.text) {
+              return 'Нууц үг таарахгүй байна';
             }
             return null;
           },
+          decoration: InputDecoration(
+            hintText: '$label оруулна уу',
+            hintStyle: TextStyle(color: Colors.grey[400]),
+            prefixIcon: const Icon(
+              Icons.lock_outline,
+              color: Color(0xFF607D8B),
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscure ? Icons.visibility_off : Icons.visibility,
+                color: const Color(0xFF607D8B),
+              ),
+              onPressed: () => onToggle(!obscure),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFF607D8B), width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          ),
         ),
       ],
     );

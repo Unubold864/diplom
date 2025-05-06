@@ -163,9 +163,6 @@ class _HomeContentState extends State<HomeContent> {
           'distance': '3.2 км',
           'rating': 4.7,
         },
-      ];
-
-      final nearby = [
         {
           'id': 3,
           'name': 'Сүхбаатарын талбай',
@@ -185,12 +182,12 @@ class _HomeContentState extends State<HomeContent> {
       ];
 
       setState(() {
-        _allPlaces = [...recommended, ...nearby];
+        _allPlaces = recommended;
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Алдаа гарлаа: \${e.toString()}';
+        _errorMessage = 'Алдаа гарлаа: ${e.toString()}';
         _isLoading = false;
       });
     }
@@ -199,18 +196,12 @@ class _HomeContentState extends State<HomeContent> {
   void _performSearch(String query) {
     setState(() {
       _isSearching = query.isNotEmpty;
-      _searchResults =
-          _isSearching
-              ? _allPlaces.where((place) {
-                final searchLower = query.toLowerCase();
-                return place['name'].toLowerCase().contains(searchLower) ||
-                    place['type'].toLowerCase().contains(searchLower) ||
-                    (place['description']?.toLowerCase()?.contains(
-                          searchLower,
-                        ) ??
-                        false);
-              }).toList()
-              : [];
+      _searchResults = _allPlaces.where((place) {
+        final searchLower = query.toLowerCase();
+        return place['name'].toLowerCase().contains(searchLower) ||
+            place['type'].toLowerCase().contains(searchLower) ||
+            (place['description']?.toLowerCase()?.contains(searchLower) ?? false);
+      }).toList();
     });
   }
 
@@ -219,35 +210,24 @@ class _HomeContentState extends State<HomeContent> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body:
-          _isLoading
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: persianGreen, strokeWidth: 3),
+            )
+          : _errorMessage != null
               ? Center(
-                child: CircularProgressIndicator(
-                  color: persianGreen,
-                  strokeWidth: 3,
-                ),
-              )
-              : _errorMessage != null
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline_rounded,
-                      size: 48,
-                      color: Colors.red.shade400,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _errorMessage!,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.red.shade400,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline_rounded, size: 48, color: Colors.red.shade400),
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage!,
+                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.red.shade400),
                       ),
-                    ),
-                  ],
-                ),
-              )
+                    ],
+                  ),
+                )
               : _buildContent(),
     );
   }
@@ -265,11 +245,7 @@ class _HomeContentState extends State<HomeContent> {
       ),
       title: Text(
         'Сайн байна уу',
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 22,
-        ),
+        style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 22),
       ),
       actions: [
         Container(
@@ -279,11 +255,7 @@ class _HomeContentState extends State<HomeContent> {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: const Icon(
-              Icons.notifications_outlined,
-              color: Colors.white,
-              size: 24,
-            ),
+            icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 24),
             onPressed: () {},
           ),
         ),
@@ -311,29 +283,17 @@ class _HomeContentState extends State<HomeContent> {
               style: GoogleFonts.poppins(fontSize: 15),
               decoration: InputDecoration(
                 hintText: 'Хайх...',
-                hintStyle: GoogleFonts.poppins(
-                  color: Colors.grey.shade400,
-                  fontSize: 15,
-                ),
-                prefixIcon: Icon(
-                  Icons.search_rounded,
-                  color: persianGreen,
-                  size: 22,
-                ),
-                suffixIcon:
-                    _searchController.text.isNotEmpty
-                        ? IconButton(
-                          icon: Icon(
-                            Icons.clear_rounded,
-                            color: Colors.grey.shade400,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            _searchController.clear();
-                            _performSearch('');
-                          },
-                        )
-                        : null,
+                hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400, fontSize: 15),
+                prefixIcon: Icon(Icons.search_rounded, color: persianGreen, size: 22),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear_rounded, color: Colors.grey.shade400, size: 20),
+                        onPressed: () {
+                          _searchController.clear();
+                          _performSearch('');
+                        },
+                      )
+                    : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
               ),
@@ -356,22 +316,14 @@ class _HomeContentState extends State<HomeContent> {
           else ...[
             Text(
               'Санал болгох газрууд',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
             const SizedBox(height: 16),
             const ReccommendedPlaces(),
             const SizedBox(height: 32),
             Text(
               'Ойролцоох газрууд',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
             const SizedBox(height: 16),
             const NerbyPlaces(),
@@ -386,12 +338,8 @@ class _HomeContentState extends State<HomeContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Хайлтын үр дүн (\${_searchResults.length})',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          'Хайлтын үр дүн (${_searchResults.length})',
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         const SizedBox(height: 16),
         if (_searchResults.isEmpty)
@@ -399,19 +347,11 @@ class _HomeContentState extends State<HomeContent> {
             child: Column(
               children: [
                 const SizedBox(height: 40),
-                Icon(
-                  Icons.search_off_rounded,
-                  size: 64,
-                  color: Colors.grey.shade300,
-                ),
+                Icon(Icons.search_off_rounded, size: 64, color: Colors.grey.shade300),
                 const SizedBox(height: 16),
                 Text(
                   'Үр дүн олдсонгүй',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.grey.shade400,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey.shade400, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -445,21 +385,13 @@ class _HomeContentState extends State<HomeContent> {
                       color: persianGreen.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
-                      Icons.place_rounded,
-                      color: persianGreen,
-                      size: 28,
-                    ),
+                    child: Icon(Icons.place_rounded, color: persianGreen, size: 28),
                   ),
                   title: Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
                       place['name'],
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16, color: Colors.black87),
                     ),
                   ),
                   subtitle: Column(
@@ -467,30 +399,20 @@ class _HomeContentState extends State<HomeContent> {
                     children: [
                       Text(
                         place['type'],
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey.shade600,
-                          fontSize: 14,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.grey.shade600, fontSize: 14),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.amber.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.star_rounded,
-                                  color: Colors.amber,
-                                  size: 16,
-                                ),
+                                const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
                                 Text(
                                   " ${place['rating']}",
                                   style: GoogleFonts.poppins(
@@ -503,21 +425,14 @@ class _HomeContentState extends State<HomeContent> {
                           ),
                           const SizedBox(width: 12),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: persianGreen.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
-                                Icon(
-                                  Icons.directions_walk_rounded,
-                                  size: 16,
-                                  color: persianGreen,
-                                ),
+                                Icon(Icons.directions_walk_rounded, size: 16, color: persianGreen),
                                 Text(
                                   " ${place['distance']}",
                                   style: GoogleFonts.poppins(
