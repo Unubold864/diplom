@@ -1222,9 +1222,9 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
 
                   Text(
                     "Холбогдох",
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
                       color: textColor,
                     ),
                   ),
@@ -1232,21 +1232,18 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFe0f7fa), Color(0xFFffffff)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          blurRadius: 12,
-                          offset: Offset(0, 4),
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -1276,7 +1273,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                               const SizedBox(height: 4),
                               Text(
                                 widget.phoneNumber,
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.inter(
                                   fontSize: 14,
                                   color: Colors.grey[700],
                                 ),
@@ -1288,12 +1285,12 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                           children: [
                             InkWell(
                               onTap: () {},
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.blue.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(
                                   Icons.message,
@@ -1305,12 +1302,12 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                             const SizedBox(width: 8),
                             InkWell(
                               onTap: _makePhoneCall,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Colors.green.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.green.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(
                                   Icons.call,
