@@ -286,7 +286,7 @@ class _HomeContentState extends State<HomeContent> {
           fit: StackFit.expand,
           children: [
             Image.asset(
-              'assets/sk.png', // <-- таны asset замыг энд бичнэ
+              'assets/YouTube.png', // <-- таны asset замыг энд бичнэ
               fit: BoxFit.cover,
             ),
             Container(
