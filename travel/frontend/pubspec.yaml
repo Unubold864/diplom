@@ -49,6 +49,7 @@ dependencies:
   flutter_google_maps_webservices: ^1.1.1
   flutter_svg: ^2.1.0
   flutter_map: ^8.1.1
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
