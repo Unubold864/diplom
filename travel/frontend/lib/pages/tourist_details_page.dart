@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/p%5BlaceMapPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -178,40 +179,39 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
   // TouristDetailsPage.dart - Зөвхөн газрын байршилтай холбоотой нэмэлт
 
   Future<void> _openMap() async {
-    final response = await http.get(
-      Uri.parse(
-        'http://127.0.0.1:8000/api/places/${widget.placeId}/',
-      ), 
-      headers: {'Accept': 'application/json'},
-    );
+  final response = await http.get(
+    Uri.parse('http://127.0.0.1:8000/api/places/${widget.placeId}/'),
+    headers: {'Accept': 'application/json'},
+  );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final latitude = data['latitude'];
-      final longitude = data['longitude'];
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final latitude = data['latitude'];
+    final longitude = data['longitude'];
 
-      if (latitude != null && longitude != null) {
-        final mapUrl = Uri.parse(
-          'https://www.google.com/maps/search/?api=1&query=\$latitude,\$longitude',
-        );
-        if (await canLaunchUrl(mapUrl)) {
-          await launchUrl(mapUrl, mode: LaunchMode.externalApplication);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Google Maps нээгдсэнгүй')),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Байршлын координат алга байна')),
-        );
-      }
+    if (latitude != null && longitude != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapScreen(
+            latitude: latitude,
+            longitude: longitude,
+            placeName: widget.name,
+          ),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Газрын мэдээлэл олдсонгүй')),
+        const SnackBar(content: Text('Байршлын координат алга байна')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Газрын мэдээлэл олдсонгүй')),
+    );
   }
+}
+
 
   void _showRestaurants(BuildContext context) {
     showModalBottomSheet(
