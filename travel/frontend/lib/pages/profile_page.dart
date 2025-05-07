@@ -13,8 +13,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // Define Persian Green as the primary color
-  final Color persianGreen = const Color(0xFF00A896);
+  // Define a modern color palette
+  final Color primaryColor = const Color(0xFF00A896);
+  final Color accentColor = const Color(0xFF05668D);
+  final Color backgroundColor = const Color(0xFFF8F9FA);
+  final Color cardColor = Colors.white;
+  final Color textPrimaryColor = const Color(0xFF2D3142);
+  final Color textSecondaryColor = const Color(0xFF9A9FB3);
   
   // Create an instance of our API service
   final ApiService _apiService = ApiService();
@@ -74,13 +79,14 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text('Алдаа', style: GoogleFonts.poppins(color: Colors.red)),
         content: Text(message, style: GoogleFonts.poppins()),
         actions: <Widget>[
           TextButton(
             child: Text(
               'Ойлголоо',
-              style: GoogleFonts.poppins(color: persianGreen),
+              style: GoogleFonts.poppins(color: primaryColor),
             ),
             onPressed: () {
               Navigator.of(ctx).pop();
@@ -108,39 +114,27 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // The rest of your UI code stays the same
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-        ),
+        backgroundColor: cardColor,
+        centerTitle: true,
         title: Text(
           "Профайл",
           style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: textPrimaryColor,
           ),
         ),
         actions: [
           CustomIconButton(
             icon: Icon(
               ionicons['settings_outline'] ?? Icons.settings,
-              color: persianGreen,
+              color: primaryColor,
               size: 24,
             ),
             onTap: () {
@@ -151,24 +145,24 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          color: persianGreen,
+          color: primaryColor,
           onRefresh: _fetchUserProfile,
           child: _isLoading 
               ? _buildLoadingState()
               : SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       _buildProfileHeader(),
                       const SizedBox(height: 30),
                       _buildProfileSection(),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 16),
                       _buildAccountSection(),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 16),
                       _buildPreferencesSection(),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 40),
                       _buildLogoutButton(),
                       const SizedBox(height: 50),
                     ],
@@ -179,34 +173,74 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // The rest of your widget building methods remain the same
   Widget _buildLoadingState() {
-    return const Center(
-      child: CircularProgressIndicator(),
+    return Center(
+      child: SizedBox(
+        width: 40,
+        height: 40,
+        child: CircularProgressIndicator(
+          color: primaryColor,
+          strokeWidth: 3,
+        ),
+      ),
     );
   }
 
   Widget _buildProfileHeader() {
-    return Center(
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            primaryColor,
+            accentColor,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 60,
-            backgroundColor: persianGreen.withOpacity(0.1),
-            child: Icon(ionicons['person'] ?? Icons.person, size: 70, color: persianGreen),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: CircleAvatar(
+              radius: 55,
+              backgroundColor: Colors.white,
+              child: Icon(
+                ionicons['person'] ?? Icons.person, 
+                size: 55, 
+                color: primaryColor
+              ),
+            ),
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 16),
           Text(
             _userData['name'] ?? 'Хэрэглэгч',
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Colors.white,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             _userData['email'] ?? 'email@example.com',
-            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+            style: GoogleFonts.poppins(
+              fontSize: 14, 
+              color: Colors.white.withOpacity(0.9),
+            ),
           ),
         ],
       ),
@@ -214,19 +248,23 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildLogoutButton() {
-    return ElevatedButton(
-      onPressed: _logout,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: persianGreen,
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-      child: Text(
-        'Гарах',
-        style: GoogleFonts.poppins(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _logout,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.redAccent,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          elevation: 0,
+        ),
+        child: Text(
+          'Гарах',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
@@ -272,20 +310,6 @@ class _ProfilePageState extends State<ProfilePage> {
             // TODO: Төлбөрийн хэрэгслүүдийн хуудас руу шилжих
           },
         ),
-        _buildProfileItem(
-          icon: ionicons['bookmark_outline'] ?? Icons.bookmark_border,
-          title: "Захиалгууд",
-          onTap: () {
-            // TODO: Захиалгуудын хуудас руу шилжих
-          },
-        ),
-        _buildProfileItem(
-          icon: ionicons['heart_outline'] ?? Icons.favorite_border,
-          title: "Миний дуртай",
-          onTap: () {
-            // TODO: Таалагдсан зүйлсийн хуудас руу шилжих
-          },
-        ),
       ],
     );
   }
@@ -304,9 +328,10 @@ class _ProfilePageState extends State<ProfilePage> {
         _buildProfileItem(
           icon: ionicons['moon_outline'] ?? Icons.dark_mode_outlined,
           title: "Харанхуй горим",
-          trailing: Switch(
+          trailing: Switch.adaptive(
             value: _isDarkMode,
-            activeColor: persianGreen,
+            activeColor: primaryColor,
+            activeTrackColor: primaryColor.withOpacity(0.3),
             onChanged: (bool value) {
               setState(() {
                 _isDarkMode = value;
@@ -329,13 +354,13 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildSection({required String title, required List<Widget> items}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -343,16 +368,17 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
             child: Text(
               title,
               style: GoogleFonts.poppins(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+                color: textPrimaryColor,
               ),
             ),
           ),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
           ...items,
         ],
       ),
@@ -365,15 +391,37 @@ class _ProfilePageState extends State<ProfilePage> {
     VoidCallback? onTap,
     Widget? trailing,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: persianGreen, size: 24),
-      title: Text(
-        title,
-        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
-      ),
-      trailing: trailing ??
-          Icon(ionicons['chevron_forward_outline'] ?? Icons.chevron_right, color: Colors.grey[400]),
+    return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: ListTile(
+          leading: Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: primaryColor, size: 20),
+          ),
+          title: Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 15, 
+              fontWeight: FontWeight.w500,
+              color: textPrimaryColor,
+            ),
+          ),
+          trailing: trailing ??
+              Icon(
+                ionicons['chevron_forward_outline'] ?? Icons.chevron_right, 
+                color: textSecondaryColor,
+                size: 20,
+              ),
+        ),
+      ),
     );
   }
 }
