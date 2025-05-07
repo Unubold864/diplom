@@ -263,7 +263,6 @@ class _HomeContentState extends State<HomeContent> {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Сайн байна уу', style: TextStyle(color: Colors.white)),
           Text('Монголын үзэсгэлэнт газрууд',
               style: TextStyle(color: Colors.white70)),
         ],
