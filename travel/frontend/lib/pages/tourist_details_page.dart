@@ -1152,14 +1152,33 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFe0f7fa), Color(0xFFffffff)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          blurRadius: 12,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Row(
                       children: [
-                        const CircleAvatar(
-                          radius: 24,
-                          child: Icon(Icons.person, size: 30),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.person,
+                            size: 28,
+                            color: Colors.black54,
+                          ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -1169,30 +1188,63 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                               Text(
                                 "Өнөболд",
                                 style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w600,
                                   fontSize: 16,
+                                  color: Colors.black87,
                                 ),
                               ),
+                              const SizedBox(height: 4),
                               Text(
                                 widget.phoneNumber,
                                 style: GoogleFonts.poppins(
-                                  color: secondaryTextColor,
+                                  fontSize: 14,
+                                  color: Colors.grey[700],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.message, color: primaryColor),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.call, color: primaryColor),
-                          onPressed: _makePhoneCall,
+                        Row(
+                          children: [
+                            InkWell(
+                              onTap: () {},
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.message,
+                                  color: Colors.blue,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            InkWell(
+                              onTap: _makePhoneCall,
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.call,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 80),
                 ],
               ),
@@ -1216,24 +1268,11 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
         child: SafeArea(
           child: Row(
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-              ),
-              const Spacer(),
-              SizedBox(
-                width: 150,
-                child: ElevatedButton(
+              Expanded(
+                child: ElevatedButton.icon(
                   onPressed: _isBooking ? null : _openMap,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child:
+                  icon: const Icon(Icons.map_rounded, size: 22),
+                  label:
                       _isBooking
                           ? const SizedBox(
                             width: 20,
@@ -1244,12 +1283,25 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                             ),
                           )
                           : Text(
-                            "Газрын байршил",
+                            "Газрын байршлыг харах",
                             style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
+                  style: ElevatedButton.styleFrom(
+                    elevation: 6,
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
+                    shadowColor: Colors.black.withOpacity(0.2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
                 ),
               ),
             ],
