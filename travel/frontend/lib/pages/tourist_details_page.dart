@@ -1025,116 +1025,196 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                   Divider(color: Colors.grey[300], height: 1),
                   const SizedBox(height: 24),
 
-                  Text(
-                    "Тайлбар",
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    widget.description,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      color: secondaryTextColor,
-                      height: 1.6,
-                    ),
-                  ),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Description Section
+                        Text(
+                          "Тайлбар",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            widget.description,
+                            style: GoogleFonts.inter(
+                              fontSize: 15,
+                              color: secondaryTextColor,
+                              height: 1.6,
+                            ),
+                          ),
+                        ),
 
-                  const SizedBox(height: 24),
-                  Divider(color: Colors.grey[300], height: 1),
-                  const SizedBox(height: 24),
+                        const SizedBox(height: 32),
 
-                  Text(
-                    "Үйлчилгээ",
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 4,
-                    childAspectRatio: 0.9,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    children: [
-                      _buildFeatureItem(Icons.hotel, "Зочид буудал"),
-                      _buildFeatureItem(Icons.restaurant, "Ресторан"),
-                      _buildFeatureItem(Icons.local_parking, "Зогсоол"),
-                    ],
-                  ),
-
-                  if (widget.images.isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    Divider(color: Colors.grey[300], height: 1),
-                    const SizedBox(height: 24),
-                    Text(
-                      "Зураг",
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 100,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: widget.images.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 10),
-                        itemBuilder:
-                            (_, index) => GestureDetector(
-                              onTap:
-                                  () => _showImageDialog(
-                                    context,
-                                    widget.images[index],
-                                  ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: AspectRatio(
-                                  aspectRatio: 1,
-                                  child: Image.network(
-                                    widget.images[index],
-                                    fit: BoxFit.cover,
-                                    loadingBuilder: (
-                                      context,
-                                      child,
-                                      loadingProgress,
-                                    ) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                primaryColor,
-                                              ),
-                                        ),
-                                      );
-                                    },
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              color: Colors.grey[200],
-                                              child: const Icon(
-                                                Icons.broken_image,
-                                                size: 30,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                  ),
-                                ),
+                        // Services Section
+                        Row(
+                          children: [
+                            Text(
+                              "Үйлчилгээ",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
                               ),
                             ),
-                      ),
+                            const Spacer(),
+                            Text(
+                              "Бүгд",
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: primaryColor,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: primaryColor,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildFeatureItem(
+                              Icons.hotel_outlined,
+                              "Зочид буудал",
+                            ),
+                            _buildFeatureItem(
+                              Icons.restaurant_outlined,
+                              "Ресторан",
+                            ),
+                            _buildFeatureItem(
+                              Icons.local_parking_outlined,
+                              "Зогсоол",
+                            ),
+                          ],
+                        ),
+
+                        // Photos Section
+                        if (widget.images.isNotEmpty) ...[
+                          const SizedBox(height: 32),
+                          Row(
+                            children: [
+                              Text(
+                                "Зураг",
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                  color: textColor,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                "${widget.images.length} зураг",
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 120,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: widget.images.length,
+                              separatorBuilder:
+                                  (_, __) => const SizedBox(width: 12),
+                              itemBuilder:
+                                  (_, index) => GestureDetector(
+                                    onTap:
+                                        () => _showImageDialog(
+                                          context,
+                                          widget.images[index],
+                                        ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Container(
+                                        width: 120,
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.1,
+                                              ),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Image.network(
+                                          widget.images[index],
+                                          fit: BoxFit.cover,
+                                          loadingBuilder: (
+                                            context,
+                                            child,
+                                            loadingProgress,
+                                          ) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Container(
+                                              color: Colors.grey[100],
+                                              child: Center(
+                                                child: CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                        Color
+                                                      >(primaryColor),
+                                                  strokeWidth: 2,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder:
+                                              (
+                                                context,
+                                                error,
+                                                stackTrace,
+                                              ) => Container(
+                                                color: Colors.grey[100],
+                                                child: const Center(
+                                                  child: Icon(
+                                                    Icons
+                                                        .image_not_supported_outlined,
+                                                    size: 32,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
+                  ),
 
                   const SizedBox(height: 24),
                   Divider(color: Colors.grey[300], height: 1),
@@ -1332,26 +1412,45 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
           );
         }
       },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
-              shape: BoxShape.circle,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              spreadRadius: 1,
+              offset: const Offset(0, 2),
             ),
-            child: Icon(icon, color: primaryColor, size: 20),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: GoogleFonts.poppins(fontSize: 12),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: primaryColor, size: 24),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
