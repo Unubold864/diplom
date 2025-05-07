@@ -13,6 +13,7 @@ from geopy.distance import geodesic
 from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny
 
 
 class SignUpView(APIView):
@@ -229,3 +230,14 @@ class TopRatedNearbyPlacesView(APIView):
 
         results.sort(key=lambda x: x['rating'], reverse=True)
         return Response(results[:10])
+
+class RecommendedPlaceDetailView(APIView):
+    permission_classes = [AllowAny]  # нэвтрэлт шаардахгүй болгоно
+
+    def get(self, request, pk):
+        try:
+            place = RecommendedPlace.objects.get(pk=pk)
+            serializer = RecommendedPlaceSerializer(place, context={"request": request})
+            return Response(serializer.data, status=200)
+        except RecommendedPlace.DoesNotExist:
+            return Response({"detail": "Place not found"}, status=404)

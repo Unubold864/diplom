@@ -157,22 +157,6 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
     );
   }
 
-  Future<void> _bookNow() async {
-    setState(() => _isBooking = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isBooking = false);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${widget.name} захиалга амжилттай',
-          style: GoogleFonts.poppins(),
-        ),
-        backgroundColor: primaryColor,
-      ),
-    );
-  }
-
   Future<void> _makePhoneCall() async {
     final Uri launchUri = Uri(scheme: 'tel', path: widget.phoneNumber);
     if (await canLaunchUrl(launchUri)) {
@@ -187,6 +171,44 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
           ),
           backgroundColor: Colors.red,
         ),
+      );
+    }
+  }
+
+  // TouristDetailsPage.dart - Зөвхөн газрын байршилтай холбоотой нэмэлт
+
+  Future<void> _openMap() async {
+    final response = await http.get(
+      Uri.parse(
+        'http://127.0.0.1:8000/api/places/${widget.placeId}/',
+      ), 
+      headers: {'Accept': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final latitude = data['latitude'];
+      final longitude = data['longitude'];
+
+      if (latitude != null && longitude != null) {
+        final mapUrl = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=\$latitude,\$longitude',
+        );
+        if (await canLaunchUrl(mapUrl)) {
+          await launchUrl(mapUrl, mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Google Maps нээгдсэнгүй')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Байршлын координат алга байна')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Газрын мэдээлэл олдсонгүй')),
       );
     }
   }
@@ -878,7 +900,7 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
               SizedBox(
                 width: 150,
                 child: ElevatedButton(
-                  onPressed: _isBooking ? null : _bookNow,
+                  onPressed: _isBooking ? null : _openMap,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
