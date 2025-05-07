@@ -179,39 +179,39 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
   // TouristDetailsPage.dart - Зөвхөн газрын байршилтай холбоотой нэмэлт
 
   Future<void> _openMap() async {
-    final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/places/${widget.placeId}/'),
-      headers: {'Accept': 'application/json'},
-    );
+  final response = await http.get(
+    Uri.parse('http://127.0.0.1:8000/api/places/${widget.placeId}/'),
+    headers: {'Accept': 'application/json'},
+  );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final latitude = data['latitude'];
-      final longitude = data['longitude'];
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final latitude = data['latitude'];
+    final longitude = data['longitude'];
 
-      if (latitude != null && longitude != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => MapScreen(
-                  latitude: latitude,
-                  longitude: longitude,
-                  placeName: widget.name,
-                ),
+    if (latitude != null && longitude != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapScreen(
+            latitude: latitude,
+            longitude: longitude,
+            placeName: widget.name,
           ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Байршлын координат алга байна')),
-        );
-      }
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Газрын мэдээлэл олдсонгүй')),
+        const SnackBar(content: Text('Байршлын координат алга байна')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Газрын мэдээлэл олдсонгүй')),
+    );
   }
+}
+
 
   void _showRestaurants(BuildContext context) {
     showModalBottomSheet(
@@ -548,52 +548,41 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
-            expandedHeight: 350,
+            expandedHeight: 300,
             floating: false,
             pinned: true,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: EdgeInsets.zero,
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Hero(
-                    tag: 'place_${widget.name}',
-                    child: Image.network(
-                      widget.image,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.grey[100],
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                primaryColor,
-                              ),
-                              strokeWidth: 3,
-                            ),
+                  Image.network(
+                    widget.image,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            primaryColor,
                           ),
-                        );
-                      },
-                      errorBuilder:
-                          (context, error, stackTrace) => Container(
-                            color: Colors.grey[200],
-                            child: const Icon(
-                              Icons.image,
-                              size: 70,
-                              color: Colors.grey,
-                            ),
+                        ),
+                      );
+                    },
+                    errorBuilder:
+                        (context, error, stackTrace) => Container(
+                          color: Colors.grey[200],
+                          child: const Icon(
+                            Icons.image,
+                            size: 50,
+                            color: Colors.grey,
                           ),
-                    ),
+                        ),
                   ),
-                  Container(
+                  DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
@@ -601,257 +590,273 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                         colors: [
                           Colors.black.withOpacity(0.7),
                           Colors.transparent,
-                          Colors.black.withOpacity(0.2),
                         ],
-                        stops: const [0.0, 0.5, 1.0],
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                elevation: 4,
-                shadowColor: Colors.black.withOpacity(0.2),
-                shape: const CircleBorder(),
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: primaryColor,
-                      size: 20,
-                    ),
-                  ),
+            leading: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.4),
+                  shape: BoxShape.circle,
                 ),
+                child: const Icon(Icons.arrow_back, color: Colors.white),
               ),
+              onPressed: () => Navigator.pop(context),
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Material(
-                  elevation: 4,
-                  shadowColor: Colors.black.withOpacity(0.2),
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.favorite_border,
-                        color: primaryColor,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Material(
-                  elevation: 4,
-                  shadowColor: Colors.black.withOpacity(0.2),
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.share, color: primaryColor, size: 20),
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
 
           SliverToBoxAdapter(
-            child: Transform.translate(
-              offset: const Offset(0, -30),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                  child: Column(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.name,
-                              style: GoogleFonts.poppins(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black87,
-                                height: 1.2,
-                              ),
-                            ),
+                      Expanded(
+                        child: Text(
+                          widget.name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
                           ),
-                          const SizedBox(width: 16),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: primaryColor.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  widget.rating.toStringAsFixed(1),
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-
-                      const SizedBox(height: 16),
-
+                      const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                          horizontal: 10,
+                          vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[100]!),
+                          color: primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.location_on,
-                              color: primaryColor,
-                              size: 22,
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 18,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                widget.location,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.black87,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            const SizedBox(width: 4),
+                            Text(
+                              widget.rating.toStringAsFixed(1),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor,
                               ),
-                            ),
-                            IconButton(
-                              icon: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: primaryColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.directions,
-                                  color: primaryColor,
-                                  size: 20,
-                                ),
-                              ),
-                              onPressed: _openMap,
                             ),
                           ],
                         ),
                       ),
-
-                      const SizedBox(height: 32),
-
-                      _buildSectionHeader("Тайлбар", Icons.info_outline),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget.description,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.black87,
-                          height: 1.7,
-                        ),
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      _buildSectionHeader(
-                        "Үйлчилгээ",
-                        Icons.room_service_outlined,
-                      ),
-                      const SizedBox(height: 24),
-                      _buildServices(),
-
-                      if (widget.images.isNotEmpty) ...[
-                        const SizedBox(height: 32),
-                        _buildSectionHeader(
-                          "Зураг",
-                          Icons.photo_library_outlined,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildImageGallery(),
-                      ],
-
-                      const SizedBox(height: 32),
-
-                      _buildSectionHeader(
-                        "Холбогдох",
-                        Icons.contact_phone_outlined,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildContactCard(),
-
-                      const SizedBox(height: 100),
                     ],
                   ),
-                ),
+
+                  const SizedBox(height: 12),
+
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, color: primaryColor, size: 18),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          widget.location,
+                          style: GoogleFonts.poppins(
+                            color: secondaryTextColor,
+                            fontSize: 15,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+                  Divider(color: Colors.grey[300], height: 1),
+                  const SizedBox(height: 24),
+
+                  Text(
+                    "Тайлбар",
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.description,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: secondaryTextColor,
+                      height: 1.6,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  Divider(color: Colors.grey[300], height: 1),
+                  const SizedBox(height: 24),
+
+                  Text(
+                    "Үйлчилгээ",
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.9,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    children: [
+                      _buildFeatureItem(Icons.hotel, "Зочид буудал"),
+                      _buildFeatureItem(Icons.restaurant, "Ресторан"),
+                      _buildFeatureItem(Icons.local_parking, "Зогсоол"),
+                    ],
+                  ),
+
+                  if (widget.images.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Divider(color: Colors.grey[300], height: 1),
+                    const SizedBox(height: 24),
+                    Text(
+                      "Зураг",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 100,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.images.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 10),
+                        itemBuilder:
+                            (_, index) => GestureDetector(
+                              onTap:
+                                  () => _showImageDialog(
+                                    context,
+                                    widget.images[index],
+                                  ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: Image.network(
+                                    widget.images[index],
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (
+                                      context,
+                                      child,
+                                      loadingProgress,
+                                    ) {
+                                      if (loadingProgress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                primaryColor,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              color: Colors.grey[200],
+                                              child: const Icon(
+                                                Icons.broken_image,
+                                                size: 30,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 24),
+                  Divider(color: Colors.grey[300], height: 1),
+                  const SizedBox(height: 24),
+
+                  Text(
+                    "Холбогдох",
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 24,
+                          child: Icon(Icons.person, size: 30),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Өнөболд",
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                widget.phoneNumber,
+                                style: GoogleFonts.poppins(
+                                  color: secondaryTextColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.message, color: primaryColor),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.call, color: primaryColor),
+                          onPressed: _makePhoneCall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 80),
+                ],
               ),
             ),
           ),
@@ -859,10 +864,9 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
       ),
 
       bottomSheet: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          color: backgroundColor,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -874,32 +878,24 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
         child: SafeArea(
           child: Row(
             children: [
-              Expanded(
-                child: TextButton.icon(
-                  onPressed: _makePhoneCall,
-                  icon: Icon(Icons.call, color: primaryColor),
-                  label: Text(
-                    "Дуудлага",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: primaryColor,
-                    ),
-                  ),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: primaryColor.withOpacity(0.1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton.icon(
+              const Spacer(),
+              SizedBox(
+                width: 150,
+                child: ElevatedButton(
                   onPressed: _isBooking ? null : _openMap,
-                  icon:
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child:
                       _isBooking
                           ? const SizedBox(
                             width: 20,
@@ -909,239 +905,21 @@ class _TouristDetailsPageState extends State<TouristDetailsPage> {
                               color: Colors.white,
                             ),
                           )
-                          : const Icon(Icons.map, color: Colors.white),
-                  label: Text(
-                    "Газрын зураг",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    elevation: 3,
-                    shadowColor: primaryColor.withOpacity(0.5),
-                    backgroundColor: primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, color: primaryColor, size: 24),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: Colors.black87,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildServices() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        _buildServiceItem(Icons.hotel, "Зочид буудал"),
-        _buildServiceItem(Icons.restaurant, "Ресторан"),
-        _buildServiceItem(Icons.local_parking, "Зогсоол"),
-      ],
-    );
-  }
-
-  Widget _buildServiceItem(IconData icon, String label) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                spreadRadius: 1,
-              ),
-            ],
-            border: Border.all(color: Colors.grey[100]!),
-          ),
-          child: Icon(icon, color: primaryColor, size: 32),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImageGallery() {
-    return SizedBox(
-      height: 120,
-      child: ListView.separated(
-        physics: const BouncingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.images.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemBuilder:
-            (_, index) => GestureDetector(
-              onTap: () => _showImageDialog(context, widget.images[index]),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Image.network(
-                      widget.images[index],
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.grey[100],
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                primaryColor,
-                              ),
-                              strokeWidth: 2,
+                          : Text(
+                            "Газрын байршил",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        );
-                      },
-                      errorBuilder:
-                          (context, error, stackTrace) => Container(
-                            color: Colors.grey[200],
-                            child: const Icon(
-                              Icons.broken_image,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
-                          ),
-                    ),
-                  ),
                 ),
               ),
-            ),
-      ),
-    );
-  }
-
-  Widget _buildContactCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-        ],
-        border: Border.all(color: Colors.grey[100]!),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: primaryColor, width: 2),
-            ),
-            child: CircleAvatar(
-              radius: 30,
-              backgroundColor: primaryColor.withOpacity(0.1),
-              child: Icon(Icons.person, size: 36, color: primaryColor),
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Өнөболд",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  widget.phoneNumber,
-                  style: GoogleFonts.poppins(
-                    color: Colors.black54,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              _buildContactButton(Icons.message, Colors.blue),
-              const SizedBox(width: 12),
-              _buildContactButton(Icons.call, Colors.green),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContactButton(IconData icon, Color color) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: icon == Icons.call ? _makePhoneCall : () {},
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(icon, color: color, size: 24),
         ),
       ),
     );
   }
-
-  
 
   Widget _buildFeatureItem(IconData icon, String label) {
     return GestureDetector(
