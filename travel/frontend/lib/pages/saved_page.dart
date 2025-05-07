@@ -38,10 +38,7 @@ class _SavedPageState extends State<SavedPage> {
     try {
       final response = await http.get(
         Uri.parse('http://127.0.0.1:8000/api/recommended_places/'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept-Charset': 'utf-8',
-        },
+        headers: {'Authorization': 'Bearer $token', 'Accept-Charset': 'utf-8'},
       );
 
       if (response.statusCode == 200) {
@@ -74,17 +71,13 @@ class _SavedPageState extends State<SavedPage> {
             const SizedBox(width: 12),
             Text(
               'Removed from saved places',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-              ),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
             ),
           ],
         ),
         backgroundColor: _primaryColor,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
       ),
@@ -109,9 +102,7 @@ class _SavedPageState extends State<SavedPage> {
         backgroundColor: _backgroundColor,
         foregroundColor: Colors.black87,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: FutureBuilder<List<ReccommendedPlacesModel>>(
@@ -286,11 +277,7 @@ class _SavedPageState extends State<SavedPage> {
               ),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(
-              Icons.favorite_rounded,
-              size: 30,
-              color: _primaryColor,
-            ),
+            child: Icon(Icons.favorite_rounded, size: 30, color: _primaryColor),
           ),
         ],
       ),
@@ -342,15 +329,16 @@ class _SavedPageState extends State<SavedPage> {
                             height: 130,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              height: 130,
-                              color: Colors.grey[200],
-                              child: Icon(
-                                Icons.image_rounded,
-                                color: Colors.grey[400],
-                                size: 40,
-                              ),
-                            ),
+                            errorBuilder:
+                                (_, __, ___) => Container(
+                                  height: 130,
+                                  color: Colors.grey[200],
+                                  child: Icon(
+                                    Icons.image_rounded,
+                                    color: Colors.grey[400],
+                                    size: 40,
+                                  ),
+                                ),
                           ),
                         ),
                         // Gradient overlay for better text readability
@@ -375,76 +363,79 @@ class _SavedPageState extends State<SavedPage> {
                       ],
                     ),
                     // Content
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            place.name,
-                            style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              height: 1.3,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.location_on_rounded,
-                                size: 14,
-                                color: _primaryColor,
+                              Text(
+                                place.name,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.3,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  place.location,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                    height: 1.2,
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_rounded,
+                                    size: 14,
+                                    color: _primaryColor,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      place.location,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                        height: 1.2,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.star_rounded,
+                                      size: 16,
+                                      color: Colors.amber,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      place.rating.toString(),
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.amber[800],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          // Rating badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.star_rounded,
-                                  size: 16,
-                                  color: Colors.amber,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  place.rating.toString(),
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.amber[800],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ],
@@ -488,17 +479,18 @@ class _SavedPageState extends State<SavedPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => TouristDetailsPage(
-          image: place.image,
-          images: place.images,
-          name: place.name,
-          location: place.location,
-          description: place.description,
-          phoneNumber: place.phoneNumber,
-          hotelRating: place.hotelRating,
-          rating: place.rating,
-          placeId: int.parse(place.id),
-        ),
+        builder:
+            (_) => TouristDetailsPage(
+              image: place.image,
+              images: place.images,
+              name: place.name,
+              location: place.location,
+              description: place.description,
+              phoneNumber: place.phoneNumber,
+              hotelRating: place.hotelRating,
+              rating: place.rating,
+              placeId: int.parse(place.id),
+            ),
       ),
     );
   }
