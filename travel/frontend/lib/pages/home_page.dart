@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:frontend/pages/tourist_details_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/explore_page.dart';
@@ -137,14 +138,15 @@ class _HomeContentState extends State<HomeContent> {
     final searchLower = query.toLowerCase();
     setState(() {
       _isSearching = query.isNotEmpty;
-      _searchResults = _allPlaces.where((place) {
-        final name = (place['name'] ?? '').toString().toLowerCase();
-        final type = (place['type'] ?? '').toString().toLowerCase();
-        final desc = (place['description'] ?? '').toString().toLowerCase();
-        return name.contains(searchLower) ||
-            type.contains(searchLower) ||
-            desc.contains(searchLower);
-      }).toList();
+      _searchResults =
+          _allPlaces.where((place) {
+            final name = (place['name'] ?? '').toString().toLowerCase();
+            final type = (place['type'] ?? '').toString().toLowerCase();
+            final desc = (place['description'] ?? '').toString().toLowerCase();
+            return name.contains(searchLower) ||
+                type.contains(searchLower) ||
+                desc.contains(searchLower);
+          }).toList();
     });
   }
 
@@ -190,7 +192,9 @@ class _HomeContentState extends State<HomeContent> {
       );
       if (res1.statusCode == 200) {
         final List<dynamic> data1 = json.decode(utf8.decode(res1.bodyBytes));
-        combined.addAll(data1.map((place) => {
+        combined.addAll(
+          data1.map(
+            (place) => {
               'id': place['id'],
               'name': place['name'] ?? '',
               'type': place['type'] ?? '',
@@ -198,7 +202,9 @@ class _HomeContentState extends State<HomeContent> {
               'distance': '${place['distance_km'] ?? '---'} км',
               'rating': (place['rating'] ?? 0).toDouble(),
               'image': place['image'] ?? 'https://via.placeholder.com/150',
-            }));
+            },
+          ),
+        );
       }
 
       // Nearby places
@@ -211,7 +217,9 @@ class _HomeContentState extends State<HomeContent> {
       );
       if (res2.statusCode == 200) {
         final List<dynamic> data2 = json.decode(utf8.decode(res2.bodyBytes));
-        combined.addAll(data2.map((place) => {
+        combined.addAll(
+          data2.map(
+            (place) => {
               'id': place['id'],
               'name': place['name'] ?? '',
               'type': place['type'] ?? '',
@@ -219,7 +227,9 @@ class _HomeContentState extends State<HomeContent> {
               'distance': '${place['distance_km'] ?? '---'} км',
               'rating': (place['rating'] ?? 0).toDouble(),
               'image': place['image'] ?? 'https://via.placeholder.com/150',
-            }));
+            },
+          ),
+        );
       }
 
       setState(() {
@@ -240,19 +250,18 @@ class _HomeContentState extends State<HomeContent> {
       backgroundColor: Colors.grey[50],
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            _buildSliverAppBar(),
-          ];
+          return [_buildSliverAppBar()];
         },
-        body: _isLoading
-            ? Center(child: CircularProgressIndicator(color: primaryColor))
-            : _errorMessage != null
+        body:
+            _isLoading
+                ? Center(child: CircularProgressIndicator(color: primaryColor))
+                : _errorMessage != null
                 ? Center(
-                    child: Text(
-                      _errorMessage!,
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  )
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                )
                 : _buildContent(),
       ),
     );
@@ -276,8 +285,8 @@ class _HomeContentState extends State<HomeContent> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              'https://images.unsplash.com/photo-1629381675135-217ce9707b8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2142&q=80',
+            Image.asset(
+              'assets/sk.png', // <-- таны asset замыг энд бичнэ
               fit: BoxFit.cover,
             ),
             Container(
@@ -285,10 +294,7 @@ class _HomeContentState extends State<HomeContent> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
                 ),
               ),
             ),
@@ -318,15 +324,16 @@ class _HomeContentState extends State<HomeContent> {
               onChanged: _performSearch,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search, color: primaryColor),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.clear, color: Colors.grey),
-                        onPressed: () {
-                          _searchController.clear();
-                          _performSearch('');
-                        },
-                      )
-                    : null,
+                suffixIcon:
+                    _searchController.text.isNotEmpty
+                        ? IconButton(
+                          icon: Icon(Icons.clear, color: Colors.grey),
+                          onPressed: () {
+                            _searchController.clear();
+                            _performSearch('');
+                          },
+                        )
+                        : null,
                 hintText: 'Үзмэр хайх...',
                 hintStyle: GoogleFonts.poppins(
                   fontSize: 14,
@@ -388,179 +395,225 @@ class _HomeContentState extends State<HomeContent> {
   Widget _buildSearchResults() {
     return _searchResults.isEmpty
         ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.search_off, size: 80, color: Colors.grey[400]),
-                const SizedBox(height: 16),
-                Text(
-                  'Үр дүн олдсонгүй',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
-                  ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.search_off, size: 80, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              Text(
+                'Үр дүн олдсонгүй',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600],
                 ),
-              ],
-            ),
-          )
+              ),
+            ],
+          ),
+        )
         : ListView.builder(
-            padding: const EdgeInsets.all(20),
-            itemCount: _searchResults.length,
-            itemBuilder: (context, index) {
-              final place = _searchResults[index];
-              return _buildPlaceCard(place);
-            },
-          );
+          padding: const EdgeInsets.all(20),
+          itemCount: _searchResults.length,
+          itemBuilder: (context, index) {
+            final place = _searchResults[index];
+            return _buildPlaceCard(place);
+          },
+        );
   }
 
   Widget _buildPlaceCard(Map<String, dynamic> place) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                Image.network(
-                  place['image'] ?? 'https://via.placeholder.com/400x200',
-                  height: 150,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => TouristDetailsPage(
+                  placeId: place['id'],
+                  name: place['name'],
+                  image: place['image'],
+                  location: place['distance'],
+                  description: place['description'],
+                  phoneNumber: '', // Хэрвээ backend өгдөг бол дамжуулна
+                  rating: place['rating'],
+                  images: const [], // Хэрвээ олон зураг байвал нэмж болно
+                  hotelRating: '0', // шаардлагатай бол rating дамжуулна
                 ),
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: secondaryColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      place['type'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  Image.network(
+                    place['image'] ?? 'https://via.placeholder.com/400x200',
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: secondaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        place['type'],
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.star_rounded,
-                          color: Colors.amber,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${place['rating']}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    place['name'],
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    place['description'] ?? 'Тодорхойлолт байхгүй',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
                         children: [
                           Icon(
-                            Icons.location_on_rounded,
-                            color: primaryColor,
+                            Icons.star_rounded,
+                            color: Colors.amber,
                             size: 16,
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            place['distance'],
+                            '${place['rating']}',
                             style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: primaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
                             ),
                           ),
                         ],
                       ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: Text(
-                          'Дэлгэрэнгүй',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      place['name'],
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      place['description'] ?? 'Тодорхойлолт байхгүй',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on_rounded,
+                              color: primaryColor,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              place['distance'],
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => TouristDetailsPage(
+                                      placeId: place['id'],
+                                      name: place['name'],
+                                      image: place['image'],
+                                      location: place['distance'],
+                                      description: place['description'],
+                                      phoneNumber: '',
+                                      rating: place['rating'],
+                                      images: const [],
+                                      hotelRating: '0',
+                                    ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            'Дэлгэрэнгүй',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
