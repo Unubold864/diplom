@@ -100,21 +100,41 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        ),
+        const SizedBox(height: 8),
         SizedBox(
-          height: 220,
+          height: 260, // Increased height for more content
           child: FutureBuilder<List<NerbyPlacesModel>>(
             future: _nearbyPlacesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                );
               } else if (snapshot.hasError) {
-                return Center(child: Text('Алдаа: ${snapshot.error}'));
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 40, color: Colors.red.shade300),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Алдаа: ${snapshot.error}',
+                        style: GoogleFonts.poppins(color: Colors.red.shade300),
+                      ),
+                    ],
+                  ),
+                );
               } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 return ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     return Padding(
@@ -124,7 +144,19 @@ class _NerbyPlacesState extends State<NerbyPlaces> {
                   },
                 );
               } else {
-                return const Center(child: Text('Ойролцоо газар олдсонгүй'));
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.location_off, size: 40, color: Colors.grey.shade400),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Ойролцоо газар олдсонгүй',
+                        style: GoogleFonts.poppins(color: Colors.grey.shade600),
+                      ),
+                    ],
+                  ),
+                );
               }
             },
           ),
@@ -140,50 +172,106 @@ class NearbyPlaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 180,
+    return Container(
+      width: 200, // Slightly wider card
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16), // Rounder corners
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0, // No card elevation since we're using custom shadow
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => _navigateToDetails(context),
+          splashColor: Colors.blue.withOpacity(0.1),
+          highlightColor: Colors.blue.withOpacity(0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Stack(
                 children: [
                   _buildPlaceImage(),
+                  // Gradient overlay for better text visibility
                   Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
                     child: Container(
-                      height: 60,
+                      height: 80,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: [
-                            Colors.black.withOpacity(0.7),
-                            Colors.transparent,
+                            Colors.black.withOpacity(0.8),
+                            Colors.black.withOpacity(0.0),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  Positioned(bottom: 8, left: 8, child: _buildDistanceBadge()),
+                  // Rating badge in top-right corner
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber.shade600,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            place.rating?.toStringAsFixed(1) ?? '-.-',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Distance badge at bottom
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    child: _buildDistanceBadge(),
+                  ),
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       place.name ?? 'Нэргүй газар',
                       style: GoogleFonts.poppins(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
@@ -191,40 +279,58 @@ class NearbyPlaceCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      place.location ?? 'Байршил тодорхойгүй',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(
-                          Icons.star,
-                          color: Colors.amber.shade600,
-                          size: 16,
+                          Icons.location_on_rounded,
+                          color: Colors.blue.shade600,
+                          size: 14,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            place.rating?.toStringAsFixed(1) ?? '-.-',
+                            place.location ?? 'Байршил тодорхойгүй',
                             style: GoogleFonts.poppins(
                               fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade600,
                             ),
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 14,
-                          color: Colors.blue.shade400,
-                        ),
                       ],
+                    ),
+                    const SizedBox(height: 8),
+                    // View Details Button
+                    Container(
+                      width: double.infinity,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.shade400,
+                            Colors.blue.shade600,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _navigateToDetails(context),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Center(
+                            child: Text(
+                              'Дэлгэрэнгүй',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -238,39 +344,83 @@ class NearbyPlaceCard extends StatelessWidget {
 
   Widget _buildPlaceImage() {
     return place.image != null && place.image!.isNotEmpty
-        ? Image.network(
-            place.image!,
-            height: 120,
-            width: 180,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => _buildPlaceholderImage(),
+        ? Hero(
+            tag: 'place_image_${place.id}',
+            child: Container(
+              height: 140,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+              ),
+              child: Image.network(
+                place.image!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => _buildPlaceholderImage(),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              (loadingProgress.expectedTotalBytes ?? 1)
+                          : null,
+                      color: Colors.blue.shade300,
+                    ),
+                  );
+                },
+              ),
+            ),
           )
         : _buildPlaceholderImage();
   }
 
   Widget _buildPlaceholderImage() {
     return Container(
-      height: 120,
-      width: 180,
-      color: Colors.grey.shade200,
-      child: const Center(child: Icon(Icons.image_not_supported, size: 40)),
+      height: 140,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.grey.shade300,
+            Colors.grey.shade200,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.image_rounded,
+          size: 48,
+          color: Colors.grey.shade400,
+        ),
+      ),
     );
   }
 
   Widget _buildDistanceBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            spreadRadius: 1,
+            offset: const Offset(0, 1),
+          ),
         ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.location_on, color: Colors.blue.shade600, size: 14),
+          Icon(
+            Icons.directions_walk_rounded,
+            color: Colors.blue.shade600,
+            size: 14,
+          ),
           const SizedBox(width: 4),
           Text(
             place.distance != null && place.distance! > 0
@@ -279,6 +429,7 @@ class NearbyPlaceCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 12,
               fontWeight: FontWeight.w500,
+              color: Colors.black87,
             ),
           ),
         ],
@@ -294,18 +445,29 @@ class NearbyPlaceCard extends StatelessWidget {
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => TouristDetailsPage(
-          image: place.image ?? (allImages.isNotEmpty ? allImages.first : ''),
-          images: allImages,
-          name: place.name ?? 'Unknown Place',
-          location: place.location ?? 'Unknown Location',
-          description: place.description ?? 'No description available',
-          phoneNumber: place.phoneNumber ?? 'Not available',
-          rating: place.rating ?? 0.0,
-          hotelRating: place.hotelRating ?? '0.0',
-          placeId: place.id ?? 0,
-        ),
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            TouristDetailsPage(
+              image: place.image ?? (allImages.isNotEmpty ? allImages.first : ''),
+              images: allImages,
+              name: place.name ?? 'Unknown Place',
+              location: place.location ?? 'Unknown Location',
+              description: place.description ?? 'No description available',
+              phoneNumber: place.phoneNumber ?? 'Not available',
+              rating: place.rating ?? 0.0,
+              hotelRating: place.hotelRating ?? '0.0',
+              placeId: place.id ?? 0,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
       ),
     );
   }
