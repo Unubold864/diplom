@@ -10,6 +10,7 @@ class ReccommendedPlacesModel {
   final String phoneNumber;
   final String hotelRating;
   final List<String> images;
+  final String type;
 
   ReccommendedPlacesModel({
     required this.id,
@@ -20,6 +21,7 @@ class ReccommendedPlacesModel {
     required this.description,
     required this.phoneNumber,
     required this.hotelRating,
+    required this.type,
     this.images = const [],
   });
 
@@ -63,6 +65,7 @@ class ReccommendedPlacesModel {
       phoneNumber: json['phone_number']?.toString() ?? 'Not available',
       hotelRating: json['hotel_rating']?.toString() ?? 'Not rated',
       images: galleryImages,
+      type: json['type'] ?? '',
     );
   }
 
